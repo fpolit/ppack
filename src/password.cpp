@@ -1,8 +1,22 @@
+#ifndef __INCLUDE_PASSWORD_H__
+#define __INCLUDE_PASSWORD_H__
 #include "../include/password.hpp"
-#include "../include/character.hpp"
-#include "../include/mask.hpp"
-#include "omp.h"
+#endif //__INCLUDE_PASSWORD_H__
 
+#ifndef __INCLUDE_CHARACTER_H__
+#define __INCLUDE_CHARACTER_H__
+#include "../include/character.hpp"
+#endif //__INCLUDE_CHARACTER_H__
+
+#ifndef __INCLUDE_MASK_H__
+#define __INCLUDE_MASK_H__
+#include "../include/mask.hpp"
+#endif // __INCLUDE_MASK_H__
+
+#ifndef __INCLUDE_OMP_H__
+#define __INCLUDE_OMP_H__
+#include "omp.h"
+#endif //__INCLUDE_OMP_H__
 
 
 // BEGIN: Password class implementation
