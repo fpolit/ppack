@@ -62,7 +62,6 @@ int main(int argc ,char* argv[])
         int minlength;
         int maxlength;
         
-        //parallel parameters
         unsigned int threads;
 
         po::options_description files("Files I/O");

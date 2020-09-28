@@ -91,7 +91,7 @@ int main(int argc ,char* argv[])
 
         po::options_description print("Print");
         print.add_options()
-            ("hiderare", po::value<bool>(&show)->implicit_value(true)->default_value(false), "Show generated masks.")
+            ("show", po::value<bool>(&show)->implicit_value(true)->default_value(false), "Show generated masks.")
             ("quiet, q", po::value<bool>(&quiet)->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).");
 
         po::options_description mask_compare("Compare mask o file of mask against an already cracked list.");
@@ -103,8 +103,8 @@ int main(int argc ,char* argv[])
         po::options_description password("Password Structure");
         password.add_options()
             ("charset, c", po::value<vector<string>>(), "Password's charset.")
-            ("minlength", po::value<int>(&minlength)->default_value(-1)->implicit_value(-1), "Minimum password length.")
-            ("maxlength", po::value<int>(&maxlength)->default_value(-1)->implicit_value(-1), "Maximum password length.")
+            ("minlength", po::value<int>(&minlength)->default_value(0), "Minimum password length.")
+            ("maxlength", po::value<int>(&maxlength)->default_value(-1), "Maximum password length.")
             ("mincomplexity", po::value<int>(&mincomplexity)->default_value(0), "Minimum password Complexity.")
             ("maxcomplexity", po::value<int>(&maxcomplexity)->default_value(100), "Maximum password Complexity.");
                     
@@ -147,15 +147,16 @@ int main(int argc ,char* argv[])
         {
             statsgen_output = vm["statsgen"].as<string>();
             // Finalize implementation of classes
-            PPACK ppack();
-            ppack.maskgen(statsgen_output, output,              //IO parameters 
-                        show, quiet,                            //print parameters
-                        checkmasks, checkmasksfile,             //checkmask parameters
-                        charset,                                //password charset
-                        minlength, maxlength,                   //length parameters
-                        mincomplexity, maxcomplexity,           //complexity parameters
-                        minoccurrence, maxoccurrence,           //occurrence parameters
-                        threads);
+            // PPACK ppack();
+            // ppack.maskgen(statsgen_output, output,              //IO parameters 
+                        // show, quiet,                            //print parameters
+                        // checkmasks, checkmasksfile,             //checkmask parameters
+                        // charset,                                //password charset
+                        // minlength, maxlength,                   //length parameters
+                        // mincomplexity, maxcomplexity,           //complexity parameters
+                        // minoccurrence, maxoccurrence,           //occurrence parameters
+                        // threads);
+            return 0;
         }
         else
         {
@@ -169,5 +170,5 @@ int main(int argc ,char* argv[])
         cout << e.what() << endl;
         return 1;
     }
-    return 0;
+
 }
