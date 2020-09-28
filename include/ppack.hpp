@@ -55,7 +55,7 @@ public:
                 int minupper=-1, int maxupper=-1,                           // password
                 int mindigit=-1, int maxdigit=-1,                           // charset
                 int minspecial=-1, int maxspecial=-1,                       //
-                int threads=2);                                             //parallel parameters
+                unsigned int threads=2);                                    //parallel parameters
 
 };
 
