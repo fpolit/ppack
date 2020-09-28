@@ -1,21 +1,22 @@
 #ifndef __PASSWORD_H__
 #define __PASSWORD_H__
 
-#ifndef __STD_MAP_H_
-#define __STD_MAP_H_
+#ifndef __INCLUDE_STD_MAP_H_
+#define __INCLUDE_STD_MAP_H_
 #include<map>
-#endif // __STD_MAP_H_
+#endif // __INCLUDE_STD_MAP_H_
 
-#ifndef __STD_STRING_H_
-#define __STD_STRING_H_
+#ifndef __INCLUDE_STD_STRING_H_
+#define __INCLUDE_STD_STRING_H_
 #include<string>
-#endif //__STD_STRING_H_
+#endif //__INCLUDE_STD_STRING_H_
 
 using namespace std;
 
-#ifndef __MASK_H__
+#ifndef __INCLUDE_MASK_H__
+#define __INCLUDE_MASK_H__
 #include "mask.hpp"
-#endif // __MASK_H__
+#endif // __INCLUDE_MASK_H__
 
 
 

@@ -1,7 +1,12 @@
 #ifndef __CHARACTER_H__
 #define __CHARACTER_H__
 
+
+#ifndef __INCLUDE_STD_STRING_H_
+#define __INCLUDE_STD_STRING_H_
 #include<string>
+#endif //__INCLUDE_STD_STRING_H_
+
 using namespace std;
 
 typedef struct Character

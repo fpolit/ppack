@@ -1,15 +1,15 @@
 #ifndef __MASK_H__
 #define __MASK_H__
 
-#ifndef __STD_STRING_H_
-#define __STD_STRING_H_
+#ifndef __INCLUDE_STD_STRING_H_
+#define __INCLUDE_STD_STRING_H_
 #include<string>
-#endif //__STD_STRING_H_
+#endif //__INCLUDE_STD_STRING_H_
 
-#ifndef __STD_VECTOR_H_
-#define __STD_VECTOR_H_
+#ifndef __INCLUDE_STD_VECTOR_H_
+#define __INCLUDE_STD_VECTOR_H_
 #include<vector>
-#endif //__STD_VECTOR_H_
+#endif //__INCLUDE_STD_VECTOR_H_
 
 using namespace std;
 
@@ -24,14 +24,14 @@ typedef struct maskSymbols
 
 }maskSymbols;
 
-typedef struct lettherMask
+typedef struct letterMask
 {
     string lowercase    = "l";
     string uppercase    = "u";
     string special      = "s";
     string digit        = "d";
     string all          = "a";
-}lettherMask;
+}LetterMask;
 
 bool ismask(string mask);
 
