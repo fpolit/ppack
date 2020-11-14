@@ -1,4 +1,8 @@
+#ifndef __INCLUDE_CHARACTER_H__
+#define __INCLUDE_CHARACTER_H__
 #include "../include/character.hpp"
+#endif //__INCLUDE_CHARACTER_H__
+
 
 Character characters;
 

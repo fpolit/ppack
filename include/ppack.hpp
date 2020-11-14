@@ -33,30 +33,38 @@ public:
     PPACK(){}
     PPACK(string wordlist):wordlist_file{wordlist}{}
 
-    void statsgen(string output="statsgen.masks",                           //IO parameters
-                bool hiderare=false, bool quiet=false,                      //print parameters
-                vector<string> charset={"none"},                            //password charset
-                int minlength=-1, int maxlength=-1,                         //length parameters
-                unsigned int threads=2);                                    //parallel parameters
+    // void statsgen(string output="statsgen.masks",                           //IO parameters
+    //             bool hiderare=false, bool quiet=false,                      //print parameters
+    //             vector<string> charset={"none"},                            //password charset
+    //             int minlength=-1, int maxlength=-1,                         //length parameters
+    //             unsigned int threads=2);                                    //parallel parameters
 
-    void maskgen(string statsgen_output, string output="maskgen.hcmask",    //IO parameters 
-                bool show=true, bool quiet=false,                           //print parameters
-                vector<Mask> checkmasks={}, string checkmasksfile="",       //checkmask parameters
-                vector<string> charset={"none"},                            //password charset
-                int minlength=-1, int maxlength=-1,                         //length parameters
-                int mincomplexity=1, int maxcomplexity=100,                 //complexity parameters
-                int minoccurrence=-1, int maxoccurrence=-1,                 //occurrence parameters
-                unsigned int threads=2);                                    //parallel parameters
+    // void maskgen(string statsgen_output, string output="maskgen.hcmask",    //IO parameters
+    //             bool show=true, bool quiet=false,                           //print parameters
+    //             vector<Mask> checkmasks={}, string checkmasksfile="",       //checkmask parameters
+    //             vector<string> charset={"none"},                            //password charset
+    //             int minlength=-1, int maxlength=-1,                         //length parameters
+    //             int mincomplexity=1, int maxcomplexity=100,                 //complexity parameters
+    //             int minoccurrence=-1, int maxoccurrence=-1,                 //occurrence parameters
+    //             unsigned int threads=2);                                    //parallel parameters
 
-    void policygen(string output="complexity.hcmask",                       //Output File
-                bool quiet=false, bool show=true,                           //print parameters
-                int minlength=-1, int maxlength=-1,                         //length parameters
-                int minlower=-1, int maxlower=-1,                           //
-                int minupper=-1, int maxupper=-1,                           // password
-                int mindigit=-1, int maxdigit=-1,                           // charset
-                int minspecial=-1, int maxspecial=-1,                       //
-                unsigned int threads=2);                                    //parallel parameters
+    // void policygen(string output="complexity.hcmask",                       //Output File
+    //             bool quiet=false, bool show=true,                           //print parameters
+    //             int minlength=-1, int maxlength=-1,                         //length parameters
+    //             int minlower=-1, int maxlower=-1,                           //
+    //             int minupper=-1, int maxupper=-1,                           // password
+    //             int mindigit=-1, int maxdigit=-1,                           // charset
+    //             int minspecial=-1, int maxspecial=-1,                       //
+    //             unsigned int threads=2);                                    //parallel parameters
 
+  void policygen(string output,                       //Output File
+                        bool quiet, bool show,                           //print parameters
+                        int minlength, int maxlength,                         //length parameters
+                        int minlower, int maxlower,                           //
+                        int minupper, int maxupper,                           // password
+                        int mindigit, int maxdigit,                           // charset
+                        int minspecial, int maxspecial,                       //
+                        unsigned int t);
 };
 
 

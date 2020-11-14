@@ -94,6 +94,7 @@ map<ACS, string> AdvanceCharSet = {
 };
 
 
+
 typedef struct PStruct{
         unsigned int lowercase  = 0;
         unsigned int uppercase  = 0;
@@ -102,17 +103,24 @@ typedef struct PStruct{
 }PStruct;// Password Structure
 
 
+
+Mask analyzePassword(string passwd, PStruct *pStruct,
+                     SCS* simple);
+// determine password's SCS
+SCS detSimpleCS(PStruct * pStruct);
+
+
 class Password : public string
 {
 private:
     Mask mask;
     int complexity=-1;
-    
+
     // Charater set password
     SCS simple;
     //optional no computer in contructor (default value nane(ACS))
     ACS advance;
-    
+
     PStruct passwdStruct;
 
 
@@ -136,10 +144,5 @@ Password::Password(string passwd)
     mask = mask_passwd;
     advance = ACS::none;
 }
-
-Mask analyzePassword(string passwd, PStruct *pStruct, 
-                    SCS* simple);
-// determine password's SCS
-SCS detSimpleCS(PStruct * pStruct);
 
 #endif // __PASSWORD_H__

@@ -43,17 +43,4 @@ public:
     size_t size() const; 
 };
 
-
-Mask::Mask(string mask) 
-{
-   //verify that mask have the format of a MASK
-    if(ismask(mask)){
-        string(mask); 
-    }
-    else{
-        throw "Invalid mask: " + mask;
-    }
-}
-
-
 #endif // __MASK_H__
