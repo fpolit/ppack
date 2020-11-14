@@ -67,11 +67,7 @@ Mask::Mask(string mask)
   :string(mask) // NOTA: EL CONTRUCTOR DE LA CLASE PADRE (string) DEBE IR AQUI NO EN EL CUERPO SINO NO FUNCIONA.
 {
   //verify that mask have the format of a MASK
-  if(ismask(mask)){
-    //string(mask);
-    cout << mask << " is a mask." << endl;
-  }
-  else{
+  if(!ismask(mask)){
     throw "Invalid mask: " + mask;
   }
 }
@@ -91,25 +87,28 @@ void Mask::expand(string masksymbol)
 //   cout << "No forget implement permutation method(Mask Class)." << endl;
 // }
 
-// maskStruct maskAnalysis(Mask mask)
-// {
-//   maskStruct mask_struct;
-// #pragma omp parallel for shared(mask)
-//   for(int i=1; i<mask.size(); i+=2)
-//     {
-//     switch(mask[i])
-//       {
-//       case 'l':
-//         mask_struct.lowercase += 1;
-//       case "d":
-//         mask_struct.digit += 1;
-//       case "u":
-//         mask_struct.uppercase += 1;
-//       case "s":
-//         mask_struct.special += 1;
-//       }
-//     }
-
-//   return mask_struct;
-// }
+maskStruct maskAnalysis(Mask mask)
+{
+  maskStruct mask_struct;
+#pragma omp parallel for shared(mask)
+  for(int i=1; i<mask.size(); i+=2)
+    {
+      switch(mask[i])
+        {
+        case 'l':
+          mask_struct.lowercase += 1;
+          break;
+        case 'd':
+          mask_struct.digit += 1;
+          break;
+        case 'u':
+          mask_struct.uppercase += 1;
+          break;
+        case 's':
+          mask_struct.special += 1;
+          break;
+        }
+    }
+  return mask_struct;
+}
 // END: Mask class implementation

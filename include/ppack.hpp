@@ -1,21 +1,26 @@
 #ifndef __PPACK_H__
 #define __PPACK_H__
 
-#ifndef __INCLUDE_STD_STRING_H_
-#define __INCLUDE_STD_STRING_H_
+#ifndef __INCLUDE_STD_STRING_H__
+#define __INCLUDE_STD_STRING_H__
 #include<string>
 #endif //__INCLUDE_STD_STRING_H_
 
-#ifndef __INCLUDE_STD_VECTOR_H_
-#define __INCLUDE_STD_VECTOR_H_
+#ifndef __INCLUDE_STD_VECTOR_H__
+#define __INCLUDE_STD_VECTOR_H__
 #include<vector>
 #endif // __INCLUDE_STD_VECTOR_H_
 using namespace std;
 
-#ifndef __INCLUDE_MASK_H_
-#define __INCLUDE_MASK_H_
+#ifndef __INCLUDE_MASK_H__
+#define __INCLUDE_MASK_H__
 #include "../include/mask.hpp"
-#endif //__INCLUDE_MASK_H_
+#endif //__INCLUDE_MASK_H__
+
+#ifndef __INCLUDE_BASE_H__
+#define __INCLUDE_BASE_H__
+#include "../include/base.hpp"
+#endif //__INCLUDE_BASE_H__
 
 namespace ppack{
 string VERSION  = "1.0";
@@ -24,14 +29,14 @@ string VERSION  = "1.0";
 class PPACK
 {
 private:
-    string wordlist_file;
-    string output_statsgen;
-    string output_maskgen;
-    string output_policygen;
+  static string wordlist_file;
+  static string output_statsgen;
+  static string output_maskgen;
+  static string output_policygen;
 
 public:
     PPACK(){}
-    PPACK(string wordlist):wordlist_file{wordlist}{}
+  //PPACK(string wordlist):wordlist_file{wordlist}{}
 
     // void statsgen(string output="statsgen.masks",                           //IO parameters
     //             bool hiderare=false, bool quiet=false,                      //print parameters
@@ -57,15 +62,28 @@ public:
     //             int minspecial=-1, int maxspecial=-1,                       //
     //             unsigned int threads=2);                                    //parallel parameters
 
-  void policygen(string output,                       //Output File
+  // this method depend of Base class
+  // and corePolicygen is the more important function(this function generate a new Base)
+  static void policygen(string output,                       //Output File
                         bool quiet, bool show,                           //print parameters
                         int minlength, int maxlength,                         //length parameters
                         int minlower, int maxlower,                           //
                         int minupper, int maxupper,                           // password
                         int mindigit, int maxdigit,                           // charset
-                        int minspecial, int maxspecial,                       //
-                        unsigned int t);
+                        int minspecial, int maxspecial);
 };
 
+
+// requirements for the creation of masks
+typedef struct poliStruct
+{
+  int minlength; int maxlength;                         //length parameters
+  int minlower; int maxlower;                           //
+  int minupper; int maxupper;                           // password
+  int mindigit; int maxdigit;                           // charset
+  int minspecial; int maxspecial;
+}poliStruct;
+
+Base corePolicygen(Base init_base);
 
 #endif // __PPACK_H__
