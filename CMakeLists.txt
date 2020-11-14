@@ -10,6 +10,7 @@ add_library(mask
   "include/mask.hpp"
   "src/mask.cpp")
 
+# Adding ppack library
 add_library(ppack
   STATIC
   "include/ppack.hpp"
@@ -18,6 +19,15 @@ add_library(ppack
 
 # create the policygen executable
 add_executable(policygen "src/policygen.cpp")
+
+
+# Linking with  boost/program_options library
+set(BOOST_VERSION 1.72.0)
+find_package(Boost ${BOOST_VERSION} COMPONENTS program_options)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  target_link_libraries(policygen ${Boost_LIBRARIES})
+endif()
 
 
 # link with mask  dependences
