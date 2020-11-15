@@ -1,12 +1,12 @@
-/**
+/*
  * @file maskgen.cpp
  * @author glozanoa (gacuna@protonmail.com)
  * @brief Generate mask for brute force that achieve with minimun password complexity requirements.
  * @version 0.1
  * @date 2020-09-27
- * 
+ *
  * @copyright Copyright (c) 2020
- * 
+ *
  */
 
 #ifndef __INCLUDE_STD_IOSTREAM_H__
@@ -185,7 +185,7 @@ int main(int argc ,char* argv[])
         po::options_description files("Files I/O");
         files.add_options()
             ("output, o", po::value<string>(&output)->default_value("policygen.hcmasks"), "Ouput File.")
-          ("input, i", po::value<string>(&input), "Input ini File.")M
+          ("input, i", po::value<string>(&input), "Input File.");
 
         po::options_description print("Print");
         print.add_options()
@@ -242,7 +242,7 @@ int main(int argc ,char* argv[])
         if(vm.count("version"))
         {
             //cout << "PPACK  version " + ppack::VERSION << endl;
-          cout << "PPACK  version: " << PPACK::VERSION  << endl;
+          cout << "PPACK  version: " << PPACK_VERSION  << endl;
             return 1;
         }
 
