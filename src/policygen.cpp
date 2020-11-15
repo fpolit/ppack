@@ -160,6 +160,7 @@ int main(int argc ,char* argv[])
     {
         //Output File parameter(files)
         string output;
+        string input; // ini file
 
         //print parameters(print)
         bool quiet;
@@ -183,7 +184,8 @@ int main(int argc ,char* argv[])
 
         po::options_description files("Files I/O");
         files.add_options()
-            ("output, o", po::value<string>(&output)->default_value("policygen.hcmasks"), "Ouput File.");
+            ("output, o", po::value<string>(&output)->default_value("policygen.hcmasks"), "Ouput File.")
+          ("input, i", po::value<string>(&input), "Input ini File.")M
 
         po::options_description print("Print");
         print.add_options()
@@ -240,34 +242,38 @@ int main(int argc ,char* argv[])
         if(vm.count("version"))
         {
             //cout << "PPACK  version " + ppack::VERSION << endl;
-            cout << "PPACK  version 0.1"  << endl;
-
+          cout << "PPACK  version: " << PPACK::VERSION  << endl;
             return 1;
         }
 
-        // no version  or help flags
+        if(vm.count("input"))
+          {
+            // write the support to read from a ini file
+          }
+        else
+          {
+            // input argument analysis
+            argi arguments; // this variable modify all the other variables(lenght , upper, lower, special, quiet, ..)
+            arguments.output = &output;
 
-        // input argument analysis
-        argi arguments; // this variable modify all the other variables(lenght , upper, lower, special, quiet, ..)
-        arguments.output = &output;
-
-        arguments.quiet = &quiet;
-        arguments.show = &show;
-
-
-        arguments.minlength = &minlength;
-        arguments.maxlength = &maxlength;
-        arguments.minlower = &minlower;
-        arguments.minupper = &minupper;
-        arguments.maxupper = &maxupper;
-        arguments.mindigit = &mindigit;
-        arguments.maxdigit = &maxdigit;
-        arguments.minspecial = &minspecial;
-        arguments.maxspecial = &maxspecial;
+            arguments.quiet = &quiet;
+            arguments.show = &show;
 
 
-        // read and analyze the entered arguments
-        validate_ioptions(vm, &arguments);
+            arguments.minlength = &minlength;
+            arguments.maxlength = &maxlength;
+            arguments.minlower = &minlower;
+            arguments.minupper = &minupper;
+            arguments.maxupper = &maxupper;
+            arguments.mindigit = &mindigit;
+            arguments.maxdigit = &maxdigit;
+            arguments.minspecial = &minspecial;
+            arguments.maxspecial = &maxspecial;
+
+
+            // read and analyze the entered arguments
+            validate_ioptions(vm, &arguments);
+          }
 
         PPACK::policygen(output,                        //Output File
                         quiet,      show,               //print parameters

@@ -17,14 +17,10 @@ using namespace std;
 #include "../include/mask.hpp"
 #endif //__INCLUDE_MASK_H__
 
-#ifndef __INCLUDE_BASE_H__
-#define __INCLUDE_BASE_H__
-#include "../include/base.hpp"
-#endif //__INCLUDE_BASE_H__
-
-namespace ppack{
-string VERSION  = "1.0";
-}
+#ifndef __INCLUDE_BASEMASK_H__
+#define __INCLUDE_BASEMASK_H__
+#include "../include/basemask.hpp"
+#endif //__INCLUDE_BASEMASK_H__
 
 class PPACK
 {
@@ -35,7 +31,7 @@ private:
   static string output_policygen;
 
 public:
-    PPACK(){}
+  PPACK(){};
   //PPACK(string wordlist):wordlist_file{wordlist}{}
 
     // void statsgen(string output="statsgen.masks",                           //IO parameters
@@ -62,6 +58,9 @@ public:
     //             int minspecial=-1, int maxspecial=-1,                       //
     //             unsigned int threads=2);                                    //parallel parameters
 
+
+
+  static string VERSION = "1.0";
   // this method depend of Base class
   // and corePolicygen is the more important function(this function generate a new Base)
   static void policygen(string output,                       //Output File
@@ -74,6 +73,8 @@ public:
 };
 
 
+
+// policygen
 // requirements for the creation of masks
 typedef struct poliStruct
 {
@@ -84,6 +85,41 @@ typedef struct poliStruct
   int minspecial; int maxspecial;
 }poliStruct;
 
-Base corePolicygen(Base init_base);
+// base class of policygen
+class Base
+{
+private:
+  poliStruct bstruct; // base struct , entered options for policygen
+  vector<Mask> *base;
+  unsigned int length;
+
+public:
+
+  Base(poliStruct init);
+  void maskStep(); // generate all the posible mask of length = length +1(step)
+
+  void appendMask(Mask step); // next step mask
+
+  unsigned int getLength(){return length;}
+  int numberMasks(){return base->size();}
+
+
+  int getPoliMinLength(){return bstruct.minlength;}
+  int getPoliMaxLength(){return bstruct.maxlength;}
+
+  ~Base();
+};
+
+
+
+
+poliStruct init_polistruct(int minlength, int maxlength,                         //length parameters
+                           int minlower, int maxlower,                           //
+                           int minupper, int maxupper,                           // password
+                           int mindigit, int maxdigit,                           // charset
+                           int minspecial, int maxspecial);
+
+
+void corePolicygen();
 
 #endif // __PPACK_H__
