@@ -1,3 +1,10 @@
+/*
+ * Implementation of ppack class
+ * statsgen method: Compute statistis of a wordlist
+ *
+ * policygen method: generate a set of mask with some rules
+ */
+
 #ifndef __INCLUDE_STD_IOSTREAM_H__
 #define __INCLUDE_STD_IOSTREAM_H__
 #include<iostream>
@@ -26,11 +33,16 @@ using namespace std;
 #endif //__INCLUDE_PPACK_H_
 
 
-// #ifndef __INCLUDE_BASE_H__
-// #define __INCLUDE_BASE_H__
-// #include "../include/base.hpp"
-// #endif //__INCLUDE_BASE_H__
+#ifndef __INCLUDE_LOGOS_H__
+#define __INCLUDE_LOGOS_H__
+#include "../include/logos.hpp"
+#endif //__INCLUDE_LOGOS_H__
 
+
+#ifndef __INCLUDE_COLOR_H__
+#define __INCLUDE_COLOR_H__
+#include "../include/color.hpp"
+#endif //__INCLUDE_COLOR_H__
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,6 +153,7 @@ void Base::maskStep()
   // replace the updated base(step_base) with base
   delete [] base; // fre memory of base = vector<Mask>
   base = step_base;
+  step_base = nullptr;
   length += 1;
 }
 
@@ -187,5 +200,27 @@ static void policygen(string output,                       //Output File
                                       minspecial, maxspecial);
 
   corePolicygen(pstruct); //do almost all the work()
-  //  cout << "hello from policygen ppack's method" << endl;
+
+  if(quiet == false) // print the ppack logo
+    {
+      string ppack_logo = Logo::random();
+      cout << ppack_logo << endl;
+    }
+  print_status("Saving generated masks to [" + output +".hcmask]");
+  print_status("Using 8 OMP Threads.");
+
+  // string password_policy =
+  //   "Password policy:"  +\
+  //   "\n\tPass Lengths:" + " min: " + minlength + " max: " + maxlength + \
+  //   "\n\tMin strength:" + " l:" + minlower + " u:" + minupper + " d:" + mindigit + " s:" + minspecial +\
+  //   "\n\tMin strength:" + " l:" + minlower + " u:" + minupper + " d:" + mindigit + " s:" + minspecial + "\n";
+
+  //print_status("Policy Masks: ");
+
+  if(show==true)
+    {
+      cout << "show generated masks" << endl;
+    }
+
+  print_status("Policy Masks: ");
 }

@@ -22,6 +22,8 @@ using namespace std;
 // #include "../include/basemask.hpp"
 // #endif //__INCLUDE_BASEMASK_H__
 
+string PPACK_VERSION = "1.0";
+
 class PPACK
 {
 private:
@@ -29,9 +31,11 @@ private:
   static string output_statsgen;
   static string output_maskgen;
   static string output_policygen;
-  static string VERSION;
+
 public:
-  PPACK(){VERSION = "1.0";}
+
+  PPACK(){}
+  // PPACK(){VERSION = "1.0";}
   //PPACK(string wordlist):wordlist_file{wordlist}{}
 
     // void statsgen(string output="statsgen.masks",                           //IO parameters
