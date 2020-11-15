@@ -17,10 +17,10 @@ using namespace std;
 #include "../include/mask.hpp"
 #endif //__INCLUDE_MASK_H__
 
-#ifndef __INCLUDE_BASEMASK_H__
-#define __INCLUDE_BASEMASK_H__
-#include "../include/basemask.hpp"
-#endif //__INCLUDE_BASEMASK_H__
+// #ifndef __INCLUDE_BASEMASK_H__
+// #define __INCLUDE_BASEMASK_H__
+// #include "../include/basemask.hpp"
+// #endif //__INCLUDE_BASEMASK_H__
 
 class PPACK
 {
@@ -29,9 +29,9 @@ private:
   static string output_statsgen;
   static string output_maskgen;
   static string output_policygen;
-
+  static string VERSION;
 public:
-  PPACK(){};
+  PPACK(){VERSION = "1.0";}
   //PPACK(string wordlist):wordlist_file{wordlist}{}
 
     // void statsgen(string output="statsgen.masks",                           //IO parameters
@@ -60,7 +60,7 @@ public:
 
 
 
-  static string VERSION = "1.0";
+
   // this method depend of Base class
   // and corePolicygen is the more important function(this function generate a new Base)
   static void policygen(string output,                       //Output File
