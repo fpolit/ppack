@@ -19,12 +19,16 @@
 #endif // __INCLUDE_STD_VECTOR_H_
 
 
-#ifndef __INCLUDE_STD_RANDOM_H__
-#define __INCLUDE_STD_RANDOM_H__
-#include<cstdlib>
-#include<ctime>
-#endif // __INCLUDE_STD_RANDOM_H__
+#ifndef __INCLUDE_STD_RANDOM_H_
+#define __INCLUDE_STD_RANDOM_H_
+#include <random>
+#endif //__INCLUDE_STD_RANDOM_H_
 
+
+#ifndef __INCLUDE_STD_CTIME_H_
+#define __INCLUDE_STD_CTIME_H__
+#include <ctime>
+#endif //__INCLUDE_STD_CTIME_H_
 
 
 using namespace std;
