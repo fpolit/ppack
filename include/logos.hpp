@@ -36,11 +36,11 @@ using namespace std;
 class Logo
 {
 protected:
-	vector<string> rawLogos;
+	static vector<string> rawLogos;
 
 public:
 	Logo();
-	string randomLogo();
+	static string random();
 };
 
 Logo::Logo()
@@ -82,7 +82,7 @@ Logo::Logo()
             88""""""'   88""""""'  d8YaaaaY8b  88            8888"88,      
             88          88        d8""""""""8b Y8,           88P   Y8b     
             88          88       d8'        `8b Y8a.    .a8P 88     "88,   
-            88          88      d8'          `8b `"Y8888Y"'  88       Y8b                                                               
+            88          88      d8'          `8b `"Y8888Y"'  88       Y8b
         )""",
         R"""(
             [.......  [.......        [.           [..   [..   [..  
@@ -185,12 +185,12 @@ Logo::Logo()
     };
 }
 
-string Logo::randomLogo()
+string Logo::random()
 {
 
-	srand(time(NULL));
+	srand(time(0));
 
-	int idxLogo = rand() % rawLogos.size();
+	int idxLogo = rand() % Logo::rawLogos.size();
 
 	return rawLogos[idxLogo];
 }
