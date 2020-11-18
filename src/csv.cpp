@@ -1,3 +1,9 @@
+#ifndef __INCLUDE_CSV_H__
+#define __INCLUDE_CSV_H__
+#include "../include/csv.hpp"
+#endif //__INCLUDE_CSV_H__
+
+
 
 #ifndef __INCLUDE_STD_STRING_H__
 #define __INCLUDE_STD_STRING_H__
@@ -21,7 +27,11 @@
 #include<algorithm>
 #endif //__INCLUDE_ALGORITHM_H__
 
+
+#ifndef __INCLUDE_BOOST_ALGORITHM_H__
+#define __INCLUDE_BOOST_ALGORITHM_H__
 #include <boost/algorithm/string.hpp>
+#endif //__INCLUDE_BOOST_ALGORITHM_H__
 
 
 std::vector<std::vector<std::string>> CSVReader::getData()

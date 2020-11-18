@@ -10,27 +10,32 @@
 #include<iostream>
 #endif //__INCLUDE_STD_IOSTREAM_H_
 
+#ifndef __INCLUDE_FSTREAM_H__
+#define __INCLUDE_FSTREAM_H__
+#include<fstream>
+#endif //__INCLUDE_FSTREAM_H__
+
 // #ifndef __INCLUDE_STD_STRING_H_
 // #define __INCLUDE_STD_STRING_H_
 // #include<string>
 // #endif //__INCLUDE_STD_STRING_H_
 
-#ifndef __INCLUDE_STD_VECTOR_H_
-#define __INCLUDE_STD_VECTOR_H_
+#ifndef __INCLUDE_STD_VECTOR_H__
+#define __INCLUDE_STD_VECTOR_H__
 #include<vector>
-#endif // __INCLUDE_STD_VECTOR_H_
+#endif // __INCLUDE_STD_VECTOR_H__
 
 using namespace std;
 
-// #ifndef __INCLUDE_MASK_H_
-// #define __INCLUDE_MASK_H_
-// #include "../include/mask.hpp"
-// #endif //__INCLUDE_MASK_H_
+#ifndef __INCLUDE_MASK_H_
+#define __INCLUDE_MASK_H_
+#include "../include/mask.hpp"
+#endif //__INCLUDE_MASK_H_
 
-#ifndef __INCLUDE_PPACK_H_
-#define __INCLUDE_PPACK_H_
+#ifndef __INCLUDE_PPACK_H__
+#define __INCLUDE_PPACK_H__
 #include "../include/ppack.hpp"
-#endif //__INCLUDE_PPACK_H_
+#endif //__INCLUDE_PPACK_H__
 
 
 #ifndef __INCLUDE_LOGOS_H__
@@ -43,6 +48,151 @@ using namespace std;
 #define __INCLUDE_COLOR_H__
 #include "../include/color.hpp"
 #endif //__INCLUDE_COLOR_H__
+
+
+#ifndef __INCLUDE_CSV_H__
+#define __INCLUDE_CSV_H__
+#include "../include/csv.hpp"
+#endif //__INCLUDE_CSV_H__
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// Statsgen implementation  /////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+vector<Password>* passwdBlock(ifstream wordlist, int BLOCK)
+{
+  string passwd;
+  vector<Password> *vpasswd = new vector<Password>;
+  while((getline(wordlist, passwd) && passwd!="") && vpasswd->size() <= BLOCK)
+    {
+      vpasswd->push_back(passwd);
+    }
+
+  if(getline(wordlist, passwd) && passwd!="")
+    wordlist.close(); //closing wordlist file because it hasn't more passwords
+
+  return vpasswd;
+}
+
+
+void statsgen(string wordlist, string output,                           //IO parameters
+              bool hiderare, bool quiet,                      //print parameters
+              vector<string> charset,                            //password charset
+              int minlength, int maxlength)                         //length parameters
+{
+  ifstream wordlist_file(wordlist);
+  //string passwd;
+  int block_passwds=1000; // max block of pasword that i will read from wordlists
+  statstruct sstruct; //stats struct
+
+  while(wordlist_file.is_open()) // ensure that you close the wordlist when it hasn't more password
+    {
+      vector<Password> *vpasswd = passwdBlock(wordlist_file, block_passwds); // this function read at most 1000 passwords
+
+#pragma omp parallel for shared(vpasswd, sstruct)
+      for(int k=0; k<vpasswd->size(); k++)
+        {
+          Password passwd = vpasswd->at(k);
+
+          //length password stats
+          if(sstruct.length.find(passwd.size()) != sstruct.length.end())
+            {
+              #pragma omp critical
+              sstruct.length[passwd.size()] = 1;
+            }
+          else
+            {
+              #pragma omp atomic
+              sstruct.length[passwd.size()] += 1;
+            }
+
+          // Character set stats
+          if(sstruct.scs.find(passwd.scs()) != sstruct.scs.end())
+            {
+              #pragma omp critical
+              sstruct.scs[passwd.scs()] = 1;
+            }
+          else
+            {
+              #pragma omp atomic
+              sstruct.scs[passwd.scs()] += 1;
+            }
+
+
+          // advance mask stats
+          if(sstruct.mask.find(passwd.getMask()) != sstruct.mask.end())
+            {
+              #pragma omp critical
+              sstruct.mask[passwd.getMask()] = 1;
+            }
+          else{
+            #pragma omp atomic
+            sstruct.mask[passwd.getMask()] += 1;
+          }
+
+        }
+
+      // free vpasswd vector to read the other block of passwds
+      delete [] vpasswd;
+    }
+}
+
+void statsgen_results(statstruct sstruct)
+{
+  // using sstuct struct write the output file and show the generated stats
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// maskgen implementation   /////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+bool satisfyFilter(string mask_str, int occurence, maskgenStruct mskgn)
+{
+  Mask mask(mask_str);
+  if(checkLength(mask, mskgn.minlength, mskgn.maxlength) &&
+     //checkChartset(mask, mskgn.charsets) &&
+     checkOcurrence(mask, mskgn.minoccurence, mskgn.maxoccurence) &&
+     )
+    return true;
+  return false;
+}
+
+void maskgen(string statsgen_output, string output,    //IO parameters
+             bool show, bool quiet,                           //print parameters
+             vector<Mask> checkmasks,string checkmasksfile,       //checkmask parameters
+             vector<string> charset,                            //password charset
+             int minlength, int maxlength,                         //length parameters
+             int mincomplexity, int maxcomplexity,                 //complexity parameters
+             int minoccurrence, int maxoccurrence)                 //occurrence parameters
+{
+  CSVReader statsgen(statsgen_output);
+
+  maskgenStruct mskgn = init_maskgen_struct(minlength, maxlength,
+                                            mincomplexity, maxcomplexity,
+                                            minoccurrence, maxoccurrence,
+                                            charset);
+
+  vector<vector<string>> results = statsgen.getData(); //result of statsgen
+#pragma omp parallel for shared(statsgen_results)
+  for(int k=0; k < results.size(); k++)
+    {
+      // first element in statsgen output is mask and
+      // second element is occurence of the mask(first element)
+      string mask = results[k][0];
+      int occurence = stoi(results[k][1]); //convert from string to interger
+
+      if(satisfyFilter(mask, occurence, mskgn))
+        {
+
+        }
+    }
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////

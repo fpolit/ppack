@@ -20,45 +20,55 @@
 
 
 // BEGIN: Password class implementation
+
+Password::Password(string passwd)
+  :string(passwd)
+{
+  Mask mask_passwd = analyzePassword(passwd, &passwdStruct);
+  mask = mask_passwd;
+  simple = detSimpleCS(passwdStruct);
+  advance = ACS::none;
+}
+
+
 string Password::scs()
 {
     return SimpleCharSet[simple];    
 }
 
-string Password::acs() 
-{
-// if (characters != "")
-//     return characters;
-// else
+// string Password::acs()
 // {
-//     LetterMask symbolsMask;
-//     map<string, unsigned int> simple{
-//         {"lowercase", 0},
-//         {"uppercase", 0},
-//         {"special", 0},
-//         {"digit", 0}
-//     };
-//     for(int k=1; k<2*mask.size(); k+=2)
-//     {
-//         string letter_mask = to_string(mask[k]);
-//         if(letter_mask == symbolsMask.lowercase)
-//             simple["lowercase"] += 1;
-        
-//     }
-// }
-}
+// // if (characters != "")
+// //     return characters;
+// // else
+// // {
+// //     LetterMask symbolsMask;
+// //     map<string, unsigned int> simple{
+// //         {"lowercase", 0},
+// //         {"uppercase", 0},
+// //         {"special", 0},
+// //         {"digit", 0}
+// //     };
+// //     for(int k=1; k<2*mask.size(); k+=2)
+// //     {
+// //         string letter_mask = to_string(mask[k]);
+// //         if(letter_mask == symbolsMask.lowercase)
+// //             simple["lowercase"] += 1;
 
-int Password::complexity() 
-{
-    
-}
+// //     }
+// // }
+// }
+
+// int Password::complexity()
+// {
+//   return 0;
+// }
 
 // END: Password class implementation
 
 
 // BEGIN: analyzePassword function implementation
-Mask analyzePassword(string passwd, PStruct *pStruct,
-                    SCS* simple)
+Mask analyzePassword(string passwd, PStruct *pStruct)
 {
     string master_mask = "";
     maskSymbols symbols;
@@ -92,48 +102,46 @@ Mask analyzePassword(string passwd, PStruct *pStruct,
             }
         }
     }
-    
-    *simple = detSimpleCS(pStruct);
     return Mask(master_mask);
 }
 // END: analyzePassword function implementation
 
 // END: setSimpleCS function implementation
 
-SCS detSimpleCS(PStruct *pStruct)
+SCS detSimpleCS(PStruct pStruct)
 {
     // determine the set of characteres that confor the password (simple Character Set)
     
     
-    if(pStruct->lowercase && 
-        !(pStruct->digit || pStruct->uppercase || pStruct->special))
+    if(pStruct.lowercase &&
+        !(pStruct.digit || pStruct.uppercase || pStruct.special))
         return SCS::loweralpha;
 
-    else if(pStruct->uppercase && 
-        !(pStruct->lowercase || pStruct->digit || pStruct->special))
+    else if(pStruct.uppercase &&
+        !(pStruct.lowercase || pStruct.digit || pStruct.special))
         return SCS::numeric;
 
-    else if(pStruct->digit && 
-        !(pStruct->lowercase || pStruct->uppercase || pStruct->special))
+    else if(pStruct.digit &&
+        !(pStruct.lowercase || pStruct.uppercase || pStruct.special))
         return SCS::numeric;
 
-    else if(pStruct->special && 
-        !(pStruct->lowercase || pStruct->uppercase || pStruct->digit))
+    else if(pStruct.special &&
+        !(pStruct.lowercase || pStruct.uppercase || pStruct.digit))
         return SCS::numeric;
 
-    else if((pStruct->uppercase && pStruct->lowercase) && 
-        !(pStruct->uppercase || pStruct->digit))
+    else if((pStruct.uppercase && pStruct.lowercase) &&
+        !(pStruct.uppercase || pStruct.digit))
         return SCS::alpha;
     
-    else if((pStruct->special && pStruct->uppercase && pStruct->lowercase) &&
-        !(pStruct->digit))
+    else if((pStruct.special && pStruct.uppercase && pStruct.lowercase) &&
+        !(pStruct.digit))
         return SCS::mixalphaspecial;
 
-    else if((pStruct->digit && pStruct->special) &&
-        !(pStruct->uppercase || pStruct->lowercase))
+    else if((pStruct.digit && pStruct.special) &&
+        !(pStruct.uppercase || pStruct.lowercase))
         return SCS::mixspecialnum;
     
-    else if(pStruct->special && pStruct->lowercase && pStruct->uppercase && pStruct->digit) 
+    else if(pStruct.special && pStruct.lowercase && pStruct.uppercase && pStruct.digit)
         return SCS::mixall;
 
     else

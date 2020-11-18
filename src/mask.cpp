@@ -111,4 +111,82 @@ maskStruct maskAnalysis(Mask mask)
     }
   return mask_struct;
 }
+
+
+SCS Mask::simpleCharset()
+{
+    // determine the set of characteres that confor the password (simple Character Set)
+
+
+    if(mstruct.lowercase &&
+       !(mstruct.digit || mstruct.uppercase || mstruct.special))
+        return SCS::loweralpha;
+
+    else if(mstruct.uppercase &&
+            !(mstruct.lowercase || mstruct.digit || mstruct.special))
+        return SCS::numeric;
+
+    else if(mstruct.digit &&
+        !(mstruct.lowercase || mstruct.uppercase || mstruct.special))
+        return SCS::numeric;
+
+    else if(mstruct.special &&
+        !(mstruct.lowercase || mstruct.uppercase || mstruct.digit))
+        return SCS::numeric;
+
+    else if((mstruct.uppercase && mstruct.lowercase) &&
+        !(mstruct.uppercase || mstruct.digit))
+        return SCS::alpha;
+
+    else if((mstruct.special && mstruct.uppercase && mstruct.lowercase) &&
+        !(mstruct.digit))
+        return SCS::mixalphaspecial;
+
+    else if((mstruct.digit && mstruct.special) &&
+        !(mstruct.uppercase || mstruct.lowercase))
+        return SCS::mixspecialnum;
+
+    else if(mstruct.special && mstruct.lowercase && mstruct.uppercase && mstruct.digit)
+        return SCS::mixall;
+
+    else
+        return SCS::none;
+}
+
+
+
+
+bool Mask::checkLength(Mask mask, int minlength, int maxlength)
+{
+  if(this->length() > minlength && this->length() < maxlength)
+    return true;
+  return false;
+}
+
+bool Mask::checkChartset(Mask mask, vector<SCS> charsets)
+{
+
+  // CHECK BUG
+  if(find(charsets.begin(), charsets.end(), this->simpleCharset()) != charsets.end())
+     return true;
+  return false;
+}
+
+
+// bool Mask::checkOccurence(int minoccurence, int maxoccurence)
+// {
+//   if(this->() > minlength && this->length() < maxlength)
+//     return true;
+//   return false;
+// }
+
+
+bool Mask::checkComplexity(Mask mask, int minCompexity, int maxComplexity)
+{
+  int complexity = this->complexity();
+  if(complexity > minCompexity && complexity < maxComplexity)
+    return true;
+  return false;
+}
+
 // END: Mask class implementation
