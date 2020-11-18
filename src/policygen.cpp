@@ -41,7 +41,7 @@ typedef struct argi{
   int *minspecial; int *maxspecial;
 }argi;
 
-void validate_ioptions(po::variables_map vm, argi *polyargs)
+void validate_arguments(po::variables_map vm, argi *polyargs)
 /*
  * Validate the process of flag reading and set default value to forgeted parameters
  * also assign these validated parameters to their varibles
@@ -272,7 +272,7 @@ int main(int argc ,char* argv[])
 
 
             // read and analyze the entered arguments
-            validate_ioptions(vm, &arguments);
+            validate_arguments(vm, &arguments);
           }
 
         PPACK::policygen(output,                        //Output File

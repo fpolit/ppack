@@ -163,7 +163,7 @@ bool satisfyFilter(Mask mask, int occurence, maskgenStruct mskgn)
   if(checkLength(mask, mskgn.minlength, mskgn.maxlength) &&
      //checkChartset(mask, mskgn.charsets) &&
      checkOcurrence(occurence, mskgn.minoccurence, mskgn.maxoccurence) &&
-     checkComplexity(mask, mskgn,mincompexity, mskgn.maxcomplexity))
+     checkComplexity(mask, mskgn.mincompexity, mskgn.maxcomplexity))
     return true;
   return false;
 }
@@ -207,22 +207,20 @@ void maskgen(string statsgen_output, string output,    //IO parameters
     }
 
   ofstream maskgen_output(output);
-  maskgen_output.open();
+  //maskgen_output.open();
 
   if(show)
     {
       for(auto const& [mask, occurence] : fmasks)
         {
           maskgen_output << mask << endl;
+          // print the mask and its occurence
         }
     }
   else
     {
       for(auto const& [mask, occurence] : fmasks)
-        {
-          maskgen_output << mask << endl;
-          // print the mask and its occurence
-        }
+        maskgen_output << mask << endl;
     }
 }
 
