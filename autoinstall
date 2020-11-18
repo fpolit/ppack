@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+
+import os
+import argparse
+from cement.utils.shell import exec_cmd2
+import shlex
+import sys
+
+
+url_ppack_repo = "https://github.com/glozanoa/ppack.git"
+
+
+parser = argparse.ArgumentParser(description="PPACK autoinstallation")
+parser.add_argument('prefix', type=str, help="Location to clone and compile PPACK")
+parser.add_argument('systemwide', type=bool, help="Install PPACK for the users.")
+
+args = parser.parse_args()
+
+if args.prefix and not os.path.exists(args.prefix): #directory prefix doen't exist
+    os.mkdir(args.prefix)
+    #abs_prefix = os.path.abspath(args.prefix)
+    ppack_home = args.prefix
+
+elif args.prefix and os.path.isdir(args.prefix): # the directory prefix already exist so cloning inside
+    ppack_home = os.path.join(args.prefix, "ppack")
+
+else:
+    print("[-] Something went wrong!")
+    print("[*] Install PPACK manually, please!")
+    sys.exit(1)
+
+
+clone_ppack_repo = shlex.split(f"git clone {url_ppack_repo} {ppack_home}")
+exec_cmd2(clone_ppack_repo)
+build_ppack_dir = os.path.join(ppack_home, "build")
+os.mkdir(build_ppack_dir)
+os.chdir(build_ppack_dir)
+
+    # build ppack
+build_ppack = shlex.split("cmake ..")
+exec_cmd2(build_ppack)
+compile_ppack = shlex.split("cmake --build .")
+exec_cmd2(compile_ppack)
+
+# exporting PPACX to the PATH
+if args.systemwide:
+    # add PPACK to /usr/bash.bashrc
+    pass
+else:
+    # add PPACK to the ~/.bashrc
+    pass
+
+print("Happy Hacking!\n - glozanoa")
