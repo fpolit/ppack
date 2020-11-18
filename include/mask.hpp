@@ -88,7 +88,6 @@ public:
   friend bool checkLength(Mask mask, int minlength, int maxlength);
   friend bool checkChartset(Mask mask, vector<SCS> charsets);
   //bool checkAdvanceChartset(vector<ACS> advanceCharsets);
-  //friend bool checkOccurence(Mask mask, int minoccurence, int maxoccurence);
   friend bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
 };
 

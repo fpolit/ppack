@@ -150,15 +150,20 @@ void statsgen_results(statstruct sstruct)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
-bool satisfyFilter(string mask_str, int occurence, maskgenStruct mskgn)
+bool checkOccurence(int occurence, int minoccurence, int maxoccurence)
 {
-  Mask mask(mask_str);
+  if(occurence > minoccurence && occurence < maxoccurence)
+    return true;
+  return false;
+}
+
+bool satisfyFilter(Mask mask, int occurence, maskgenStruct mskgn)
+{
+  //Mask mask(mask_str);
   if(checkLength(mask, mskgn.minlength, mskgn.maxlength) &&
      //checkChartset(mask, mskgn.charsets) &&
-     checkOcurrence(mask, mskgn.minoccurence, mskgn.maxoccurence) &&
-     )
+     checkOcurrence(occurence, mskgn.minoccurence, mskgn.maxoccurence) &&
+     checkComplexity(mask, mskgn,mincompexity, mskgn.maxcomplexity))
     return true;
   return false;
 }
@@ -178,18 +183,45 @@ void maskgen(string statsgen_output, string output,    //IO parameters
                                             minoccurrence, maxoccurrence,
                                             charset);
 
+  // mask and occurence map
+  map<Mask, int> fmasks; //filtered masks (mask, occurence of mask)
   vector<vector<string>> results = statsgen.getData(); //result of statsgen
 #pragma omp parallel for shared(statsgen_results)
   for(int k=0; k < results.size(); k++)
     {
       // first element in statsgen output is mask and
       // second element is occurence of the mask(first element)
-      string mask = results[k][0];
+      Mask mask(results[k][0]);
       int occurence = stoi(results[k][1]); //convert from string to interger
 
       if(satisfyFilter(mask, occurence, mskgn))
         {
+          fmasks[mask] = occurence;
+        }
+    }
 
+  if(!quiet)
+    {
+      string ppack_logo = Logo::random();
+      cout << ppack_logo << endl;
+    }
+
+  ofstream maskgen_output(output);
+  maskgen_output.open();
+
+  if(show)
+    {
+      for(auto const& [mask, occurence] : fmasks)
+        {
+          maskgen_output << mask << endl;
+        }
+    }
+  else
+    {
+      for(auto const& [mask, occurence] : fmasks)
+        {
+          maskgen_output << mask << endl;
+          // print the mask and its occurence
         }
     }
 }
