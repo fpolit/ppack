@@ -43,6 +43,132 @@ namespace po = boost::program_options;
 using namespace std;
 
 
+
+typedef struct statsargi{
+  string *wordlist;
+  string *output; string *input;                       //Output File
+  bool *quiet; //bool *show;                           //print parameters
+  int *minlength; int *maxlength;                         //length parameters
+  // int *minlower; int *maxlower;                           //
+  // int *minupper; int *maxupper;                           // password
+  // int *mindigit; int *maxdigit;                           // charset
+  // int *minspecial; int *maxspecial;
+}statsargi;
+
+
+void validate_arguments(po::variables_map vm, statsargi *statargs)
+/*
+ * Validate the process of flag reading and set default value to forgeted parameters
+ * also assign these validated parameters to their varibles
+ */
+{
+  //Output File parameter(files section)
+  if(vm.count("output"))
+    {
+      *(statargs->output) = vm["output"].as<string>();
+    }
+
+  //print parameters(print section)
+  if(vm.count("quiet"))
+    {
+      *(statargs->quiet) = vm["quiet"].as<bool>();
+    }
+
+  // if(vm.count("show"))
+  //   {
+  //     *(statargs->show) = vm["show"].as<bool>();
+  //   }
+
+  //length parameters (mask section)
+  if(vm.count("minlength") && vm.count("maxlength"))
+    {
+      *(statargs->minlength) = vm["minlength"].as<int>();
+      *(statargs->maxlength) = vm["maxlength"].as<int>();
+    }
+  else if(vm.count("maxlength"))
+    {
+      *(statargs->maxlength) = vm["maxlength"].as<int>();
+      *(statargs->minlength) = 0;
+    }
+  else
+    {
+      *(statargs->minlength) = vm["minlength"].as<int>();
+      *(statargs->maxlength) = vm["maxlength"].as<int>(); //set maxlength to the default value -1
+    }
+
+  // password complexity requirements (mask section)
+
+  // // lower characters
+  // if(vm.count("minlower") && vm.count("maxlower"))
+  //   {
+  //     *(polyargs->minlower) = vm["minlower"].as<int>();
+  //     *(polyargs->maxlower) = vm["maxlower"].as<int>();
+  //   }
+  // else if(vm.count("maxlower"))
+  //   {
+  //     *(polyargs->maxlower) = vm["maxlower"].as<int>();
+  //     *(polyargs->minlower) = 0;
+  //   }
+  // else
+  //   {
+  //     *(polyargs->minlower) = vm["minlower"].as<int>();
+  //     *(polyargs->maxlower) = vm["maxlower"].as<int>(); //set maxlower to the default value -1
+  //   }
+
+  // // upper characters
+  // if(vm.count("minupper") && vm.count("maxupper"))
+  //   {
+  //     *(polyargs->minupper) = vm["minupper"].as<int>();
+  //     *(polyargs->maxupper) = vm["maxupper"].as<int>();
+  //   }
+  // else if(vm.count("maxupper"))
+  //   {
+  //     *(polyargs->maxupper) = vm["maxupper"].as<int>();
+  //     *(polyargs->minupper) = 0;
+  //   }
+  // else
+  //   {
+  //     *(polyargs->minupper) = vm["minupper"].as<int>();
+  //     *(polyargs->maxupper) = vm["maxupper"].as<int>(); //set maxupper to the default value -1
+  //   }
+
+  // // digit characters
+  // if(vm.count("mindigit") && vm.count("maxdigit"))
+  //   {
+  //     *(polyargs->mindigit) = vm["mindigit"].as<int>();
+  //     *(polyargs->maxdigit) = vm["maxdigit"].as<int>();
+  //   }
+  // else if(vm.count("maxdigit"))
+  //   {
+  //     *(polyargs->maxdigit) = vm["maxdigit"].as<int>();
+  //     *(polyargs->mindigit) = 0;
+  //   }
+  // else
+  //   {
+  //     *(polyargs->mindigit) = vm["mindigit"].as<int>();
+  //     *(polyargs->maxdigit) = vm["maxdigit"].as<int>(); //set maxdigit to the default value -1
+  //   }
+
+  // // special characters
+  // if(vm.count("minspecial") && vm.count("maxspecial"))
+  //   {
+  //     *(polyargs->minspecial) = vm["minspecial"].as<int>();
+  //     *(polyargs->maxspecial) = vm["maxspecial"].as<int>();
+  //   }
+  // else if(vm.count("maxspecial"))
+  //   {
+  //     *(polyargs->maxspecial) = vm["maxspecial"].as<int>();
+  //     *(polyargs->minspecial) = 0;
+  //   }
+  // else
+  //   {
+  //     *(polyargs->minspecial) = vm["minspecial"].as<int>();
+  //     *(polyargs->maxspecial) = vm["maxspecial"].as<int>(); //set maxspecial to the default value -1
+  //   }
+
+}
+
+
 int main(int argc ,char* argv[])
 {
     try
@@ -50,6 +176,7 @@ int main(int argc ,char* argv[])
         //IO parameters
         string wordlist;
         string output;
+        string input;
 
         //print parameters
         bool hiderare;
@@ -62,12 +189,14 @@ int main(int argc ,char* argv[])
         int minlength;
         int maxlength;
         
-        unsigned int threads;
+        //unsigned int threads;
 
         po::options_description files("Files I/O");
         files.add_options()
             ("wordlist, w", po::value<string>(), "Wordlist.")
-            ("output, o", po::value<string>(&output)->default_value("statsgen.masks"), "Ouput File.");
+            ("output, o", po::value<string>(&output)->default_value("statsgen.masks"), "Ouput File.")
+          ("input, i", po::value<string>(&input), "Input File.");
+
 
         po::options_description password("Password Structure");
         password.add_options()
@@ -80,15 +209,15 @@ int main(int argc ,char* argv[])
             ("hiderare", po::value<bool>(&hiderare)->implicit_value(true)->default_value(false), "Omit items with occurrence of less than 1%.")
             ("quiet, q", po::value<bool>(&quiet)->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).");
 
-        po::options_description parallel("Paralelization");
-        parallel.add_options()
-            ("threads, t", po::value<unsigned int>(&threads)->default_value(2), "Number of threads.");
+        // po::options_description parallel("Paralelization");
+        // parallel.add_options()
+        //     ("threads, t", po::value<unsigned int>(&threads)->default_value(2), "Number of threads.");
 
         po::options_description statsgen("Generate statistic of a wordlists that help you crack passwords");
         statsgen.add_options()
             ("version, v", "PPACK version.")
             ("help, h", "Show help.");
-        statsgen.add(files).add(password).add(print).add(parallel);
+        statsgen.add(files).add(password).add(print);
 
         po::variables_map vm;
 
@@ -108,20 +237,38 @@ int main(int argc ,char* argv[])
             return 1;
         }
 
-        if(vm.count("wordlist"))
-        {
-            wordlist = vm["wordlist"].as<string>();
-            cout << "HELLO" << endl;
-            // Finalize implementation of classes
-            //PPACK ppack(wordlist);
-            //ppack.statsgen(output, hiderare, quiet, charset, minlength, maxlength, threads);
-        }
+        if(vm.count("input"))
+          {
+            // write the support to read from a ini file
+          }
         else
-        {
-            cout << "No wordlist file supplied." << endl;
-            cout << statsgen << endl;
-            return 1;
-        }
+          {
+            // input argument analysis
+            statsargi arguments; // this variable modify all the other variables(lenght , upper, lower, special, quiet, ..)
+            arguments.output = &output;
+
+            arguments.quiet = &quiet;
+            //arguments.show = &show;
+
+
+            arguments.minlength = &minlength;
+            arguments.maxlength = &maxlength;
+            // arguments.minlower = &minlower;
+            // arguments.minupper = &minupper;
+            // arguments.maxupper = &maxupper;
+            // arguments.mindigit = &mindigit;
+            // arguments.maxdigit = &maxdigit;
+            // arguments.minspecial = &minspecial;
+            // arguments.maxspecial = &maxspecial;
+
+
+            // read and analyze the entered arguments
+            validate_arguments(vm, &arguments);
+          }
+
+
+        // Solve the support for multi arguments input for flag(vector<string> charset)
+        //PPACK::statgen()
     }
     catch(std::exception& e)
     {
