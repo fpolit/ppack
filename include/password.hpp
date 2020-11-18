@@ -104,10 +104,9 @@ typedef struct PStruct{
 
 
 
-Mask analyzePassword(string passwd, PStruct *pStruct,
-                     SCS* simple);
+Mask analyzePassword(string passwd, PStruct *pStructx);
 // determine password's SCS
-SCS detSimpleCS(PStruct * pStruct);
+SCS detSimpleCS(PStruct pStruct);
 
 
 class Password : public string
@@ -134,15 +133,8 @@ public:
     string scs(); 
     // return a type of ACS (map). 
     string acs();
-    int complexity();
-    
-};
-Password::Password(string passwd) 
-    :string(passwd)
-{
-    Mask mask_passwd = analyzePassword(passwd, &passwdStruct, &simple);
-    mask = mask_passwd;
-    advance = ACS::none;
-}
+  //    int complexity();
 
+  Mask getMask(){return mask;}
+};
 #endif // __PASSWORD_H__
