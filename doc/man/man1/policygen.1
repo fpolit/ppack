@@ -1,0 +1,149 @@
+.TH policygen "1" "PPACK Commands" "November 2020" "PPACK Commands"
+
+.SH "NAME"
+policygen \-
+
+.SH "SYNOPSIS"
+\fBpolicygen\fR [\fIOPTIONS\fR...]
+
+.SH "DESCRIPTION"
+.PP
+Generate masks that meet certain requirements to attack passwords, instead
+of use brute force to attack them.
+
+.SH "OPTIONS"
+
+.TP "10"
+\f3\-o\fP\f3,\fP \f3\-\-output\fP
+This file contains all the generated masks that meet all requirements that we have enetered.
+.IP
+
+.TP
+\f3\-i \fP\f3, \fP \f3\-\-input\fP\
+Input File. This one contains all the requiements for policygen, so this file can be used instead of all the requirement flags.
+.IP
+
+
+.TP
+\f3\-q\fP\f3,\fP \f3\-\-quiet\fP
+Ocult the PPACK's banner.
+.IP
+
+.TP
+\fP \f3\-\-show\fP
+Show the generated masks.
+.IP
+
+.TP
+\fP \f3\-\-minlength\fP
+Minimum masks' length.
+.IP
+
+.TP
+\fP \f3\-\-maxlength\fP
+Maximum masks' length.
+.IP
+
+
+.TP
+\fP \f3\-\-minlower\fP
+Minimum number of lowercase characters.
+.IP
+
+.TP
+\fP \f3\-\-maxlower\fP
+Maximum number of lowercase characters.
+.IP
+
+
+.TP
+\fP \f3\-\-minupper\fP
+Minimum number of uppercase characters.
+.IP
+
+.TP
+\fP \f3\-\-maxupper\fP
+Maximum number of uppercase characters.
+.IP
+
+
+.TP
+\fP \f3\-\-mindigit\fP
+Minimum number of digits.
+.IP
+
+.TP
+\fP \f3\-\-maxdigits\fP
+Maximum number of digits.
+.IP
+
+
+.TP
+\fP \f3\-\-minspecial\fP
+Minimum number of special characters.
+.IP
+
+.TP
+\fP \f3\-\-maxspecial\fP
+Maximum number of special characters.
+.IP
+
+
+.SH "EXAMPLES"
+This examples ilustrate the use of \f3policygen\fP requirements':
+.RS
+.PP
+.nf
+.ft 3
+$ policygen --minlength 3 --maxlength 4 --minlower 2 --maxspecial 3 -o custom_attack.hcmasks
+
+
+.ft 1
+.fi
+.RE
+.PP
+This example ilustrate how to enter  \f3policygen\fP requiments using a \f3json\fP file, because
+sometime there are a lot of requirements:
+.RS
+.PP
+.nf
+.ft 3
+$ policygen -i requirements.json
+
+.PP
+\fIrequiements.json\fR
+{
+    "policygen":{
+        "output":"custom_attack.hcmask",
+        "quiet":"false",
+        "show":"true",
+        "minlength":0,
+        "maxlength":-1,
+        "minlower":0,
+        "maxlower":-1,
+        "minupper":-1,
+        "maxupper":-1,
+        "mindigit":-1,
+        "maxdigit":-1,
+        "minspecial":-1,
+        "maxspecial":-1,
+    }
+}
+
+.TP
+\f3Note:\fP
+.PP
+The json file no necessary will hace an unique section \fIpolicygen\fR instead it can have several but \f3policygen\fP only is going to read \fIpolicygen\fR section.
+
+
+.ft 1
+.fi
+.RE
+.PP
+This example ilustrate how to run policygen with \fImpirun\fR:
+.RS
+.PP
+.nf
+.ft 3
+$ mpirun -n 4 policygen --minlength 3 --maxlength 4 --minlower 2 --maxspecial 3 -o custom_attack.hcmasks
+$ mpiruin -n 4 policygen -i requirements.json
