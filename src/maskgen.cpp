@@ -1,12 +1,12 @@
-/**
+/*
  * @file maskgen.cpp
  * @author glozanoa (gacuna@protonmail.com)
  * @brief Generate customized mask for crack passwords.
  * @version 0.1
  * @date 2020-09-27
- * 
+ *
  * @copyright Copyright (c) 2020
- * 
+ *
  */
 
 #ifndef __INCLUDE_STD_IOSTREAM_H__
@@ -58,14 +58,14 @@ int main(int argc ,char* argv[])
 
         //print parameters (print)
         bool show;
-        bool quiet;                           
-        
+        bool quiet;
+
         //checkmask parameters (mask_compare)
         vector<Mask> checkmasks;
         string checkmasksfile;
 
         //password charset (password struct-password)
-        vector<string> charset;                            
+        vector<string> charset;
 
         //length parameters (password struct)
         int minlength;
@@ -80,9 +80,9 @@ int main(int argc ,char* argv[])
         int maxoccurrence;
 
         //parallel parameters (parallel)
-        unsigned int threads;                                             
+        unsigned int threads;
 
-        
+
 
         po::options_description files("Files I/O");
         files.add_options()
@@ -98,8 +98,8 @@ int main(int argc ,char* argv[])
         mask_compare.add_options()
             ("checkmasks", po::value<vector<Mask>>(), "Masks to compare.")
             ("checkmasksfile", po::value<string>(), "File of mask to compare.");
-            
-        
+
+
         po::options_description password("Password Structure");
         password.add_options()
             ("charset, c", po::value<vector<string>>(), "Password's charset.")
@@ -107,7 +107,7 @@ int main(int argc ,char* argv[])
             ("maxlength", po::value<int>(&maxlength)->default_value(-1), "Maximum password length.")
             ("mincomplexity", po::value<int>(&mincomplexity)->default_value(0), "Minimum password Complexity.")
             ("maxcomplexity", po::value<int>(&maxcomplexity)->default_value(100), "Maximum password Complexity.");
-                    
+
 
         po::options_description frequency("Mask Ocurrence");
         frequency.add_options()
@@ -148,7 +148,7 @@ int main(int argc ,char* argv[])
             statsgen_output = vm["statsgen"].as<string>();
             // Finalize implementation of classes
             // PPACK ppack();
-            // ppack.maskgen(statsgen_output, output,              //IO parameters 
+            // ppack.maskgen(statsgen_output, output,              //IO parameters
                         // show, quiet,                            //print parameters
                         // checkmasks, checkmasksfile,             //checkmask parameters
                         // charset,                                //password charset

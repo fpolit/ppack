@@ -1,3 +1,11 @@
+/*
+ * Color and fine namespaces definition and implementation
+ * color and fine namesapces reimplemented 23 nov 20202
+ *
+ * Maintainer: glozanoa <glozanoa@uni.pe>
+ */
+
+
 #ifndef __COLOR_H__
 #define __COLOR_H__
 
@@ -30,11 +38,13 @@
 #include <ctime>
 #endif //__INCLUDE_STD_CTIME_H_
 
-
 using namespace std;
 
-typedef struct ascii_colors
-{
+
+namespace color{
+
+  // colors
+
   string red = "\x1B[31m";
   string green = "\x1B[32m";
   string blue = "\x1B[34m";
@@ -43,66 +53,59 @@ typedef struct ascii_colors
   string end = "\033[0m";
 
   vector<string> all{red, green, blue, yellow};
-}ascii_color;
 
+  // function to pint text in several color
 
+  string randomText(string text)
+  {
+    srand(time(0));
+    int rdm_idx = rand() % all.size();
 
-class Color
-{
-public:
-  Color(){}
-  static string redText(string text);
-  static string greenText(string text);
-  static string blueText(string text);
-  static string yellowText(string text);
-  static string randomText(string text); //
-};
+    return all[rdm_idx] + text + end;
+  }
 
-string Color::randomText(string text)
-{
-  ascii_color colors;
-  srand(time(0));
-  int rdm_idx = rand() % colors.all.size();
+  string redText(string text)
+  {
+    return "\x1B[31m" + text + "\033[0m";
+  }
 
-  return colors.all[rdm_idx] + text + colors.end;
-}
+  string greenText(string text)
+  {
+    return "\x1B[32m" + text + "\033[0m";
+  }
 
-string Color::redText(string text)
-{
-  return "\x1B[31m" + text + "\033[0m";
-}
+  string blueText(string text)
+  {
+    return "\x1B[34m" +  text + "\033[0m";
+  }
 
-string Color::greenText(string text)
-{
-  return "\x1B[32m" + text + "\033[0m";
-}
+  string yellowText(string text)
+  {
+    return "\x1B[93m"  + text + "\033[0m";
+  }
 
-string Color::blueText(string text)
-{
-  return "\x1B[34m" +  text + "\033[0m";
-}
-
-string Color::yellowText(string text)
-{
-  return "\x1B[93m"  + text + "\033[0m";
 }
 
 
-void print_successful(string msg)
+namespace fine
 {
-  cout << Color::greenText("[+] ") << msg << endl;
+
+  void print_successful(string msg)
+  {
+    cout << color::greenText("[+] ") << msg << endl;
+  }
+
+
+  void print_status(string msg)
+  {
+    cout << color::blueText("[*] ") << msg << endl;
+  }
+
+  void print_failure(string msg)
+  {
+    cout << color::redText("[-] ") << msg << endl;
+  }
+
 }
-
-
-void print_status(string msg)
-{
-  cout << Color::blueText("[*] ") << msg << endl;
-}
-
-void print_failure(string msg)
-{
-  cout << Color::redText("[-] ") << msg << endl;
-}
-
 
 #endif // __COLOR_H__

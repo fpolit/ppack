@@ -1,3 +1,10 @@
+/*
+ * CVSReade class definition
+ * Allow you read CVS files,  23 nov 20202
+ *
+ * Maintainer: glozanoa <glozanoa@uni.pe>
+ */
+
 #ifndef __INCLUDE_CSV_H__
 #define __INCLUDE_CSV_H__
 #include "../include/csv.hpp"

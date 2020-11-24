@@ -6,7 +6,6 @@
  */
 
 
-
 #ifndef __INCLUDE_STD_STRING_H__
 #define __INCLUDE_STD_STRING_H__
 #include<string>
@@ -35,44 +34,13 @@ using namespace std;
 #endif //__INCLUDE_OMP_H__
 
 
+Mask  analyzePassword(string passwd);
 
-SCS scsParser(maskStruct mstruct)
+
+Password::Password(string password)
+  :string(password)
 {
-    // parse a maskStruct to determine the scs of the mask
-
-    if(mstruct.lowercase &&
-        !(mstruct.digit || mstruct.uppercase || mstruct.special))
-        return SCS::loweralpha;
-
-    else if(mstruct.uppercase &&
-        !(mstruct.lowercase || mstruct.digit || mstruct.special))
-        return SCS::numeric;
-
-    else if(mstruct.digit &&
-        !(mstruct.lowercase || mstruct.uppercase || mstruct.special))
-        return SCS::numeric;
-
-    else if(mstruct.special &&
-        !(mstruct.lowercase || mstruct.uppercase || mstruct.digit))
-        return SCS::numeric;
-
-    else if((mstruct.uppercase && mstruct.lowercase) &&
-        !(mstruct.uppercase || mstruct.digit))
-        return SCS::alpha;
-
-    else if((mstruct.special && mstruct.uppercase && mstruct.lowercase) &&
-        !(mstruct.digit))
-        return SCS::mixalphaspecial;
-
-    else if((mstruct.digit && mstruct.special) &&
-        !(mstruct.uppercase || mstruct.lowercase))
-        return SCS::mixspecialnum;
-
-    else if(mstruct.special && mstruct.lowercase && mstruct.uppercase && mstruct.digit)
-        return SCS::mixall;
-
-    else
-        return SCS::none;
+  mask = analyzePassword(password);
 }
 
 
@@ -81,7 +49,6 @@ Mask  analyzePassword(string passwd)
     string master_mask = "";
 
     Mask maskParser(master_mask);
-
     // computer the mask of the password and fill the maskStruct
     // #pragma omp parallel for ordered \
     //     shared(master_mask, passwd, symbols, passwdStruct)
@@ -91,15 +58,15 @@ Mask  analyzePassword(string passwd)
         {
             string letther = to_string(passwd[k]);
 
-            if(CharSet.islower(letther))
+            if(charset::islower(letther))
             {
               maskParser.realloc("?l");
             }
-            else if(isupper(letther))
+            else if(charset::isupper(letther))
             {
               maskParser.realloc("?u");
             }
-            else if(isdigit(letther))
+            else if(charset::isdigit(letther))
             {
               maskParser.realloc("?d");
             }
@@ -117,9 +84,3 @@ Mask  analyzePassword(string passwd)
 
 
 
-
-Password::Password(string passwd)
-  :string(passwd)
-{
-  mask = analyzePassword(passwd);
-}

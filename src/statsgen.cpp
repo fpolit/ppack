@@ -1,12 +1,12 @@
-/**
+/*
  * @file statsgen.cpp
  * @author glozanoa (gacuna@protonmail.com)
  * @brief Generate statistic of a wordlists that help you crack passwords.
  * @version 0.1
  * @date 2020-09-27
- * 
+ *
  * @copyright Copyright (c) 2020
- * 
+ *
  */
 
 #ifndef __INCLUDE_STD_IOSTREAM_H__
@@ -22,13 +22,13 @@
 
 #ifndef __INCLUDE_PPACK_H__
 #define __INCLUDE_PPACK_H__
-//#include "../include/ppack.hpp"
+#include "../include/ppack.hpp"
 #endif // __INCLUDE_PPACK_H__
 
 
 #ifndef __INCLUDE_LOGOS_H__
 #define __INCLUDE_LOGOS_H__
-//#include "../include/logos.hpp"
+#include "../include/logos.hpp"
 #endif //__INCLUDE_LOGOS_H__
 
 
@@ -188,7 +188,7 @@ int main(int argc ,char* argv[])
         //length parameters
         int minlength;
         int maxlength;
-        
+
         //unsigned int threads;
 
         po::options_description files("Files I/O");
@@ -202,7 +202,7 @@ int main(int argc ,char* argv[])
         password.add_options()
             ("charset, c", po::value<vector<string>>(), "Password's charset.")
             ("minlength", po::value<int>(&minlength)->default_value(-1)->implicit_value(-1), "Minimum password length.")
-            ("maxlength", po::value<int>(&maxlength)->default_value(-1)->implicit_value(-1), "Miximum password length.");        
+            ("maxlength", po::value<int>(&maxlength)->default_value(-1)->implicit_value(-1), "Miximum password length.");
 
         po::options_description print("Print");
         print.add_options()
