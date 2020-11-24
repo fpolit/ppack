@@ -2,7 +2,22 @@
  * Mask class definition
  * Mask class reimplemented 23 nov 20202
  *
+ *
+ * Depuration:
+ * Mask class tested 24 nov 2020.
+ *
+ *
+ * No tested functions:
+ * bool Mask::checkSCS(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
+ * bool Mask::checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
+ *
+ * No implemented functions:
+ * vector<Mask> Mask::permutations();
+ *
+ *
+ *
  * Maintainer: glozanoa <glozanoa@uni.pe>
+ *
  */
 
 #ifndef __MASK_H__
@@ -27,7 +42,6 @@
 using namespace std;
 
 
-
 typedef enum SCS {
 // base types
     loweralpha,
@@ -44,22 +58,6 @@ typedef enum SCS {
     mixall,             // (unordered)[alpha, numeric, special]
     none                // default value to empty SimpleCharSet variable
 }SCS;
-
-// string Values of Simple Charsets
-map<SCS, string> SimpleCharSet = {
-  {SCS::loweralpha, "loweralpha"},
-  {SCS::upperalpha,"upperalpha"},
-  {SCS::numeric,"numeric"},
-  {SCS::special,"special"},
-  {SCS::alpha,"alpha"},
-  {SCS::mixalphaspecial,"mixalphaspecial"},
-  {SCS::mixalphanum, "mixalphanum"},
-  {SCS::mixspecialnum, "mixspecialnum"},
-  {SCS::mixall, "mixall"},
-  {SCS::none, "none"}
-};
-
-
 
 typedef enum ACS{
 //more advance charste (ordered combinations)
@@ -86,24 +84,6 @@ typedef enum ACS{
     advnone                // default value to empty AdvanceCharSet variable
 } ACS;
 
-// string Values of advance Charsets
-map<ACS, string> AdvanceCharSet = {
-  {ACS::alphaspecial, "alphaspecial"},
-  {ACS::loweralphaspecial, "loweralphaspecial"},
-  {ACS::upperalphaspecial, "upperalphaspecial"},
-  {ACS::specialalpha, "specialalpha"},
-  {ACS::specialloweralpha, "specialloweralpha"},
-  {ACS::specialupperalpha, "specialupperalpha"},
-  {ACS::alphanum, "alphanum"},
-  {ACS::loweralphanum, "loweralphanum"},
-  {ACS::upperalphanum, "upperalphanum"},
-  {ACS::specialnum, "specialnum"},
-  {ACS::numspecial, "numspecial"},
-  {ACS::advnone, "none"}
-};
-
-
-
 typedef struct maskStruct
 {
   int lowercase  = 0;
@@ -111,7 +91,6 @@ typedef struct maskStruct
   int special    = 0;
   int digit      = 0;
 }maskStruct;
-
 
 
 class Mask: public std::string
@@ -124,22 +103,15 @@ private:
   int complexity;
 
 public:
+  Mask();
   Mask(string mask);
-
-
-  // check methods
-  friend bool ismask(string mask);
-  friend bool checkLength(Mask mask, int minlength, int maxlength);
-  friend bool checkSCS(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
-  friend bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
-  friend bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
-  static bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
-
 
   // get and set methods
   int getComplexity(){return 0;} // NOTA: IMPLEMENTAR LA COMPLEJIDAD DE UNA MASCARA
   SCS getSCS(){return charset;}
   ACS getACS();
+  string getValueSCS();
+  string getValueACS();
   maskStruct getStruct(){return mstruct;}
   int length(){return this->size()/2;}
 
@@ -149,13 +121,26 @@ public:
 
 
   // modificator methods
-  void realloc(string masksymbol); // add a mask symbol to a mask and update mstruct
+  void realloc(string maskCharset); // add a mask symbol to a mask and update mstruct
   vector<Mask> permutations();
 
-
-  //  parser friend methods
+  //  parser friend functions
   static Mask analysis(string mask);
-  friend SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
 };
+
+
+
+// check functions
+bool ismask(string mask);
+bool checkLength(Mask mask, int minlength, int maxlength);
+bool checkSCS(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
+bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
+bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
+//static bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
+
+
+//  parser friend functions
+//Mask analysis(string mask);
+SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
 
 #endif // __MASK_H__

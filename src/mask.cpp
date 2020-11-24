@@ -11,10 +11,10 @@
 #endif //__INCLUDE_STD_IOSTREAM_H__
 
 
-#ifndef __INCLUDE_STD_STRING_H_
-#define __INCLUDE_STD_STRING_H_
+#ifndef __INCLUDE_STD_STRING_H__
+#define __INCLUDE_STD_STRING_H__
 #include<string>
-#endif //__INCLUDE_STD_STRING_H_
+#endif //__INCLUDE_STD_STRING_H__
 
 using namespace std;
 
@@ -38,7 +38,7 @@ using namespace std;
 // characterSet map (SCS or ACS -> string values)
 
 // string Values of Simple Charsets
-map<SCS, string> SimpleCharSet = {
+map<SCS, string> scsValue = {
   {SCS::loweralpha, "loweralpha"},
   {SCS::upperalpha,"upperalpha"},
   {SCS::numeric,"numeric"},
@@ -53,7 +53,7 @@ map<SCS, string> SimpleCharSet = {
 
 
 // string Values of advance Charsets
-map<ACS, string> AdvanceCharSet = {
+map<ACS, string> acsValue = {
   {ACS::alphaspecial, "alphaspecial"},
   {ACS::loweralphaspecial, "loweralphaspecial"},
   {ACS::upperalphaspecial, "upperalphaspecial"},
@@ -91,12 +91,19 @@ bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol 
 //Mask Mask::analysis(string mask);
 SCS scsParser(maskStruct mstruct);
 
+Mask::Mask()
+  :string("")
+{
+  // mstruct is initilizated to zeros by default
+  charset = SCS::none;
+  complexity=0;
+  advanceCharset = ACS::advnone; //init advanceCharset with none, use only the set method to get acs
+}
 
 
 Mask::Mask(string mask)
-  :string(mask) // NOTA: EL CONTRUCTOR DE LA CLASE PADRE (string) DEBE IR AQUI NO EN EL CUERPO SINO NO FUNCIONA.
+  :string("") // NOTA: EL CONTRUCTOR DE LA CLASE PADRE (string) DEBE IR AQUI NO EN EL CUERPO SINO NO FUNCIONA.
 {
-
   try{
     if(!ismask(mask))
       throw invalid_mask;
@@ -160,7 +167,8 @@ bool ismask(string mask)
 
 bool checkLength(Mask mask, int minlength, int maxlength)
 {
-  if(mask.length() > minlength && mask.length() < maxlength)
+  int maskLength = mask.length();
+  if(maskLength > minlength && maskLength < maxlength)
     return true;
   return false;
 }
@@ -200,7 +208,7 @@ bool isMaskCharset(string maskCharset) // check if a symbols is a valid symbol m
 {
   if(maskCharset.size() == 2)
     {
-      if(charset::masksymbols.find(maskCharset[1], 0) == string::npos)
+      if(charset::masksymbols.find(maskCharset[1], 0) != string::npos)
         return true;
     }
   return false;
@@ -209,6 +217,17 @@ bool isMaskCharset(string maskCharset) // check if a symbols is a valid symbol m
 
 
 // get and set methods
+string Mask::getValueSCS()
+{
+  return scsValue[charset];
+}
+string Mask::getValueACS()
+{
+  ACS acs = this->getACS();
+  return acsValue[acs];
+}
+
+
 ACS Mask::getACS()
 {
   if(advanceCharset != ACS::advnone)
