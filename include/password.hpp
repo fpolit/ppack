@@ -23,6 +23,7 @@ using namespace std;
 #endif // __INCLUDE_MASK_H__
 
 
+
 Mask passwdAnalysis(string passwd); //analyze the string passwd and get its mask
 
 class Password : public string
@@ -44,6 +45,8 @@ public:
   void setACS(ACS asv){mask.setACS(asv);}
   void setSCS(SCS scs){mask.setSCS(scs);}
 
+
   string getMask(){return mask;}
+
 };
 #endif // __PASSWORD_H__

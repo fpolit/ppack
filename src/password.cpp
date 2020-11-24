@@ -34,6 +34,7 @@ using namespace std;
 #endif //__INCLUDE_OMP_H__
 
 
+
 Mask  analyzePassword(string passwd);
 
 
@@ -44,7 +45,9 @@ Password::Password(string password)
 }
 
 
+
 Mask  analyzePassword(string passwd)
+
 {
     string master_mask = "";
 
@@ -76,11 +79,10 @@ Mask  analyzePassword(string passwd)
             }
         }
     }
+
     maskStruct mstruct = maskParser.getStruct();
     maskParser.setSCS(scsParser(mstruct));
 
     return maskParser;
+
 }
-
-
-

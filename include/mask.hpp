@@ -114,6 +114,7 @@ typedef struct maskStruct
 
 
 
+
 SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
 
 class Mask: public std::string
@@ -121,6 +122,7 @@ class Mask: public std::string
 private:
   maskStruct mstruct;
   SCS charset;
+
   ACS advanceCharset;
   int complexity;
 

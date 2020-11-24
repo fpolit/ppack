@@ -86,7 +86,7 @@ Mask::Mask(string mask)
           }
       }
 
-    charset = scsParser(mstruct);
+    SCS charset = scsParser(mstruct);
     complexity = 0; // implement a function to compute mask complexity
     advanceCharset = ACS::advnone; //init advanceCharset with none, use only the set method to get acs
 

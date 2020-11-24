@@ -7,3 +7,4 @@ pack/*
 .*
 test/simples/*
 test/wordlists/*
+doc/pack.wiki/*

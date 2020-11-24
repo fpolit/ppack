@@ -141,13 +141,17 @@ void statsgen(string wordlist, string output,                           //IO par
       delete [] vpasswd;
     }
 
+
   statsgen_results(sstruct);
+
 }
 
 void statsgen_results(statstruct sstruct)
 {
   // using sstuct struct write the output file and show the generated stats
+
   cout << "Don't forget Implement statsgen_results" << endl;
+
 }
 
 
@@ -217,9 +221,11 @@ void maskgen(string statsgen_output, string output,    //IO parameters
 
   if(show)
     {
+
       for(auto [mask, occurence] : fmasks)
         {
           maskgen_output << mask  <<  endl;
+
           // print the mask and its occurence
         }
     }
@@ -227,6 +233,7 @@ void maskgen(string statsgen_output, string output,    //IO parameters
     {
       for(auto [mask, occurence] : fmasks)
 		maskgen_output << mask  <<  endl;
+
     }
 }
 

@@ -53,13 +53,17 @@ public:
   // PPACK(){VERSION = "1.0";}
   //PPACK(string wordlist):wordlist_file{wordlist}{}
 
+
   static void statsgen(string wordlist, string output,                           //IO parameters
+
                 bool hiderare, bool quiet,                      //print parameters
                 vector<string> charset,                            //password charset
                   int minlength, int maxlength);                         //length parameters
 
 
+
     static void maskgen(string statsgen_output, string output,    //IO parameters
+
                 bool show, bool quiet,                           //print parameters
                  vector<Mask> checkmasks,string checkmasksfile,       //checkmask parameters
                 vector<string> charset,                            //password charset
