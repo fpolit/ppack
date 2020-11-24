@@ -114,6 +114,8 @@ typedef struct maskStruct
 
 
 
+SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
+
 class Mask: public std::string
 {
 private:
@@ -124,28 +126,6 @@ private:
 
 public:
   Mask(string mask);
-  int length(){return this->size()/2;}
-
-  // get and set methods
-  int getComplexity(){return 0;} // NOTA: IMPLEMENTAR LA COMPLEJIDAD DE UNA MASCARA
-  SCS getSCS(){return charset;}
-  ACS getACS(){return advanceCharset;}
-  maskStruct getStruct(){return mstruct;}
-
-
-
-  void setComplexity(int complex){complexity = complex;}
-  void setACS(ACS asv){advanceCharset = asv;}
-  void setSCS(SCS scs){charset = scs;}
-
-
-  void realloc(string masksymbol); // add a mask symbol to a mask and update mstruct
-  vector<Mask> permutations();
-
-  // change to void 23 nov
-  //  friend void maskAnalysis(Mask mask);
-  friend void maskAnalysis(Mask mask);
-
 
 
   // check methods
@@ -155,6 +135,28 @@ public:
   friend bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
   friend bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
   static bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
+
+
+  // get and set methods
+  int getComplexity(){return 0;} // NOTA: IMPLEMENTAR LA COMPLEJIDAD DE UNA MASCARA
+  SCS getSCS(){return charset;}
+  ACS getACS();
+  maskStruct getStruct(){return mstruct;}
+  int length(){return this->size()/2;}
+
+  void setComplexity(int complex){complexity = complex;}
+  void setACS(ACS asv){advanceCharset = asv;}
+  void setSCS(SCS scs){charset = scs;}
+
+
+  // modificator methods
+  void realloc(string masksymbol); // add a mask symbol to a mask and update mstruct
+  vector<Mask> permutations();
+
+  // change to void 23 nov
+  //  friend void maskAnalysis(Mask mask);
+  static Mask analysis(string mask);
+  static SCS scsParser(Mask mask);
 };
 
 #endif // __MASK_H__
