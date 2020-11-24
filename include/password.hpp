@@ -9,10 +9,10 @@
 #ifndef __PASSWORD_H__
 #define __PASSWORD_H__
 
-#ifndef __INCLUDE_STD_STRING_H_
-#define __INCLUDE_STD_STRING_H_
+#ifndef __INCLUDE_STD_STRING_H__
+#define __INCLUDE_STD_STRING_H__
 #include<string>
-#endif //__INCLUDE_STD_STRING_H_
+#endif //__INCLUDE_STD_STRING_H__
 
 using namespace std;
 
@@ -23,10 +23,9 @@ using namespace std;
 #endif // __INCLUDE_MASK_H__
 
 
-
 Mask passwdAnalysis(string passwd); //analyze the string passwd and get its mask
 
-class Password : public string
+class Password : public std::string
 {
 private:
     Mask mask;

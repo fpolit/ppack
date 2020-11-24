@@ -9,10 +9,10 @@
 #define __CHARACTER_H__
 
 
-#ifndef __INCLUDE_STD_STRING_H_
-#define __INCLUDE_STD_STRING_H_
+#ifndef __INCLUDE_STD_STRING_H__
+#define __INCLUDE_STD_STRING_H__
 #include<string>
-#endif //__INCLUDE_STD_STRING_H_
+#endif //__INCLUDE_STD_STRING_H__
 
 using namespace std;
 

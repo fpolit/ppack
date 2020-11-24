@@ -42,6 +42,7 @@
 using namespace std;
 
 
+
 typedef enum SCS {
 // base types
     loweralpha,

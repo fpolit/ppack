@@ -18,6 +18,7 @@ using namespace std;
 #include "../include/password.hpp"
 #endif //__INCLUDE_PASSWORD_H__
 
+
 #ifndef __INCLUDE_CHARACTER_H__
 #define __INCLUDE_CHARACTER_H__
 #include "../include/character.hpp"
@@ -28,20 +29,20 @@ using namespace std;
 #include "../include/mask.hpp"
 #endif // __INCLUDE_MASK_H__
 
+
 #ifndef __INCLUDE_OMP_H__
 #define __INCLUDE_OMP_H__
 #include "omp.h"
 #endif //__INCLUDE_OMP_H__
 
 
-
 Mask  analyzePassword(string passwd);
 
 
-Password::Password(string password)
-  :string(password)
+Password::Password(string passwd)
+  :string(passwd), mask("")
 {
-  mask = analyzePassword(password);
+  mask = analyzePassword(passwd);
 }
 
 
@@ -53,9 +54,9 @@ Mask  analyzePassword(string passwd)
 
     Mask maskParser(master_mask);
     // computer the mask of the password and fill the maskStruct
-    // #pragma omp parallel for ordered \
+    // #pragma omp parallel for ordered
     //     shared(master_mask, passwd, symbols, passwdStruct)
-    for(int k=0; k<passwd.size(); k++)
+    for(int k=0; k<(int)passwd.size(); k++)
     {
       //#pragma omp ordered
         {

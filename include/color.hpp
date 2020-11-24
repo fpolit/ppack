@@ -27,10 +27,10 @@
 #endif // __INCLUDE_STD_VECTOR_H_
 
 
-#ifndef __INCLUDE_STD_RANDOM_H_
-#define __INCLUDE_STD_RANDOM_H_
+#ifndef __INCLUDE_STD_RANDOM_H__
+#define __INCLUDE_STD_RANDOM_H__
 #include <random>
-#endif //__INCLUDE_STD_RANDOM_H_
+#endif //__INCLUDE_STD_RANDOM_H__
 
 
 #ifndef __INCLUDE_STD_CTIME_H_
