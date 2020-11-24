@@ -11,6 +11,13 @@
 #endif //__INCLUDE_STD_IOSTREAM_H__
 
 
+#ifndef __INCLUDE_STD_STRING_H_
+#define __INCLUDE_STD_STRING_H_
+#include<string>
+#endif //__INCLUDE_STD_STRING_H_
+
+using namespace std;
+
 #ifndef __INCLUDE_MASK_H__
 #define __INCLUDE_MASK_H__
 #include "../include/mask.hpp"
@@ -28,16 +35,6 @@
 #endif //__INCLUDE_CHARACTER_H__
 
 
-#ifndef __INCLUDE_STD_IOSTREAM_H___
-#define __INCLUDE_STD_IOSTREAM_H__
-#include<iostream>
-#endif //__INCLUDE_STD_IOSTREAM_H__
-
-using namespace std;
-
-//#include "omp.h"
-
-
 // check methods
 bool ismask(string mask);
 bool checkLength(Mask mask, int minlength, int maxlength);
@@ -51,10 +48,10 @@ void realloc(string masksymbol); // add a mask symbol to a mask and update mstru
 vector<Mask> permutations();
 
 
-// change to void 23 nov
-//  friend void maskAnalysis(Mask mask);
+// friend methods
 Mask analysis(string mask);
-SCS parserSCS(Mask mask);
+SCS scsParser(maskStruct mstruct);
+
 
 
 
@@ -86,7 +83,7 @@ Mask::Mask(string mask)
           }
       }
 
-    SCS charset = scsParser(mstruct);
+    charset = scsParser(mstruct);
     complexity = 0; // implement a function to compute mask complexity
     advanceCharset = ACS::advnone; //init advanceCharset with none, use only the set method to get acs
 

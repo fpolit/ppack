@@ -114,9 +114,6 @@ typedef struct maskStruct
 
 
 
-
-SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
-
 class Mask: public std::string
 {
 private:
@@ -155,10 +152,10 @@ public:
   void realloc(string masksymbol); // add a mask symbol to a mask and update mstruct
   vector<Mask> permutations();
 
-  // change to void 23 nov
-  //  friend void maskAnalysis(Mask mask);
+
+  //  parser friend methods
   static Mask analysis(string mask);
-  static SCS scsParser(Mask mask);
+  friend SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
 };
 
 #endif // __MASK_H__
