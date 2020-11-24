@@ -35,6 +35,42 @@ using namespace std;
 #endif //__INCLUDE_CHARACTER_H__
 
 
+// characterSet map (SCS or ACS -> string values)
+
+// string Values of Simple Charsets
+map<SCS, string> SimpleCharSet = {
+  {SCS::loweralpha, "loweralpha"},
+  {SCS::upperalpha,"upperalpha"},
+  {SCS::numeric,"numeric"},
+  {SCS::special,"special"},
+  {SCS::alpha,"alpha"},
+  {SCS::mixalphaspecial,"mixalphaspecial"},
+  {SCS::mixalphanum, "mixalphanum"},
+  {SCS::mixspecialnum, "mixspecialnum"},
+  {SCS::mixall, "mixall"},
+  {SCS::none, "none"}
+};
+
+
+// string Values of advance Charsets
+map<ACS, string> AdvanceCharSet = {
+  {ACS::alphaspecial, "alphaspecial"},
+  {ACS::loweralphaspecial, "loweralphaspecial"},
+  {ACS::upperalphaspecial, "upperalphaspecial"},
+  {ACS::specialalpha, "specialalpha"},
+  {ACS::specialloweralpha, "specialloweralpha"},
+  {ACS::specialupperalpha, "specialupperalpha"},
+  {ACS::alphanum, "alphanum"},
+  {ACS::loweralphanum, "loweralphanum"},
+  {ACS::upperalphanum, "upperalphanum"},
+  {ACS::specialnum, "specialnum"},
+  {ACS::numspecial, "numspecial"},
+  {ACS::advnone, "none"}
+};
+
+
+// head of functions
+
 // check methods
 bool ismask(string mask);
 bool checkLength(Mask mask, int minlength, int maxlength);
@@ -43,15 +79,17 @@ bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advan
 bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
 bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
 
+// get and set methods
+//ACS Mask::getACS()
+
 // modificator methods
-void realloc(string masksymbol); // add a mask symbol to a mask and update mstruct
-vector<Mask> permutations();
+//void Mask::realloc(string maskCharset); // add a mask symbol to a mask and update mstruct
+//vector<Mask> Mask::permutations();
 
 
 // friend methods
-Mask analysis(string mask);
+//Mask Mask::analysis(string mask);
 SCS scsParser(maskStruct mstruct);
-
 
 
 
