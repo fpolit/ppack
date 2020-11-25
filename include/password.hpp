@@ -2,6 +2,9 @@
  * Password class definition
  * Password class reimplemented 23 nov 20202
  *
+ * Password class debuged - 24 nov 2020
+ *
+ *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
@@ -37,8 +40,8 @@ public:
 
   // get and set methods
   int getComplexity(){return 0;} // NOTA: IMPLEMENTAR LA COMPLEJIDAD DE UNA MASCARA
-  SCS getSCS(){return mask.getSCS();}
-  ACS getACS(){return mask.getACS();}
+  string getSCS(){return mask.getValueSCS();}
+  string getACS(){return mask.getValueACS();}
 
   void setComplexity(int complex){mask.setComplexity(complex);}
   void setACS(ACS asv){mask.setACS(asv);}
@@ -48,4 +51,10 @@ public:
   string getMask(){return mask;}
 
 };
+
+bool isdigit(string letther);
+bool islower(string letther);
+bool isupper(string letther);
+bool isspecial(string letther);
+
 #endif // __PASSWORD_H__
