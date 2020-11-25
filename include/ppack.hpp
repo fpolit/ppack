@@ -54,8 +54,10 @@ using namespace std;
 
 
 
-
-string PPACK_VERSION = "1.0";
+namespace ppack{
+  string VERSION = "1.0";
+  int release = 1;
+}
 
 class PPACK
 {

@@ -87,10 +87,10 @@ typedef enum ACS{
 
 typedef struct maskStruct
 {
-  int lowercase  = 0;
-  int uppercase  = 0;
-  int special    = 0;
-  int digit      = 0;
+  unsigned  int lowercase  = 0;
+  unsigned int uppercase  = 0;
+  unsigned int special    = 0;
+  unsigned int digit      = 0;
 }maskStruct;
 
 

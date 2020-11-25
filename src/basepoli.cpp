@@ -24,6 +24,12 @@
 #endif //__INCLUDE_BASE_H__
 
 
+#ifndef __INCLUDE_STD_IOSTREAM_H__
+#define __INCLUDE_STD_IOSTREAM_H__
+#include <iostream>
+#endif //__INCLUDE_STD_IOSTREAM_H__
+
+
 string repeat(string str, int n)
 {
   string repeat_str="";
@@ -105,4 +111,34 @@ void Base::maskStep()
   base = step_base;
   step_base = nullptr;
   length += 1;
+}
+
+
+
+void permuteMasks(Base base)
+/*
+ * This function compute all the permutations without repetitions
+ * and write all of them to a file.
+ */
+{
+  cout << "search for a c++ function to do this work(permutations)" << endl;
+}
+
+void corePolicygen(pstruct init)
+{
+  Base base(init);
+
+  for(int len=base.getLength(); len < base.getPoliMinLength(); len++)
+    {
+      // generate all the posible mask with the required parameter
+      // and increase the length of base in one
+      base.maskStep();
+    }
+
+  // now the length of base is equal to minlength(policygen paramemter)
+  for(int len=base.getLength(); len < base.getPoliMaxLength(); len++)
+    {
+      permuteMasks(base); // compute all the permutation of the mask(without repetitions)
+      base.maskStep();
+    }
 }

@@ -36,18 +36,28 @@
 #endif // __INCLUDE_MASK_H__
 
 
+#ifndef __INCLUDE_PROGRAM_OPTIONS_H__
+#define __INCLUDE_PROGRAM_OPTIONS_H__
+#include<boost/program_options.hpp>
+#endif //__INCLUDE_PROGRAM_OPTIONS_H__
+
+using namespace boost;
+namespace po = boost::program_options;
+
+
 
 // requirement struct (maskgen and policygen requirements)
 class rstruct
 {
 public:
-  rstruct(unsigned int min_length, unsigned int max_length,
+  rstruct(){};
+  rstruct(unsigned int min_length, int max_length,
           bool quietPrint,
           string outputFile);
 
   // password and mas structure requirements
   unsigned int minlength;
-  unsigned int maxlength;
+  int maxlength;
 
   // print requirements
   bool quiet;
@@ -60,7 +70,7 @@ public:
 class sstruct: public rstruct
 {
 public:
-  sstruct(unsigned int min_length, unsigned int max_length,
+  sstruct(unsigned int min_length, int max_length,
           bool quietPrint,
           string outputFile,
           vector<SCS> scharsets,
@@ -76,11 +86,11 @@ public:
 class mstruct: public rstruct
 {
 public:
-  mstruct(unsigned int min_length, unsigned int max_length,
+  mstruct(unsigned int min_length, int max_length,
           bool quiet_print,
           string output_file,
-          unsigned int min_complexity, unsigned int max_complexity,
-          unsigned int min_occurence, unsigned int max_occurence,
+          unsigned int min_complexity, int max_complexity,
+          unsigned int min_occurence, int max_occurence,
           vector<SCS> scharsets,
           vector<Mask> checkmasks,string checkmasksfile,
           bool show_masks,
@@ -88,10 +98,10 @@ public:
 
   // password and mas structure requirements
   unsigned int mincomplexity;
-  unsigned int maxcomplexity;
+  int maxcomplexity;
 
   unsigned int minoccurence;
-  unsigned int maxoccurence;
+  int maxoccurence;
 
   vector<SCS> charsets;
 
@@ -111,27 +121,28 @@ public:
 class pstruct:public rstruct
 {
 public:
-
+  pstruct(){};
+  pstruct(po::variables_map vm);
   pstruct(string outputFile,
           bool quietPrint, bool showMasks,
-          unsigned int min_length, unsigned int max_length,
-          unsigned int min_lower, unsigned int max_lower,
-          unsigned int min_upper, unsigned int max_upper,
-          unsigned int min_digit, unsigned int max_digit,
-          unsigned int min_special, unsigned int max_special);
+          unsigned int min_length, int max_length,
+          unsigned int min_lower, int max_lower,
+          unsigned int min_upper, int max_upper,
+          unsigned int min_digit, int max_digit,
+          unsigned int min_special, int max_special);
 
   // password and mas structure requirements
   unsigned int minlower;
-  unsigned int maxlower;
+  int maxlower;
 
   unsigned int minupper;
-  unsigned int maxupper;
+  int maxupper;
 
   unsigned int mindigit;
-  unsigned int maxdigit;
+  int maxdigit;
 
   unsigned int minspecial;
-  unsigned int maxspecial;
+  int maxspecial;
 
   // print requirements
   bool show;

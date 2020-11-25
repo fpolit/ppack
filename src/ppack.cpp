@@ -38,6 +38,15 @@
 
 using namespace std;
 
+
+
+
+#ifndef __INCLUDE_BASE_H__
+#define __INCLUDE_BASE_H__
+#include "../include/basepoli.hpp"
+#endif //__INCLUDE_BASE_H__
+
+
 // #ifndef __INCLUDE_MASK_H_
 // #define __INCLUDE_MASK_H_
 // #include "../include/mask.hpp"
@@ -49,16 +58,16 @@ using namespace std;
 // #endif //__INCLUDE_PPACK_H__
 
 
-// #ifndef __INCLUDE_LOGOS_H__
-// #define __INCLUDE_LOGOS_H__
-// #include "../include/logos.hpp"
-// #endif //__INCLUDE_LOGOS_H__
+#ifndef __INCLUDE_LOGOS_H__
+#define __INCLUDE_LOGOS_H__
+#include "../include/logos.hpp"
+#endif //__INCLUDE_LOGOS_H__
 
 
-// #ifndef __INCLUDE_COLOR_H__
-// #define __INCLUDE_COLOR_H__
-// #include "../include/color.hpp"
-// #endif //__INCLUDE_COLOR_H__
+#ifndef __INCLUDE_COLOR_H__
+#define __INCLUDE_COLOR_H__
+#include "../include/color.hpp"
+#endif //__INCLUDE_COLOR_H__
 
 
 // #ifndef __INCLUDE_CSV_H__
@@ -245,73 +254,17 @@ using namespace std;
 //     }
 // }
 
-
-////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Policygen implementation /////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////
-
-
-string repeat(string str, int n)
+void policygen(pstruct pargs)
 {
-  string repeat_str="";
-  for(int k=0; k<n; k++)
-    repeat_str += str;
+  corePolicygen(pargs); //do almost all the work()
 
-  return repeat_str;
-}
-
-
-void permuteMasks(Base base)
-/*
- * This function compute all the permutations without repetitions
- * and write all of them to a file.
- */
-{
-  cout << "search for a c++ function to do this work(permutations)" << endl;
-}
-
-void corePolicygen(poliStruct init)
-{
-  Base base(init);
-
-  for(int len=base.getLength(); len < base.getPoliMinLength(); len++)
-    {
-      // generate all the posible mask with the required parameter
-      // and increase the length of base in one
-      base.maskStep();
-    }
-
-  // now the length of base is equal to minlength(policygen paramemter)
-  for(int len=base.getLength(); len < base.getPoliMaxLength(); len++)
-    {
-      permuteMasks(base); // compute all the permutation of the mask(without repetitions)
-      base.maskStep();
-    }
-}
-
-static void policygen(string output,                       //Output File
-                      bool quiet, bool show,                           //print parameters
-                      int minlength, int maxlength,                         //length parameters
-                      int minlower, int maxlower,                           //
-                      int minupper, int maxupper,                           // password
-                      int mindigit, int maxdigit,                           // charset
-                      int minspecial, int maxspecial)
-{
-  poliStruct pstruct =  init_polistruct(minlength, maxlength,
-                                      minlower, maxlower,
-                                      minupper, maxupper,
-                                      mindigit, maxdigit,
-                                      minspecial, maxspecial);
-
-  corePolicygen(pstruct); //do almost all the work()
-
-  if(quiet == false) // print the ppack logo
+  if(pargs.quiet == false) // print the ppack logo
     {
       string ppack_logo = Logo::random();
       cout << ppack_logo << endl;
     }
-  print_status("Saving generated masks to [" + output +".hcmask]");
-  print_status("Using 8 OMP Threads.");
+  fine::print_status("Saving generated masks to [" + pargs.output +".hcmask]");
+  fine::print_status("Using 8 OMP Threads.");
 
   // string password_policy =
   //   "Password policy:"  +\
@@ -321,10 +274,10 @@ static void policygen(string output,                       //Output File
 
   //print_status("Policy Masks: ");
 
-  if(show==true)
+  if(pargs.show==true)
     {
       cout << "show generated masks" << endl;
     }
 
-  print_status("Policy Masks: ");
+  fine::print_status("Policy Masks: ");
 }

@@ -54,4 +54,7 @@ public:
   ~Base();
 };
 
+void permuteMasks(Base base);
+void corePolicygen(pstruct init);
+
 #endif //__BASE_H__
