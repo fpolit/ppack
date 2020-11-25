@@ -29,11 +29,13 @@ using namespace std;
 #include "../include/mask_exceptions.hpp"
 #endif //__INCLUDE_MASK_EXCEPTIONS_H__
 
-#ifndef __INCLUDE_CHARACTER_H__
-#define __INCLUDE_CHARACTER_H__
-#include "../include/character.hpp"
-#endif //__INCLUDE_CHARACTER_H__
+// #ifndef __INCLUDE_CHARACTER_H__
+// #define __INCLUDE_CHARACTER_H__
+// #include "../include/character.hpp"
+// #endif //__INCLUDE_CHARACTER_H__
 
+// character.hpp
+string masksymbols = R"(ludsa)";
 
 // characterSet map (SCS or ACS -> string values)
 
@@ -155,7 +157,7 @@ bool ismask(string mask)
       // if the string mask  isn't a mask, then only pass.
       if(!master_ismask)  continue;
 
-      if(charset::masksymbols.find(mask[k], 0) == string::npos)
+      if(masksymbols.find(mask[k], 0) == string::npos)
         {
           //#pragma omp critical
           master_ismask = false;
@@ -208,7 +210,7 @@ bool isMaskCharset(string maskCharset) // check if a symbols is a valid symbol m
 {
   if(maskCharset.size() == 2)
     {
-      if(charset::masksymbols.find(maskCharset[1], 0) != string::npos)
+      if(masksymbols.find(maskCharset[1], 0) != string::npos)
         return true;
     }
   return false;
