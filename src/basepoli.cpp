@@ -1,7 +1,42 @@
+/*
+ * Base class implementation - 25 nov 2020
+ *
+ *
+ *
+ * Depuration:
+ *
+ *
+ *
+ * No tested functions:
+ *
+ *
+ * No implemented functions:
+ *
+ *
+ *
+ * Maintainer: glozanoa <glozanoa@uni.pe>
+ *
+ */
 
-Base::Base(poliStruct init)
+#ifndef __INCLUDE_BASE_H__
+#define __INCLUDE_BASE_H__
+#include "../include/basepoli.hpp"
+#endif //__INCLUDE_BASE_H__
+
+
+string repeat(string str, int n)
 {
-  bstruct = init;
+  string repeat_str="";
+  for(int k=0; k<n; k++)
+    repeat_str += str;
+
+  return repeat_str;
+}
+
+
+Base::Base(pstruct initial)
+{
+  bstruct = initial;
   string init_mask;
 
   init_mask = repeat("?l", bstruct.minlower) +\
@@ -31,7 +66,7 @@ void Base::maskStep()
   vector<Mask> *step_base = new vector<Mask>;
   for(Mask mask : *base)
     {
-      maskStruct mstruct = maskAnalysis(mask);
+      maskStruct mstruct = mask.getStruct();
 
       if(mstruct.lowercase <= bstruct.maxlower)
         {
