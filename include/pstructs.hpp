@@ -41,9 +41,34 @@
 class rstruct
 {
 public:
-  rstruct(unsigned int min_length, unsigned int max_length);
+  rstruct(unsigned int min_length, unsigned int max_length,
+          bool quietPrint,
+          string outputFile);
+
+  // password and mas structure requirements
   unsigned int minlength;
   unsigned int maxlength;
+
+  // print requirements
+  bool quiet;
+
+  // io parameters
+  string output;
+};
+
+// statsgen requirements struct
+class sstruct: public rstruct
+{
+public:
+  sstruct(unsigned int min_length, unsigned int max_length,
+          bool quietPrint,
+          string outputFile,
+          vector<SCS> scharsets,
+          bool hide);
+
+  // filter requierement
+  vector<SCS> charsets;
+  bool hiderare;
 };
 
 
@@ -52,10 +77,16 @@ class mstruct: public rstruct
 {
 public:
   mstruct(unsigned int min_length, unsigned int max_length,
+          bool quiet_print,
+          string output_file,
           unsigned int min_complexity, unsigned int max_complexity,
           unsigned int min_occurence, unsigned int max_occurence,
-          vector<SCS> scharsets);
+          vector<SCS> scharsets,
+          vector<Mask> checkmasks,string checkmasksfile,
+          bool show_masks,
+          string statgen_uput);
 
+  // password and mas structure requirements
   unsigned int mincomplexity;
   unsigned int maxcomplexity;
 
@@ -63,6 +94,16 @@ public:
   unsigned int maxoccurence;
 
   vector<SCS> charsets;
+
+  // check requirements
+  vector<Mask> checkmasks;
+  string checkmasksfile;
+
+  // print requirements
+  bool show;
+
+  // io parameters
+  string statsgenOutput; // maskgen input file
 };
 
 
@@ -71,12 +112,15 @@ class pstruct:public rstruct
 {
 public:
 
-  pstruct(unsigned int min_length, unsigned int max_length,
+  pstruct(string outputFile,
+          bool quietPrint, bool showMasks,
+          unsigned int min_length, unsigned int max_length,
           unsigned int min_lower, unsigned int max_lower,
           unsigned int min_upper, unsigned int max_upper,
           unsigned int min_digit, unsigned int max_digit,
           unsigned int min_special, unsigned int max_special);
 
+  // password and mas structure requirements
   unsigned int minlower;
   unsigned int maxlower;
 
@@ -88,6 +132,9 @@ public:
 
   unsigned int minspecial;
   unsigned int maxspecial;
+
+  // print requirements
+  bool show;
 };
 
 

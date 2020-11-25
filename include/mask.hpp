@@ -24,10 +24,10 @@
 #define __MASK_H__
 
 
-#ifndef __INCLUDE_STD_MAP_H_
-#define __INCLUDE_STD_MAP_H_
+#ifndef __INCLUDE_STD_MAP_H__
+#define __INCLUDE_STD_MAP_H__
 #include<map>
-#endif // __INCLUDE_STD_MAP_H_
+#endif // __INCLUDE_STD_MAP_H__
 
 #ifndef __INCLUDE_STD_STRING_H__
 #define __INCLUDE_STD_STRING_H__
