@@ -53,7 +53,7 @@ public:
   rstruct(){};
   rstruct(unsigned int min_length, int max_length,
           bool quietPrint,
-          string outputFile);
+          string outputFile, string inputFile);
 
   // password and mas structure requirements
   unsigned int minlength;
@@ -63,7 +63,9 @@ public:
   bool quiet;
 
   // io parameters
-  string output;
+  string input; // input file
+  string output; //output file
+
 };
 
 // statsgen requirements struct
@@ -79,6 +81,10 @@ public:
   // filter requierement
   vector<SCS> charsets;
   bool hiderare;
+
+  // io paramemters
+  //string input; // input wordlist - inehritance attribute
+  //string output; //output file of statsgen - inehritance attribute
 };
 
 
@@ -94,7 +100,7 @@ public:
           vector<SCS> scharsets,
           vector<Mask> checkmasks,string checkmasksfile,
           bool show_masks,
-          string statgen_uput);
+          string statgen_ouput);
 
   // password and mas structure requirements
   unsigned int mincomplexity;
@@ -112,8 +118,10 @@ public:
   // print requirements
   bool show;
 
-  // io parameters
-  string statsgenOutput; // maskgen input file
+
+  // io paramemters
+  //string input; // output of statsgen method - inehritance attribute
+  //string output; //output file of maskgen (generated masks) - inehritance attribute
 };
 
 
@@ -146,6 +154,12 @@ public:
 
   // print requirements
   bool show;
+
+  // io paramemters
+  //string input; // requirement file - inehritance attribute
+  //string output; //output file of policygen (generated masks) --inheritance attribute
+
+  void debug(); // show all the parameters
 };
 
 

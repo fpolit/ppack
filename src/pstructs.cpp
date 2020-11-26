@@ -20,10 +20,10 @@
  */
 
 
-#ifndef __INCLUDE_PSTRUCTS_H__
-#define __INCLUDE_PSTRUCTS_H__
-#include "../include/pstructs.hpp"
-#endif // __INCLUDE_PSTRUCTS_H__
+#ifndef __INCLUDE_STD_IOSTREAM_H__
+#define __INCLUDE_STD_IOSTREAM_H__
+#include <iostream>
+#endif //__INCLUDE_STD_IOSTREAM_H__
 
 
 
@@ -32,9 +32,15 @@
 #include <exception>
 #endif //__INCLUDE_STD_EXCEPTION_H__
 
-// void validate_arguments(po::variables_map vm, pstruct *pargs)
+using namespace std;
 
-// }
+
+#ifndef __INCLUDE_PSTRUCTS_H__
+#define __INCLUDE_PSTRUCTS_H__
+#include "../include/pstructs.hpp"
+#endif // __INCLUDE_PSTRUCTS_H__
+
+
 
 
 rstruct::rstruct(unsigned int min_length, int max_length,
@@ -45,7 +51,10 @@ rstruct::rstruct(unsigned int min_length, int max_length,
   maxlength = max_length;
 
   quiet = quietPrint;
+
+  // ios paramemters
   output = outputFile;
+  input = inputFile;
 }
 
 
@@ -69,8 +78,8 @@ mstruct::mstruct(unsigned int min_length, int max_length,
                  unsigned int min_occurence, int max_occurence,
                  vector<SCS> scharsets,
                  vector<Mask> checkMasks,string checkMasksFile,
-                 bool showMasks,
-                 string statgen_ouput)
+                 bool showMasks)
+                 //string statgen_ouput)
   :rstruct(min_length, max_length, quiet_print, output_file)
 {
   // password and mas structure requirements
@@ -88,7 +97,7 @@ mstruct::mstruct(unsigned int min_length, int max_length,
   show = showMasks;
 
   // io parameters
-  statsgenOutput = statgen_ouput; // maskgen input file
+  //input = statgen_ouput; // maskgen input file
 
 }
 
@@ -126,21 +135,18 @@ pstruct::pstruct(po::variables_map vm)
  */
 {
   //Output File parameter(files section)
-  if(vm.count("output"))
-    {
-      output = vm["output"].as<string>();
-    }
+  // if there is a output paramenter assign to output attribute, otherwise assign the default value
+  output = vm["output"].as<string>();
+
+  if(vm.count("input"))
+    input = vm["input"].as<string>();
 
   //print parameters(print section)
-  if(vm.count("quiet"))
-    {
-      quiet = vm["quiet"].as<bool>();
-    }
+  // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
+  quiet = vm["quiet"].as<bool>();
 
-  if(vm.count("show"))
-    {
-      show = vm["show"].as<bool>();
-    }
+  // if there is a show paramenter assign to show attribute, otherwise assign the default value
+  show = vm["show"].as<bool>();
 
   //length parameters (mask section)
   if(vm.count("minlength") && vm.count("maxlength"))
@@ -148,7 +154,7 @@ pstruct::pstruct(po::variables_map vm)
       minlength = vm["minlength"].as<int>();
       maxlength = vm["maxlength"].as<int>();
       if((int)minlength > maxlength)
-        throw "Ivalid paramemters";
+        throw "Invalid paramemters";
     }
   else if(vm.count("minlength"))
     {
@@ -192,7 +198,7 @@ pstruct::pstruct(po::variables_map vm)
       minupper = vm["minupper"].as<int>();
       maxupper = vm["maxupper"].as<int>();
       if((int)minupper > maxupper)
-        throw "Ivalid paramemters";
+        throw "Invalid paramemters";
     }
   else if(vm.count("minupper"))
     {
@@ -213,7 +219,7 @@ pstruct::pstruct(po::variables_map vm)
       mindigit = vm["mindigit"].as<int>();
       maxdigit = vm["maxdigit"].as<int>();
       if((int)mindigit > maxdigit)
-        throw "Ivalid paramemters";
+        throw "Invalid paramemters";
     }
   else if(vm.count("mindigit"))
     {
@@ -234,7 +240,7 @@ pstruct::pstruct(po::variables_map vm)
       minspecial = vm["minspecial"].as<int>();
       maxspecial = vm["maxspecial"].as<int>();
       if((int)minspecial > maxspecial)
-        throw "Ivalid paramemters";
+        throw "Invalid paramemters";
     }
   else if(vm.count("minspecial"))
     {
@@ -248,4 +254,34 @@ pstruct::pstruct(po::variables_map vm)
       minspecial = vm["minspecial"].as<int>(); //set minspecial to the default value 0
       maxspecial = vm["maxspecial"].as<int>();
     }
+}
+
+
+void pstruct::debug() // show all the parameters
+{
+  cout << "debug pstruct\n\n";
+
+  // file section
+  cout << "input: " << input << endl;
+  cout << "output: " << output << endl;
+
+  // print section
+  cout << "show: " << show << endl;
+  cout << "quiet: " << quiet << endl;
+
+  // mask section
+  cout << "minlenght" << minlength << endl;
+  cout << "maxlength" << maxlength << endl;
+
+  cout << "minlower" << minlower << endl;
+  cout << "maxlower" << maxlower << endl;
+
+  cout << "minupper" << minupper << endl;
+  cout << "maxupper" << maxupper << endl;
+
+  cout << "mindigit" << mindigit << endl;
+  cout << "maxdigit" << maxdigit << endl;
+
+  cout << "minspecial" << minspecial << endl;
+  cout << "maxspecial" << maxspecial << endl;
 }
