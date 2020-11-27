@@ -3,21 +3,18 @@
  *
  *
  *
- * Depuration:
+ * Depuration: 
+ * TESTED ALL THE FUNCTION with exeption of permuteMasks, 
+ *  because it isn't yet implemented. 
  *
- *
- *
- * No tested functions:
- *
+ * No tested functions: ALL FUNCTION TESTED
  *
  * No implemented functions:
- *
- *
+ *  void permuteMasks(Base base)
  *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  *
  */
-
 
 #ifndef __BASE_H__
 #define __BASE_H__
@@ -42,7 +39,7 @@ public:
   Base(pstruct initial);
   Base(pstruct poliOpt, unsigned int len);
   // generate a new base from a base increasing in 1 the length. 
-  friend Base maskStep(Base base); 
+  friend Base* maskStep(Base* base); 
 
   void appendMask(Mask step); // next step mask
 
@@ -75,6 +72,6 @@ public:
 // }
 
 //void permuteMasks(Base base);
-vector<Base> corePolicygen(pstruct init); //bases without permitations
+void corePolicygen(pstruct init); //bases without permitations
 
 #endif //__BASE_H__

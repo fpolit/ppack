@@ -3,16 +3,15 @@
  *
  *
  *
- * Depuration:
+ * Depuration: 
+ * TESTED ALL THE FUNCTION with exeption of permuteMasks, 
+ * because it isn't implemented yet. 
  *
  *
- *
- * No tested functions:
- *
+ * No tested functions: ALL FUNCTION TESTED
  *
  * No implemented functions:
- *
- *
+ *  void permuteMasks(Base base)
  *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  *
@@ -29,7 +28,7 @@
 #include <iostream>
 #endif //__INCLUDE_STD_IOSTREAM_H__
 
-
+//tested 27 nov 2020
 string repeat(string str, int n)
 {
   string repeat_str= "";
@@ -67,7 +66,7 @@ Base::Base(pstruct poliOpt, unsigned int len)
 
 Base::~Base()
 {
-  delete [] baseMasks;
+  delete  baseMasks;
 }
 
 void Base::appendMask(Mask step)
@@ -75,51 +74,51 @@ void Base::appendMask(Mask step)
   baseMasks->push_back(step);
 }
 
-Base maskStep(Base base)
+// tested 27 nov 2020
+Base* maskStep(Base *base)
 {
-  // creation of the base baseJump (base of masks with length + 1)
-  // this base is generated from the original base(masks are extended with a maskSymbol).
-  unsigned int stepBaseLength = base.getLength() + 1;
-  Base baseJump(base.getBaseStruct(), stepBaseLength);
+  unsigned int lengthBaseStep = base->getLength()+1;
+  Base* baseStep = new Base(base->getBaseStruct(), lengthBaseStep);
 
-  for(Mask mask : base.getBaseMasks())
+  pstruct bstruct = base->getBaseStruct();
+  for(Mask mask : base->getBaseMasks())
     {
       maskStruct mstruct = mask.getStruct();
-      pstruct bstruct = base.getBaseStruct();
 
       if(mstruct.lowercase < bstruct.maxlower || bstruct.maxlower == -1)
         {
-          baseJump.appendMask(reallocMask(mask, "?l"));
+          baseStep->appendMask(reallocMask(mask, "?l"));
           if(mstruct.digit < bstruct.maxdigit || bstruct.maxdigit == -1)
-              baseJump.appendMask(reallocMask(mask, "?d"));
+              baseStep->appendMask(reallocMask(mask, "?d"));
 
           if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
-              baseJump.appendMask(reallocMask(mask, "?u"));
+              baseStep->appendMask(reallocMask(mask, "?u"));
 
           if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
-            baseJump.appendMask(reallocMask(mask, "?s"));
+            baseStep->appendMask(reallocMask(mask, "?s"));
         }
       else if(mstruct.digit < bstruct.maxdigit || bstruct.maxdigit == -1)
         {
-          baseJump.appendMask(reallocMask(mask, "?d"));
+          baseStep->appendMask(reallocMask(mask, "?d"));
           if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
-              baseJump.appendMask(reallocMask(mask, "?u"));
+              baseStep->appendMask(reallocMask(mask, "?u"));
           if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
-            baseJump.appendMask(reallocMask(mask, "?s"));
+            baseStep->appendMask(reallocMask(mask, "?s"));
         }
       else if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
         {
-          baseJump.appendMask(reallocMask(mask, "?u"));
+          baseStep->appendMask(reallocMask(mask, "?u"));
           if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
-            baseJump.appendMask(reallocMask(mask, "?s"));
+            baseStep->appendMask(reallocMask(mask, "?s"));
         }
       else if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
         {
-          baseJump.appendMask(reallocMask(mask, "?s"));
+          baseStep->appendMask(reallocMask(mask, "?s"));
         }
     }
-  
-  return baseJump;
+
+    //delete base;
+    return baseStep;
 }
 
 
@@ -132,22 +131,29 @@ void permuteMasks(Base base)
   cout << "Compute all the permutation without repetitions." << endl;
 }
 
-// return a set of bases[PoliBase]
+// compute a set of bases[PoliBase]
 // (with length equal to minlength  till maxlength)
-vector<Base> corePolicygen(pstruct init)
+// tested 27 nov 2020 
+void corePolicygen(pstruct init)
 {
-  Base base(init);
-
-  for(int len=base.getLength(); len < base.getMinLength()-1; len++)
+  Base *base = new Base(init);
+  
+  int minlength = base->getMinLength();
+  while(base->getLength() < minlength - 1)
       base = maskStep(base); //increase the length of base in one
 
   // now the length of base is equal to minlength-1(policygen paramemter)
-  vector<Base> poliBases;
-  for(int len=base.getLength(); len < base.getMaxLength(); len++)
+  vector<Base*> poliBases;
+  for(int step=base->getLength(); step < base->getMaxLength(); step++)
     {
       base = maskStep(base);
+      cout << "base.length: " << base->getLength() << endl;
+
       poliBases.push_back(base);
     }
-
-  return poliBases; 
+  
+  
+  cout << "I get it!" << endl;
+  //delete  base;
+  //return poliBases;
 }

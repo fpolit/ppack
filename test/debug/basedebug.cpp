@@ -65,4 +65,8 @@ int main(int argc, char **argv)
     Base base(pargs);
 
     corePolicygen(pargs);
+    //vector<Base> aa = corePolicygen(pargs);
+    cout << "(main)I get it!" << endl;
+
+    return 0;
 }
