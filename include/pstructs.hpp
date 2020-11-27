@@ -4,16 +4,11 @@
  *
  *
  * Depuration:
+ * rstruct and inheritance classes tested 27 nov 2020.
  *
+ * No tested functions: ALL ClASES TESTED
  *
- *
- * No tested functions:
- *
- *
- *
- * No implemented functions:
- *
- *
+ * No implemented functions: ALL FUNCTIONS OR METHOD IMEPLEMENTED
  *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  *
@@ -66,25 +61,37 @@ public:
   string input; // input file
   string output; //output file
 
+  //virtual debug();
 };
 
 // statsgen requirements struct
 class sstruct: public rstruct
 {
 public:
-  sstruct(unsigned int min_length, int max_length,
-          bool quietPrint,
-          string outputFile,
-          vector<SCS> scharsets,
-          bool hide);
+  sstruct(unsigned int min_length, int max_length, //mask struct parameters
+          bool quiet_print, bool hide_rare,          //print parameters
+          string output_file, string input_file,     // IO parameters
+          vector<SCS> scharsets);                  // check parameters
 
-  // filter requierement
-  vector<SCS> charsets;
+
+
+  // password and mas structure requirements
+  //unsigned int minlength; - inheritance attribute
+  //int maxlength; - inheritance attribute
+
+
+  // print parameters
   bool hiderare;
+  // bool quiet; - inheritance attribute
 
-  // io paramemters
-  //string input; // input wordlist - inehritance attribute
-  //string output; //output file of statsgen - inehritance attribute
+  // check requierement
+  vector<SCS> charsets;
+
+
+  // io parameters
+  // string input; // input wordlist - inehritance attribute
+  // string output; //output file of statsgen - inehritance attribute
+
 };
 
 
@@ -92,32 +99,31 @@ public:
 class mstruct: public rstruct
 {
 public:
-  mstruct(unsigned int min_length, int max_length,
-          bool quiet_print,
-          string output_file,
-          unsigned int min_complexity, int max_complexity,
-          unsigned int min_occurence, int max_occurence,
+  mstruct(unsigned int min_length, int max_length,             //
+          unsigned int min_complexity, int max_complexity,     // mask struct parameters
+          unsigned int min_occurence, int max_occurence,       //
+          bool quiet_print, bool show_masks,                   // print parametersxs
           vector<SCS> scharsets,
           vector<Mask> checkmasks,string checkmasksfile,
-          bool show_masks,
-          string statgen_ouput);
+          string output_file, string statgen_ouput);
 
   // password and mas structure requirements
+  //unsigned int minlength; - inheritance attribute
+  //int maxlength; - inheritance attribute
   unsigned int mincomplexity;
   int maxcomplexity;
 
   unsigned int minoccurence;
   int maxoccurence;
 
-  vector<SCS> charsets;
-
-  // check requirements
-  vector<Mask> checkmasks;
-  string checkmasksfile;
-
-  // print requirements
+  // print parameters
   bool show;
+  // bool quiet; - inheritance attribute
 
+  // check requierement
+  vector<Mask> checkMasks;
+  string checkMaskFile;
+  vector<SCS> charsets;
 
   // io paramemters
   //string input; // output of statsgen method - inehritance attribute
@@ -131,15 +137,18 @@ class pstruct:public rstruct
 public:
   pstruct(){};
   pstruct(po::variables_map vm);
-  pstruct(string outputFile,
-          bool quietPrint, bool showMasks,
-          unsigned int min_length, int max_length,
-          unsigned int min_lower, int max_lower,
-          unsigned int min_upper, int max_upper,
-          unsigned int min_digit, int max_digit,
-          unsigned int min_special, int max_special);
+  pstruct(unsigned int min_length, int max_length,    //
+                 unsigned int min_lower, int max_lower,      // masks
+                 unsigned int min_upper, int max_upper,      // struct
+                 unsigned int min_digit, int max_digit,      // parameters
+                 unsigned int min_special, int max_special,  // 
+                 bool quiet_print, bool show_masks,          // print parameters
+                 string output_file, string input_file);      // io parameters
+
 
   // password and mas structure requirements
+  //unsigned int minlength; - inehritance attribute
+  //int maxlength; - inehritance attribute
   unsigned int minlower;
   int maxlower;
 
@@ -152,7 +161,11 @@ public:
   unsigned int minspecial;
   int maxspecial;
 
+  // unsigned int mincomplexity;
+  // int maxcomplexity;
+
   // print requirements
+  //bool quiet; - inehritance attribute
   bool show;
 
   // io paramemters

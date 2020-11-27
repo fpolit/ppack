@@ -44,75 +44,76 @@ using namespace std;
 
 
 rstruct::rstruct(unsigned int min_length, int max_length,
-                 bool quietPrint,
-                 string outputFile)
+                 bool quiet_print,
+                 string output_file, string input_file)
 {
+
+  // mask struct
   minlength = min_length;
   maxlength = max_length;
 
-  quiet = quietPrint;
+  //print parameters
+  quiet = quiet_print;
 
-  // ios paramemters
-  output = outputFile;
-  input = inputFile;
+  // I/O paramemters
+  output = output_file;
+  input = input_file;
 }
 
 
-sstruct::sstruct(unsigned int min_length, int max_length,
-                 bool quietPrint,
-                 string outputFile,
-                 vector<SCS> scharsets, // simple charsets
-                 bool hide)
+sstruct::sstruct(unsigned int min_length, int max_length, //mask struct parameters
+          bool quietPrint, bool hideRare,          //print parameters
+          string output_file, string input_file,     // IO parameters
+          vector<SCS> scharsets)                  // check parameters
   :rstruct(min_length, max_length,
            quietPrint,
-           outputFile)
+           output_file, input_file)
 {
   charsets = scharsets;
-  hiderare = hide;
+  hiderare = hideRare;
 }
 
-mstruct::mstruct(unsigned int min_length, int max_length,
-                 bool quiet_print,
-                 string output_file,
-                 unsigned int min_complexity, int max_complexity,
-                 unsigned int min_occurence, int max_occurence,
-                 vector<SCS> scharsets,
-                 vector<Mask> checkMasks,string checkMasksFile,
-                 bool showMasks)
-                 //string statgen_ouput)
-  :rstruct(min_length, max_length, quiet_print, output_file)
+mstruct::mstruct(unsigned int min_length, int max_length,             //
+          unsigned int min_complexity, int max_complexity,     // mask struct parameters
+          unsigned int min_occurence, int max_occurence,       //
+          bool quiet_print, bool show_masks,                   // print parametersxs
+          vector<SCS> scharsets,
+          vector<Mask> check_masks,string check_mask_file,
+          string output_file, string statsgen_output)
+  :rstruct(min_length, max_length,
+           quiet_print,
+           output_file, statsgen_output)
 {
+
   // password and mas structure requirements
   mincomplexity = min_complexity;
   maxcomplexity = max_complexity;
   minoccurence = min_occurence;
   maxoccurence = max_occurence;
+
+  // print parameters
+  show = show_masks;
+  quiet = quiet_print;
+
+  // check requierement
+  checkMasks = check_masks;
+  checkMaskFile = check_mask_file;
   charsets = scharsets;
-
-  // check requirements
-  checkmasks = checkMasks;
-  checkmasksfile = checkMasksFile;
-
-  // print requirements
-  show = showMasks;
-
-  // io parameters
-  //input = statgen_ouput; // maskgen input file
-
 }
 
 
-pstruct::pstruct(string outputFile,
-                 bool quietPrint, bool showMasks,
-                 unsigned int min_length, int max_length,
-                 unsigned int min_lower, int max_lower,
-                 unsigned int min_upper, int max_upper,
-                 unsigned int min_digit, int max_digit,
-                 unsigned int min_special, int max_special)
+pstruct::pstruct(unsigned int min_length, int max_length,    //
+                 unsigned int min_lower, int max_lower,      // masks
+                 unsigned int min_upper, int max_upper,      // struct
+                 unsigned int min_digit, int max_digit,      // parameters
+                 unsigned int min_special, int max_special,  // 
+                 bool quiet_print, bool show_masks,          // print parameters
+                 string output_file, string input_file)      // io parameters
   :rstruct(min_length, max_length,
-           quietPrint, outputFile)
+           quiet_print,
+           output_file, input_file)
 {
-  // password and mas structure requirements
+  // masks struct parameters
   minlower = min_lower;
   maxlower = max_lower;
 
@@ -125,135 +126,213 @@ pstruct::pstruct(string outputFile,
   minspecial = min_special;
   maxspecial = max_special;
 
-  // print requirements
-  show = showMasks;
+  // print parameters
+  show = show_masks;
 }
 
 pstruct::pstruct(po::variables_map vm)
 /*
- * init a pstruct with all the paramenters entered to vm (from cli using flags)
+ * init a pstruct with all the paramenters entered to vm
+ * (from cli using flags)
  */
 {
-  //Output File parameter(files section)
-  // if there is a output paramenter assign to output attribute, otherwise assign the default value
+  ////////// Output File parameter(files section) //////////
+  
+  // if there is a output paramenter assign to output attribute, 
+  // otherwise assign the default value
   output = vm["output"].as<string>();
 
-  if(vm.count("input"))
-    input = vm["input"].as<string>();
+  // if there is a output paramenter assign to output attribute, 
+  // otherwise assign the default value
+  input = vm["input"].as<string>();
 
-  //print parameters(print section)
+  
+  ////////// print parameters(print section) //////////
+  
   // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
   quiet = vm["quiet"].as<bool>();
 
   // if there is a show paramenter assign to show attribute, otherwise assign the default value
   show = vm["show"].as<bool>();
 
-  //length parameters (mask section)
-  if(vm.count("minlength") && vm.count("maxlength"))
-    {
-      minlength = vm["minlength"].as<int>();
-      maxlength = vm["maxlength"].as<int>();
-      if((int)minlength > maxlength)
-        throw "Invalid paramemters";
-    }
-  else if(vm.count("minlength"))
-    {
-      minlength = vm["minlength"].as<int>();
-      // Because we do not know any avalue for maxlenght
-      // we assign by rule -1 (this mean maxlength can be any number[5 or 8 or 100 or ...])
-      maxlength = -1;
-    }
-  else
-    {
-      minlength = vm["minlength"].as<int>(); //set minlength to the default value 0
-      maxlength = vm["maxlength"].as<int>();
-    }
+  ////////// mask parameters (mask section) //////////
+  //length
+  minlength = vm["minlength"].as<unsigned int>();
+  maxlength = vm["maxlength"].as<int>();
 
-  // password complexity requirements (mask section)
+  try
+  {
+    if(minlength >0 && maxlength == 0)
+      maxlength = -1; //there isn't a maximum length
+    else if (minlength > 0 && maxlength != 0)
+    {
+      if(maxlength < 0)
+          maxlength = -1;
+      else
+       {
+         if((int)minlength > maxlength)
+          throw "Invalid arguments(mask length).";
+       }
+    }
+    else if (minlength == 0 && maxlength != 0)
+    {
+      if(maxlength < 0)
+        maxlength = -1; //there isn't a maximum length
+    } // else case is when minlength == 0 and maxlength == 0
+  }
+  catch(std::exception &error)
+  {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
+  
+  //  complexity 
+  // mincomplexity = vm["mincomplexity"].as<unsigned int>();
+  // maxcomplexity = vm["maxcomplexity"].as<int>();
+
+  // try
+  // {
+  //   if(minspecial >0 && maxspecial == 0)
+  //     maxspecial = -1; //there isn't a maximum special  characters
+  //   else if (minspecial > 0 && maxspecial != 0)
+  //   {
+  //     if(maxspecial > 0 && (int)minspecial > maxspecial)
+  //       throw "Invalid arguments(mask special characters).";
+
+  //     else
+  //       maxspecial = -1; //there isn't a maximum special charaters
+  //   }
+  //   else if (minspecial == 0 && maxspecial != 0)
+  //   {
+  //     if(maxspecial < 0)
+  //       maxspecial = -1; //there isn't a maximum special characters
+  //   }// else case is when minspecial == 0 and maxspecial == 0
+  // }
+  // catch(std::exception &error)
+  // {
+  //   cout << error.what() << endl;
+  //   exit(1);
+  // }
 
   // lower characters
-  if(vm.count("minlower") && vm.count("maxlower"))
+  minlower = vm["minlower"].as<unsigned int>();
+  maxlower = vm["maxlower"].as<int>();
+
+  try
+  {
+    if(minlower >0 && maxlower == 0)
+      maxlower = -1; //there isn't a maximum lowercases
+    else if (minlower > 0 && maxlower != 0)
     {
-      minlower = vm["minlower"].as<int>();
-      maxlower = vm["maxlower"].as<int>();
-      if((int)minlower > maxlower)
-        throw "Ivalid paramemters";
+      if(maxlower < 0)
+        maxlower = -1; //there isn't a maximum lowercase
+      else
+      {
+        if((int)minlower > maxlower)
+        throw "Invalid arguments(mask lower cases).";
+      }
     }
-  else if(vm.count("minlower"))
+    else if (minlower == 0 && maxlower != 0)
     {
-      minlower = vm["minlower"].as<int>();
-      // Because we do not know any avalue for maxlower
-      // we assign by rule -1 (this mean maxlower can be any number[5 or 8 or 100 or ...])
-      maxlower = -1;
-    }
-  else
-    {
-      minlower = vm["minlower"].as<int>(); //set minlower to the default value 0
-      maxlower = vm["maxlower"].as<int>();
-    }
+      if(maxlower < 0)
+        maxlower = -1; //there isn't a maximum lowercases
+    }// else case is when minlower == 0 and maxlower == 0
+  }
+  catch(std::exception &error)
+  {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
 
   // upper characters
-  if(vm.count("minupper") && vm.count("maxupper"))
+  minupper = vm["minupper"].as<unsigned int>();
+  maxupper = vm["maxupper"].as<int>();
+
+  try
+  {
+    if(minupper >0 && maxupper == 0)
+      maxupper = -1; //there isn't a maximum uppercases
+    else if (minupper > 0 && maxupper != 0)
     {
-      minupper = vm["minupper"].as<int>();
-      maxupper = vm["maxupper"].as<int>();
-      if((int)minupper > maxupper)
-        throw "Invalid paramemters";
+      if(maxupper < 0)
+        maxupper = -1; //there isn't a maximum uppercases
+      else
+      {
+        if((int)minupper > maxupper)
+        throw "Invalid arguments(mask uppercases).";
+      }
     }
-  else if(vm.count("minupper"))
+    else if (minupper == 0 && maxupper != 0)
     {
-      minupper = vm["minupper"].as<int>();
-      // Because we do not know any avalue for maxupper
-      // we assign by rule -1 (this mean maxupper can be any number[5 or 8 or 100 or ...])
-      maxupper = -1;
-    }
-  else
-    {
-      minupper = vm["minupper"].as<int>(); //set minupper to the default value 0
-      maxupper = vm["maxupper"].as<int>();
-    }
+      if(maxupper < 0)
+        maxupper = -1; //there isn't a maximum uppercases
+    }// else case is when minupper == 0 and maxupper == 0
+  }
+  catch(std::exception &error)
+  {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
 
   // digit characters
-  if(vm.count("mindigit") && vm.count("maxdigit"))
+  mindigit = vm["mindigit"].as<unsigned int>();
+  maxdigit = vm["maxdigit"].as<int>();
+
+  try
+  {
+    if(mindigit >0 && maxdigit == 0)
+      maxdigit = -1; //there isn't a maximum digits
+    else if (mindigit > 0 && maxdigit != 0)
     {
-      mindigit = vm["mindigit"].as<int>();
-      maxdigit = vm["maxdigit"].as<int>();
-      if((int)mindigit > maxdigit)
-        throw "Invalid paramemters";
+      if(maxdigit < 0)
+        maxdigit = -1; //there isn't a maximum digits
+      else
+      {
+        if((int)mindigit > maxdigit)
+          throw "Invalid arguments(mask digits).";
+      }
     }
-  else if(vm.count("mindigit"))
+    else if (mindigit == 0 && maxdigit != 0)
     {
-      mindigit = vm["minidigt"].as<int>();
-      // Because we do not know any avalue for maxdigit
-      // we assign by rule -1 (this mean maxdigit can be any number[5 or 8 or 100 or ...])
-      maxdigit = -1;
-    }
-  else
-    {
-      mindigit = vm["mindigit"].as<int>(); //set mindigit to the default value 0
-      maxdigit = vm["maxdigit"].as<int>();
-    }
+      if(maxdigit < 0)
+        maxdigit = -1; //there isn't a maximum digits
+    }// else case is when mindigit == 0 and maxdigit == 0
+  }
+  catch(std::exception &error)
+  {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
 
   // special characters
-  if(vm.count("minspecial") && vm.count("maxspecial"))
+  minspecial = vm["minspecial"].as<unsigned int>();
+  maxspecial = vm["maxspecial"].as<int>();
+
+  try
+  {
+    if(minspecial >0 && maxspecial == 0)
+      maxspecial = -1; //there isn't a maximum special  characters
+    else if (minspecial > 0 && maxspecial != 0)
     {
-      minspecial = vm["minspecial"].as<int>();
-      maxspecial = vm["maxspecial"].as<int>();
-      if((int)minspecial > maxspecial)
-        throw "Invalid paramemters";
+      if(maxspecial < 0)
+        maxspecial = -1; //there isn't a maximum special characters
+      else
+      {
+        if((int)minspecial > maxspecial)
+        throw "Invalid arguments(mask special characters).";
+      }
     }
-  else if(vm.count("minspecial"))
+    else if (minspecial == 0 && maxspecial != 0)
     {
-      minspecial = vm["minspecial"].as<int>();
-      // Because we do not know any avalue for maxspecial
-      // we assign by rule -1 (this mean maxspecial can be any number[5 or 8 or 100 or ...])
-      maxspecial = -1;
-    }
-  else
-    {
-      minspecial = vm["minspecial"].as<int>(); //set minspecial to the default value 0
-      maxspecial = vm["maxspecial"].as<int>();
-    }
+      if(maxspecial < 0)
+        maxspecial = -1; //there isn't a maximum special characters
+    }// else case is when minspecial == 0 and maxspecial == 0
+  }
+  catch(std::exception &error)
+  {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 
@@ -262,26 +341,29 @@ void pstruct::debug() // show all the parameters
   cout << "debug pstruct\n\n";
 
   // file section
-  cout << "input: " << input << endl;
+  cout << "--- file section ---"  << endl;
+  cout << "input:  " << input << endl;
   cout << "output: " << output << endl;
 
   // print section
-  cout << "show: " << show << endl;
+  cout << "\n--- print section ---"  << endl;
+  cout << "show:  " << show << endl;
   cout << "quiet: " << quiet << endl;
 
   // mask section
-  cout << "minlenght" << minlength << endl;
-  cout << "maxlength" << maxlength << endl;
+  cout << "\n--- mask section ---"  << endl;
+  cout << "minlenght:  " << minlength << endl;
+  cout << "maxlength:  " << maxlength << endl;
 
-  cout << "minlower" << minlower << endl;
-  cout << "maxlower" << maxlower << endl;
+  cout << "minlower:   " << minlower << endl;
+  cout << "maxlower:   " << maxlower << endl;
 
-  cout << "minupper" << minupper << endl;
-  cout << "maxupper" << maxupper << endl;
+  cout << "minupper:   " << minupper << endl;
+  cout << "maxupper:   " << maxupper << endl;
 
-  cout << "mindigit" << mindigit << endl;
-  cout << "maxdigit" << maxdigit << endl;
+  cout << "mindigit:   " << mindigit << endl;
+  cout << "maxdigit:   " << maxdigit << endl;
 
-  cout << "minspecial" << minspecial << endl;
-  cout << "maxspecial" << maxspecial << endl;
+  cout << "minspecial: " << minspecial << endl;
+  cout << "maxspecial: " << maxspecial << endl;
 }
