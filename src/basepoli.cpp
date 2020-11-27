@@ -32,7 +32,7 @@
 
 string repeat(string str, int n)
 {
-  string repeat_str="";
+  string repeat_str= "";
   for(int k=0; k<n; k++)
     repeat_str += str;
 
@@ -43,76 +43,84 @@ string repeat(string str, int n)
 Base::Base(pstruct initial)
 {
   bstruct = initial;
-  string init_mask;
+  string init_mask = "";
 
-  init_mask = repeat("?l", bstruct.minlower) +\
-    repeat("?d", bstruct.minupper) +\
-    repeat("?u", bstruct.minupper) +\
-    repeat("?s", bstruct.minspecial);
+  init_mask += repeat("?l", bstruct.minlower);
+  init_mask += repeat("?u", bstruct.minupper);
+  init_mask += repeat("?s", bstruct.minspecial);
+  init_mask += repeat("?d", bstruct.mindigit);
+
 
   Mask initMask(init_mask);
 
-  base = new vector<Mask>;
-  base->push_back(initMask);
-  length = 1;
+  baseMasks = new vector<Mask>;
+  baseMasks->push_back(initMask);
+  length = initMask.length();
+}
+// create a base of mask of length len and a empty baseMasks vertor.
+Base::Base(pstruct poliOpt, unsigned int len)
+{
+  bstruct = poliOpt;
+  length = len;
+  baseMasks = new vector<Mask>;
 }
 
 Base::~Base()
 {
-  delete [] base;
+  delete [] baseMasks;
 }
 
 void Base::appendMask(Mask step)
 {
-  base->push_back(step);
+  baseMasks->push_back(step);
 }
 
-void Base::maskStep()
+Base maskStep(Base base)
 {
-  vector<Mask> *step_base = new vector<Mask>;
-  for(Mask mask : *base)
+  // creation of the base baseJump (base of masks with length + 1)
+  // this base is generated from the original base(masks are extended with a maskSymbol).
+  unsigned int stepBaseLength = base.getLength() + 1;
+  Base baseJump(base.getBaseStruct(), stepBaseLength);
+
+  for(Mask mask : base.getBaseMasks())
     {
       maskStruct mstruct = mask.getStruct();
+      pstruct bstruct = base.getBaseStruct();
 
-      if(mstruct.lowercase <= bstruct.maxlower)
+      if(mstruct.lowercase < bstruct.maxlower || bstruct.maxlower == -1)
         {
-          step_base->push_back(mask + "?l");
-          if(mstruct.digit <= bstruct.maxdigit)
-              step_base->push_back(mask + "?d");
+          baseJump.appendMask(reallocMask(mask, "?l"));
+          if(mstruct.digit < bstruct.maxdigit || bstruct.maxdigit == -1)
+              baseJump.appendMask(reallocMask(mask, "?d"));
 
-          if(mstruct.uppercase <= bstruct.maxupper)
-              step_base->push_back(mask + "?u");
+          if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
+              baseJump.appendMask(reallocMask(mask, "?u"));
 
-          if(mstruct.special <= bstruct.maxspecial)
-            step_base->push_back(mask + "?s");
+          if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
+            baseJump.appendMask(reallocMask(mask, "?s"));
         }
-      else if(mstruct.digit <= bstruct.maxdigit)
+      else if(mstruct.digit < bstruct.maxdigit || bstruct.maxdigit == -1)
         {
-          step_base->push_back(mask + "?d");
-          if(mstruct.uppercase <= bstruct.maxupper)
-              step_base->push_back(mask + "u");
-          if(mstruct.special <= bstruct.maxspecial)
-            step_base->push_back(mask + "?s");
+          baseJump.appendMask(reallocMask(mask, "?d"));
+          if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
+              baseJump.appendMask(reallocMask(mask, "?u"));
+          if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
+            baseJump.appendMask(reallocMask(mask, "?s"));
         }
-      else if(mstruct.uppercase <= bstruct.maxupper)
+      else if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
         {
-          step_base->push_back(mask + "?u");
-          if(mstruct.special <= bstruct.maxspecial)
-            step_base->push_back(mask + "?s");
+          baseJump.appendMask(reallocMask(mask, "?u"));
+          if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
+            baseJump.appendMask(reallocMask(mask, "?s"));
         }
-      else if(mstruct.special <= bstruct.maxspecial)
+      else if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
         {
-          step_base->push_back(mask + "?s");
+          baseJump.appendMask(reallocMask(mask, "?s"));
         }
     }
-
-  // replace the updated base(step_base) with base
-  delete [] base; // fre memory of base = vector<Mask>
-  base = step_base;
-  step_base = nullptr;
-  length += 1;
+  
+  return baseJump;
 }
-
 
 
 void permuteMasks(Base base)
@@ -121,24 +129,25 @@ void permuteMasks(Base base)
  * and write all of them to a file.
  */
 {
-  cout << "search for a c++ function to do this work(permutations)" << endl;
+  cout << "Compute all the permutation without repetitions." << endl;
 }
 
-void corePolicygen(pstruct init)
+// return a set of bases[PoliBase]
+// (with length equal to minlength  till maxlength)
+vector<Base> corePolicygen(pstruct init)
 {
   Base base(init);
 
-  for(int len=base.getLength(); len < base.getPoliMinLength(); len++)
+  for(int len=base.getLength(); len < base.getMinLength()-1; len++)
+      base = maskStep(base); //increase the length of base in one
+
+  // now the length of base is equal to minlength-1(policygen paramemter)
+  vector<Base> poliBases;
+  for(int len=base.getLength(); len < base.getMaxLength(); len++)
     {
-      // generate all the posible mask with the required parameter
-      // and increase the length of base in one
-      base.maskStep();
+      base = maskStep(base);
+      poliBases.push_back(base);
     }
 
-  // now the length of base is equal to minlength(policygen paramemter)
-  for(int len=base.getLength(); len < base.getPoliMaxLength(); len++)
-    {
-      permuteMasks(base); // compute all the permutation of the mask(without repetitions)
-      base.maskStep();
-    }
+  return poliBases; 
 }

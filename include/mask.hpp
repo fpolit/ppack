@@ -122,6 +122,7 @@ public:
 
 
   // modificator methods
+  friend Mask reallocMask(Mask mask, string maskCharset); // add maskCharset to mask
   void realloc(string maskCharset); // add a mask symbol to a mask and update mstruct
   vector<Mask> permutations();
 

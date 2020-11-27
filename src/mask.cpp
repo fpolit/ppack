@@ -87,6 +87,12 @@ bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol 
 // modificator methods
 //void Mask::realloc(string maskCharset); // add a mask symbol to a mask and update mstruct
 //vector<Mask> Mask::permutations();
+Mask reallocMask(Mask mask, string maskCharset) // add maskCharset to mask
+{
+  Mask rmask = mask;
+  rmask.realloc(maskCharset);
+  return rmask;
+}
 
 
 // friend methods

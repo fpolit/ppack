@@ -195,10 +195,10 @@ int main(int argc ,char* argv[])
             return 1;
         }
 
-        cout << "vm(before parsing arguments)" << endl;
+        cout << "--- vm(before parsing arguments) ---" << endl;
         testBoostOptions(vm);
 
-        cout << "vm(after parsing arguments)" << endl;
+        cout << "--- vm(after parsing arguments) ---" << endl;
         pstruct pargs(vm);
         pargs.debug();
 

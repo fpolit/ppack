@@ -34,27 +34,47 @@ class Base
 {
 private:
   pstruct bstruct; // base struct , entered options for policygen
-  vector<Mask> *base;
+  vector<Mask> *baseMasks;
   unsigned int length;
 
 public:
-
+  
   Base(pstruct initial);
-  void maskStep(); // generate all the posible mask of length = length +1(step)
+  Base(pstruct poliOpt, unsigned int len);
+  // generate a new base from a base increasing in 1 the length. 
+  friend Base maskStep(Base base); 
 
   void appendMask(Mask step); // next step mask
 
   unsigned int getLength(){return length;}
-  int numberMasks(){return base->size();}
+  int numberMasks(){return baseMasks->size();}
 
 
-  int getPoliMinLength(){return bstruct.minlength;}
-  int getPoliMaxLength(){return bstruct.maxlength;}
+  int getMinLength(){return bstruct.minlength;}
+  int getMaxLength(){return bstruct.maxlength;}
+  
+  vector<Mask> getBaseMasks(){return *baseMasks;}
+  pstruct getBaseStruct(){return bstruct;}
 
   ~Base();
 };
 
-void permuteMasks(Base base);
-void corePolicygen(pstruct init);
+// class PoliBase
+// // this class is equal to Base, but hasn't the pstruct(bstruct) attribute. 
+// {
+//   private:
+//   vector<Mask> *baseMasks;
+//   unsigned int length;
+
+//   public:
+//   PoliBase(Base base)
+//   {
+//     baseMasks = base.baseMasks;
+//     length = base.length;
+//   }
+// }
+
+//void permuteMasks(Base base);
+vector<Base> corePolicygen(pstruct init); //bases without permitations
 
 #endif //__BASE_H__
