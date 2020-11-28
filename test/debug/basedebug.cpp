@@ -4,9 +4,9 @@
  * Depuration: 27 nov 2020
  *  
  *
- * No tested functions: 
+ * No tested functions: NO ONE, ALL TESTED
  *
- * No implemented functions: 
+ * No implemented functions: NO ONE
  *
  * Mantainer: glozanoa <glozanoa@uni.pe>
  *
@@ -33,20 +33,20 @@ int main(int argc, char **argv)
 {
 
     // initialization of pstruct to test base Class
-    unsigned int min_length = 5;
-    int max_length = 7;
+    unsigned int min_length = 8;
+    int max_length = 10;
 
-    unsigned int min_lower = 2;
-    int max_lower = -1;
+    unsigned int min_lower = 1;
+    int max_lower = 2;
 
-    unsigned int min_upper = 0;
-    int max_upper = 0;
+    unsigned int min_upper = 1;
+    int max_upper = -1;
 
-    unsigned int min_digit = 0;
-    int max_digit = 0;
+    unsigned int min_digit = 2;
+    int max_digit = -1;
 
     unsigned int min_special = 1;
-    int max_special = 2;
+    int max_special = 3;
 
     bool quiet_print = true;
     bool show_masks = false;
@@ -64,12 +64,12 @@ int main(int argc, char **argv)
 
     //Base base(pargs);
 
-    vector<Base*> aa = corePolicygen(pargs);
+    corePolicygen(pargs);
     //vector<Base> aa = corePolicygen(pargs);
-    cout << "output corePolicygen: " << endl;
+    //cout << "output corePolicygen: " << endl;
     // for(auto base: aa)
     // {
-    //     base.showMasks();
+    //     base->showMasks();
     // }
 
 
