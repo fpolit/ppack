@@ -22,21 +22,33 @@
 #ifndef __PPACK_H__
 #define __PPACK_H__
 
-#ifndef __INCLUDE_STD_STRING_H__
-#define __INCLUDE_STD_STRING_H__
+
+#ifndef __INCLUDE_STD_IOSTREAM_H__
+#define __INCLUDE_STD_IOSTREAM_H__
+#include<iostream>
+#endif //__INCLUDE_STD_IOSTREAM_H_
+
+#ifndef __INCLUDE_FSTREAM_H__
+#define __INCLUDE_FSTREAM_H__
+#include<fstream>
+#endif //__INCLUDE_FSTREAM_H__
+
+#ifndef __INCLUDE_STD_STRING_H_
+#define __INCLUDE_STD_STRING_H_
 #include<string>
 #endif //__INCLUDE_STD_STRING_H_
 
 #ifndef __INCLUDE_STD_VECTOR_H__
 #define __INCLUDE_STD_VECTOR_H__
 #include<vector>
-#endif // __INCLUDE_STD_VECTOR_H_
+#endif // __INCLUDE_STD_VECTOR_H__
 
 using namespace std;
 
+
 #ifndef __INCLUDE_MASK_H__
 #define __INCLUDE_MASK_H__
-#include "../include/mask.hpp"
+#include "mask.hpp"
 #endif //__INCLUDE_MASK_H__
 
 
@@ -51,13 +63,30 @@ using namespace std;
 #include "pstructs.hpp"
 #endif //__INCLUDE_PSTRUCTS_H__
 
+#ifndef __INCLUDE_BASE_H__
+#define __INCLUDE_BASE_H__
+#include "basepoli.hpp"
+#endif //__INCLUDE_BASE_H__
+
+// #ifndef __INCLUDE_LOGOS_H__
+// #define __INCLUDE_LOGOS_H__
+// #include "logos.hpp"
+// #endif //__INCLUDE_LOGOS_H__
+
+
+// #ifndef __INCLUDE_COLOR_H__
+// #define __INCLUDE_COLOR_H__
+// #include "color.hpp"
+// #endif //__INCLUDE_COLOR_H__
+
+
+// #ifndef __INCLUDE_CSV_H__
+// #define __INCLUDE_CSV_H__
+// #include "csv.hpp"
+// #endif //__INCLUDE_CSV_H__
 
 
 
-namespace ppack{
-  string VERSION = "1.0";
-  int release = 1;
-}
 
 class PPACK
 {

@@ -62,6 +62,7 @@ public:
   string output; //output file
 
   //virtual debug();
+  ~rstruct(){}
 };
 
 // statsgen requirements struct

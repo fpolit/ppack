@@ -127,6 +127,7 @@ public:
   vector<Mask> permutations();
 
   //  parser friend functions
+
   static Mask analysis(string mask);
 };
 

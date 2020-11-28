@@ -117,10 +117,18 @@ Base* maskStep(Base *base)
         }
     }
 
-    //delete base;
+    delete base;
     return baseStep;
 }
 
+void Base::showMasks()
+{
+  cout << "Base " << length << " :" << endl;
+  for(auto mask: *baseMasks)
+  {
+    cout << "\t" << mask << endl;
+  }
+}
 
 void permuteMasks(Base base)
 /*
@@ -134,7 +142,7 @@ void permuteMasks(Base base)
 // compute a set of bases[PoliBase]
 // (with length equal to minlength  till maxlength)
 // tested 27 nov 2020 
-void corePolicygen(pstruct init)
+vector<Base*> corePolicygen(pstruct init)
 {
   Base *base = new Base(init);
   
@@ -148,12 +156,8 @@ void corePolicygen(pstruct init)
     {
       base = maskStep(base);
       cout << "base.length: " << base->getLength() << endl;
-
       poliBases.push_back(base);
     }
-  
-  
-  cout << "I get it!" << endl;
-  //delete  base;
-  //return poliBases;
+  delete base;
+  return poliBases;
 }

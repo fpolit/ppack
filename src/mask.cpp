@@ -331,7 +331,7 @@ SCS scsParser(maskStruct mstruct)
     if(mstruct.lowercase &&
         !(mstruct.digit || mstruct.uppercase || mstruct.special))
         return SCS::loweralpha;
-
+    // corregir return
     else if(mstruct.uppercase &&
         !(mstruct.lowercase || mstruct.digit || mstruct.special))
         return SCS::numeric;

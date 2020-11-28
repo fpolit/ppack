@@ -42,16 +42,18 @@ public:
   friend Base* maskStep(Base* base); 
 
   void appendMask(Mask step); // next step mask
-
+  
+  // get and set methods
   unsigned int getLength(){return length;}
-  int numberMasks(){return baseMasks->size();}
-
-
+  int getNumberMasks(){return baseMasks->size();}
   int getMinLength(){return bstruct.minlength;}
   int getMaxLength(){return bstruct.maxlength;}
   
   vector<Mask> getBaseMasks(){return *baseMasks;}
   pstruct getBaseStruct(){return bstruct;}
+
+  //show baseMasks
+  void showMasks();
 
   ~Base();
 };
@@ -72,6 +74,6 @@ public:
 // }
 
 //void permuteMasks(Base base);
-void corePolicygen(pstruct init); //bases without permitations
+vector<Base*> corePolicygen(pstruct init); //bases without permitations
 
 #endif //__BASE_H__
