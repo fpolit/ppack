@@ -41,8 +41,9 @@ using namespace std;
 #include "../include/pstructs.hpp"
 #endif // __INCLUDE_PSTRUCTS_H__
 
-
-
+//////////////////////////////////
+///// rstruct implementation /////
+//////////////////////////////////
 
 rstruct::rstruct(unsigned int min_length, int max_length,
                  bool quiet_print,
@@ -79,6 +80,11 @@ void rstruct::debug()
   cout << "minlenght:  " << minlength << endl;
   cout << "maxlength:  " << maxlength << endl;
 }
+
+//////////////////////////////////
+///// sstruct implementation /////
+//////////////////////////////////
+
 
 sstruct::sstruct(unsigned int min_length, int max_length, //mask struct parameters
           bool quietPrint, bool hideRare,          //print parameters
@@ -172,7 +178,6 @@ void sstruct::debug()
 
   // print section
   cout << "\n--- print section ---"  << endl;
-  //cout << "show:  " << show << endl;
   cout << "quiet: " << quiet << endl;
   cout << "hiderare: " << hiderare << endl;
 
@@ -187,6 +192,124 @@ void sstruct::debug()
   //scsValue is in mask.cpp(ans mask.hpp was included)
     cout << charset << ", "; 
   cout << endl;
+}
+
+//////////////////////////////////
+///// mstruct implementation /////
+//////////////////////////////////
+
+
+mstruct::mstruct(po::variables_map vm)
+/*
+ * init a mstruct with all the paramenters entered to vm
+ * (from cli using flags)
+ */
+{
+  ////////// Output File parameter(files section) //////////
+
+  if(vm.count("statsgen"))
+    statsgen = vm["statsgen"].as<string>();
+  else
+    {
+      cerr << "No statsgen's output to analize." << endl;
+      exit(EXIT_FAILURE); // no wordlist to analyze
+    }
+
+  // if there is a output paramenter assign to output attribute, 
+  // otherwise assign the default value
+  output = vm["output"].as<string>();
+
+  // if there is a input paramenter assign to output attribute, 
+  // otherwise assign the default value
+  input = vm["input"].as<string>();
+
+  ////////// print parameters(print section) //////////
+  
+  // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
+  quiet = vm["quiet"].as<bool>();
+
+  // if there is a show paramenter assign to show attribute, otherwise assign the default value
+  show = vm["show"].as<bool>();
+
+  ////////// check parameters (check section) //////////
+  if(vm.count("checkmasks"))
+    checkMasks = vm["checkmasks"].as<vector<Mask>>();
+
+  if(vm.count("checkmasksfile"))
+    checkMaskFile = vm["checkmasksfile"].as<string>();
+
+  ////////// password parameters (password section) //////////
+  // charsets
+  if(vm.count("scharset"))
+    charsets = vm["scharset"].as<vector<SCS>>();
+
+  if(vm.count("acharset"))
+    advCharsets = vm["acharset"].as<vector<ACS>>();
+  
+  //length
+  minlength = vm["minlength"].as<unsigned int>();
+  maxlength = vm["maxlength"].as<int>();
+
+  try
+  {
+    if(minlength >0 && maxlength == 0)
+      maxlength = -1; //there isn't a maximum length
+    else if (minlength > 0 && maxlength != 0)
+    {
+      if(maxlength < 0)
+          maxlength = -1;
+      else
+       {
+         if((int)minlength > maxlength)
+          throw "Invalid arguments(mask length).";
+       }
+    }
+    else if (minlength == 0 && maxlength != 0)
+    {
+      if(maxlength < 0)
+        maxlength = -1; //there isn't a maximum length
+    } // else case is when minlength == 0 and maxlength == 0
+  }
+  catch(std::exception &error)
+  {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  //complexity : IMPLEMENT COMPLEXITU ANALYSIS
+  mincomplexity = vm["mincomplexity"].as<unsigned int>();
+  maxcomplexity = vm["maxcomplexity"].as<int>();
+
+  ////////// frequency parameters (frequency section) //////////
+  //occurence
+  minoccurence = vm["minoccurence"].as<unsigned int>();
+  maxoccurence = vm["maxoccurence"].as<int>();
+
+  try
+  {
+    if(minoccurence >0 && maxoccurence == 0)
+      maxoccurence = -1; //there isn't a maximum occurence
+    else if (minoccurence > 0 && maxoccurence != 0)
+    {
+      if(maxoccurence < 0)
+          maxoccurence = -1;
+      else
+       {
+         if((int)minoccurence > maxoccurence)
+          throw "Invalid arguments(mask occurence).";
+       }
+    }
+    else if (minoccurence == 0 && maxoccurence != 0)
+    {
+      if(maxoccurence < 0)
+        maxoccurence = -1; //there isn't a maximum length
+    } // else case is when minoccurence == 0 and maxoccurence == 0
+  }
+  catch(std::exception &error)
+  {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 mstruct::mstruct(unsigned int min_length, int max_length,             //
@@ -216,6 +339,64 @@ mstruct::mstruct(unsigned int min_length, int max_length,             //
   checkMaskFile = check_mask_file;
   charsets = scharsets;
 }
+
+void mstruct::debug()
+{
+  cout << "debug sstruct\n";
+
+  // file section
+  cout << "--- file section ---"  << endl;
+  cout << "input    :  " << input << endl;
+  cout << "output   : " << output << endl;
+  cout << "statsgen : " << statsgen << endl;
+
+  // print section
+  cout << "\n--- print section ---"  << endl;
+  cout << "quiet: " << quiet << endl;
+  cout << "show : " << show << endl;
+
+
+  // check requirements
+  cout << "\n--- check section ---"  << endl;
+  cout << "checkMasks:";
+  for(Mask mask: checkMasks)
+  //scsValue is in mask.cpp(ans mask.hpp was included)
+    cout << mask << ", "; 
+  cout << endl;
+  
+  cout << "checkMaskFile:" << checkMaskFile << endl;
+  
+
+  // password section
+  cout << "\n--- password section ---"  << endl;
+  cout << "schasets:";
+  for(SCS charset: charsets)
+  //scsValue is in mask.cpp(ans mask.hpp was included)
+    cout << charset << ", "; 
+  cout << endl;
+
+  cout << "advChasets:";
+  for(ACS acharset: advCharsets)
+  //scsValue is in mask.cpp(ans mask.hpp was included)
+    cout << acharset << ", "; 
+  cout << endl;
+
+  cout << "minlenght:  " << minlength << endl;
+  cout << "maxlength:  " << maxlength << endl;
+  
+  cout << "mincomplexity:  " << mincomplexity << endl;
+  cout << "maxcomplexity:  " << maxcomplexity << endl;
+
+  // frequency section
+  cout << "\n--- frequency section ---"  << endl;
+  cout << "minoccurence:  " << minoccurence << endl;
+  cout << "maxoccurence:  " << maxoccurence << endl;
+}
+
+
+//////////////////////////////////
+///// pstruct implementation /////
+//////////////////////////////////
 
 
 pstruct::pstruct(unsigned int min_length, int max_length,    //

@@ -103,6 +103,7 @@ public:
 class mstruct: public rstruct
 {
 public:
+  mstruct(po::variables_map vm);
   mstruct(unsigned int min_length, int max_length,             //
           unsigned int min_complexity, int max_complexity,     // mask struct parameters
           unsigned int min_occurence, int max_occurence,       //
@@ -128,10 +129,14 @@ public:
   vector<Mask> checkMasks;
   string checkMaskFile;
   vector<SCS> charsets;
+  vector<ACS> advCharsets;
 
   // io paramemters
-  //string input; // output of statsgen method - inehritance attribute
+  //string input; // input options - inehritance attribute
   //string output; //output file of maskgen (generated masks) - inehritance attribute
+  string statsgen; // output of statsgen method 
+
+  void debug();
 };
 
 
