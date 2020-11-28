@@ -1,7 +1,7 @@
 /*
  * Base class depuration - 27 nov 2020
  *
- * Depuration:
+ * Depuration: 27 nov 2020
  *  
  *
  * No tested functions: 
@@ -62,10 +62,21 @@ int main(int argc, char **argv)
                     quiet_print, show_masks,          // print parameters
                     output_file, input_file);
 
-    Base base(pargs);
+    //Base base(pargs);
 
-    corePolicygen(pargs);
+    vector<Base*> aa = corePolicygen(pargs);
     //vector<Base> aa = corePolicygen(pargs);
+    cout << "output corePolicygen: " << endl;
+    // for(auto base: aa)
+    // {
+    //     base.showMasks();
+    // }
+
+
+    // for(int k =0; k<aa.size(); k++)
+    //     delete aa[k];
+
+
     cout << "(main)I get it!" << endl;
 
     return 0;
