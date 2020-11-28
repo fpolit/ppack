@@ -38,6 +38,11 @@ string repeat(string str, int n)
   return repeat_str;
 }
 
+Base::Base()
+{
+  length = 0;
+  baseMasks = new vector<Mask>;
+}
 
 Base::Base(pstruct initial)
 {
@@ -142,22 +147,25 @@ void permuteMasks(Base base)
 // compute a set of bases[PoliBase]
 // (with length equal to minlength  till maxlength)
 // tested 27 nov 2020 
-vector<Base*> corePolicygen(pstruct init)
+void corePolicygen(pstruct init)
 {
   Base *base = new Base(init);
   
   int minlength = base->getMinLength();
-  while(base->getLength() < minlength - 1)
+  int baseLength = base->getLength();
+  while(baseLength < minlength - 1)
+    {
       base = maskStep(base); //increase the length of base in one
+      baseLength += 1;
+    }
+
 
   // now the length of base is equal to minlength-1(policygen paramemter)
-  vector<Base*> poliBases;
   for(int step=base->getLength(); step < base->getMaxLength(); step++)
     {
       base = maskStep(base);
-      cout << "base.length: " << base->getLength() << endl;
-      poliBases.push_back(base);
+      base->showMasks();
+      // HERE PRINT THE OUTPUT OR WRITE TO FILE. 
     }
   delete base;
-  return poliBases;
 }

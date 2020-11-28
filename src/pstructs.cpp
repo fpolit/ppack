@@ -22,6 +22,7 @@
 
 #ifndef __INCLUDE_STD_IOSTREAM_H__
 #define __INCLUDE_STD_IOSTREAM_H__
+#include <cstdlib>
 #include <iostream>
 #endif //__INCLUDE_STD_IOSTREAM_H__
 
@@ -60,6 +61,24 @@ rstruct::rstruct(unsigned int min_length, int max_length,
   input = input_file;
 }
 
+void rstruct::debug()
+{
+  cout << "debug rstruct\n\n";
+
+  // file section
+  cout << "--- file section ---"  << endl;
+  cout << "input:  " << input << endl;
+  cout << "output: " << output << endl;
+
+  // print section
+  cout << "\n--- print section ---"  << endl;
+  cout << "quiet: " << quiet << endl;
+
+  // mask section
+  cout << "\n--- mask section ---"  << endl;
+  cout << "minlenght:  " << minlength << endl;
+  cout << "maxlength:  " << maxlength << endl;
+}
 
 sstruct::sstruct(unsigned int min_length, int max_length, //mask struct parameters
           bool quietPrint, bool hideRare,          //print parameters
@@ -71,6 +90,103 @@ sstruct::sstruct(unsigned int min_length, int max_length, //mask struct paramete
 {
   charsets = scharsets;
   hiderare = hideRare;
+}
+
+sstruct::sstruct(po::variables_map vm)
+/*
+ * init a sstruct with all the paramenters entered to vm
+ * (from cli using flags)
+ */
+{
+  ////////// Output File parameter(files section) //////////
+
+  if(vm.count("wordlist"))
+    wordlist = vm["wordlist"].as<string>();
+  else
+    {
+      cerr << "No wordlist to analize." << endl;
+      exit(EXIT_FAILURE); // no wordlist to analyze
+    }
+
+  // if there is a output paramenter assign to output attribute, 
+  // otherwise assign the default value
+  output = vm["output"].as<string>();
+
+  // if there is a output paramenter assign to output attribute, 
+  // otherwise assign the default value
+  input = vm["input"].as<string>();
+
+  ////////// print parameters(print section) //////////
+  
+  // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
+  quiet = vm["quiet"].as<bool>();
+
+  // if there is a hiderare paramenter assign to hiderare attribute, otherwise assign the default value
+  hiderare = vm["hiderare"].as<bool>();
+
+  ////////// check parameters (check section) //////////
+  // NO CHECK SECTION
+
+
+  ////////// mask parameters (mask section) //////////
+  //length
+  minlength = vm["minlength"].as<unsigned int>();
+  maxlength = vm["maxlength"].as<int>();
+
+  try
+  {
+    if(minlength >0 && maxlength == 0)
+      maxlength = -1; //there isn't a maximum length
+    else if (minlength > 0 && maxlength != 0)
+    {
+      if(maxlength < 0)
+          maxlength = -1;
+      else
+       {
+         if((int)minlength > maxlength)
+          throw "Invalid arguments(mask length).";
+       }
+    }
+    else if (minlength == 0 && maxlength != 0)
+    {
+      if(maxlength < 0)
+        maxlength = -1; //there isn't a maximum length
+    } // else case is when minlength == 0 and maxlength == 0
+  }
+  catch(std::exception &error)
+  {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
+}
+
+void sstruct::debug()
+{
+    cout << "debug sstruct\n";
+
+  // file section
+  cout << "--- file section ---"  << endl;
+  cout << "input:  " << input << endl;
+  cout << "output: " << output << endl;
+  cout << "wordlist: " << wordlist << endl;
+
+  // print section
+  cout << "\n--- print section ---"  << endl;
+  //cout << "show:  " << show << endl;
+  cout << "quiet: " << quiet << endl;
+  cout << "hiderare: " << hiderare << endl;
+
+  // mask section
+  cout << "\n--- mask section ---"  << endl;
+  cout << "minlenght:  " << minlength << endl;
+  cout << "maxlength:  " << maxlength << endl;
+
+  // check requirements
+  cout << "chasets:";
+  for(SCS charset: charsets)
+  //scsValue is in mask.cpp(ans mask.hpp was included)
+    cout << charset << ", "; 
+  cout << endl;
 }
 
 mstruct::mstruct(unsigned int min_length, int max_length,             //

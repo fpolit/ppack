@@ -61,7 +61,7 @@ public:
   string input; // input file
   string output; //output file
 
-  //virtual debug();
+  virtual void debug();
   ~rstruct(){}
 };
 
@@ -69,6 +69,7 @@ public:
 class sstruct: public rstruct
 {
 public:
+  sstruct(po::variables_map vm);
   sstruct(unsigned int min_length, int max_length, //mask struct parameters
           bool quiet_print, bool hide_rare,          //print parameters
           string output_file, string input_file,     // IO parameters
@@ -90,9 +91,11 @@ public:
 
 
   // io parameters
-  // string input; // input wordlist - inehritance attribute
+  string wordlist; // wordlist file
+  // string input; // input options - inehritance attribute
   // string output; //output file of statsgen - inehritance attribute
 
+  void debug();
 };
 
 
@@ -177,7 +180,7 @@ public:
 };
 
 
-// statgen stats struct
+// statgen stats struct (property , occurence)
 typedef struct statstruct
 {
   map<SCS, int> scs;

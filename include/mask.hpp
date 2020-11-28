@@ -85,6 +85,8 @@ typedef enum ACS{
     advnone                // default value to empty AdvanceCharSet variable
 } ACS;
 
+
+
 typedef struct maskStruct
 {
   unsigned  int lowercase  = 0;
@@ -126,28 +128,23 @@ public:
   void realloc(string maskCharset); // add a mask symbol to a mask and update mstruct
   vector<Mask> permutations();
 
-  //  parser friend functions
-  // parse a maskStruct and get the complexity of the mask
-  friend int complexityParser(string mask); 
+
+  // check functions
+  friend bool ismask(string mask);
+  friend bool checkLength(Mask mask, int minlength, int maxlength);
+  friend bool checkSCS(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
+  friend bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
+  friend bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
+  //static bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
+
+
+  //  parser functions
   static Mask analysis(string mask);
+  //Mask analysis(string mask);
+  static SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
+  static ACS acsParser(string mask); // parse a maskStruct and get its ACS
+
+  // parse a maskStruct and get the complexity of the mask
+  int complexityParser(maskStruct mstruct); 
 };
-
-
-
-// check functions
-bool ismask(string mask);
-bool checkLength(Mask mask, int minlength, int maxlength);
-bool checkSCS(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
-bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
-bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
-//static bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
-
-
-//  parser friend functions
-//Mask analysis(string mask);
-SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
-ACS acsParser(maskStruct mstruct); // parse a maskStruct and get its ACS
-
-
-
 #endif // __MASK_H__

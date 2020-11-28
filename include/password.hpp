@@ -40,15 +40,23 @@ public:
 
   // get and set methods
   int getComplexity(){return 0;} // NOTA: IMPLEMENTAR LA COMPLEJIDAD DE UNA MASCARA
-  string getSCS(){return mask.getValueSCS();}
-  string getACS(){return mask.getValueACS();}
+  string getValueSCS(){return mask.getValueSCS();}
+  string getValueACS(){return mask.getValueACS();}
+  SCS getSCS(){return mask.getSCS();}
+  ACS getACS(){return mask.getACS();}
+  string getMask(){return mask;}
 
   void setComplexity(int complex){mask.setComplexity(complex);}
   void setACS(ACS asv){mask.setACS(asv);}
   void setSCS(SCS scs){mask.setSCS(scs);}
 
+  //check functions
+  static bool checkLength(Password passwd, int minlength, int maxlength);
 
-  string getMask(){return mask;}
+  
+
+  // / check functions
+
 
 };
 

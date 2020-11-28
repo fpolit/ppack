@@ -99,39 +99,6 @@ class PPACK
 public:
 
   PPACK(){}
-  // PPACK(){VERSION = "1.0";}
-  //PPACK(string wordlist):wordlist_file{wordlist}{}
-
-
-  // static void statsgen(string wordlist, string output,                           //IO parameters
-
-  //               bool hiderare, bool quiet,                      //print parameters
-  //               vector<string> charset,                            //password charset
-  //                 int minlength, int maxlength);                         //length parameters
-
-
-
-  //   static void maskgen(string statsgen_output, string output,    //IO parameters
-
-  //               bool show, bool quiet,                           //print parameters
-  //                vector<Mask> checkmasks,string checkmasksfile,       //checkmask parameters
-  //               vector<string> charset,                            //password charset
-  //               int minlength, int maxlength,                         //length parameters
-  //               int mincomplexity, int maxcomplexity,                 //complexity parameters
-  //                int minoccurrence, int maxoccurrence);                 //occurrence parameters
-
-
-
-
-  // // this method depend of Base class
-  // // and corePolicygen is the more important function(this function generate a new Base)
-  // static void policygen(string output,                       //Output File
-  //                       bool quiet, bool show,                           //print parameters
-  //                       int minlength, int maxlength,                         //length parameters
-  //                       int minlower, int maxlower,                           //
-  //                       int minupper, int maxupper,                           // password
-  //                       int mindigit, int maxdigit,                           // charset
-  //                       int minspecial, int maxspecial);
 
   // using pstructs to pass paramether to static method of PPACK class
 
@@ -139,5 +106,9 @@ public:
   static void maskgen(mstruct margs);
   static void policygen(pstruct pargs);
 
+  // core of statsgen
+  friend statstruct coreStatsgen(sstruct pargs);
+  
+  // core of policygen is in basepoli.cpp
 };
 #endif // __PPACK_H__

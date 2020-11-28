@@ -35,7 +35,7 @@ private:
   unsigned int length;
 
 public:
-  
+  Base();
   Base(pstruct initial);
   Base(pstruct poliOpt, unsigned int len);
   // generate a new base from a base increasing in 1 the length. 
@@ -74,6 +74,6 @@ public:
 // }
 
 //void permuteMasks(Base base);
-vector<Base*> corePolicygen(pstruct init); //bases without permitations
+void corePolicygen(pstruct init); //bases without permitations
 
 #endif //__BASE_H__

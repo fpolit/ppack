@@ -97,7 +97,7 @@ Mask reallocMask(Mask mask, string maskCharset) // add maskCharset to mask
 
 // friend methods
 //Mask Mask::analysis(string mask);
-SCS scsParser(maskStruct mstruct);
+//SCS scsParser(maskStruct mstruct);
 
 Mask::Mask()
   :string("")
@@ -176,8 +176,16 @@ bool ismask(string mask)
 bool checkLength(Mask mask, int minlength, int maxlength)
 {
   int maskLength = mask.length();
-  if(maskLength > minlength && maskLength < maxlength)
+  if(maxlength != -1)
+  {
+    if(maskLength >= minlength && maskLength <= maxlength)
     return true;
+  }  
+  else
+  {
+    if(maskLength >= minlength)
+    return true;
+  }
   return false;
 }
 
@@ -324,7 +332,7 @@ Mask Mask::analysis(string mask)
 
 
 
-SCS scsParser(maskStruct mstruct)
+SCS Mask::scsParser(maskStruct mstruct)
 {
     // parse a maskStruct to determine the scs of the mask
 
@@ -334,7 +342,7 @@ SCS scsParser(maskStruct mstruct)
     // corregir return
     else if(mstruct.uppercase &&
         !(mstruct.lowercase || mstruct.digit || mstruct.special))
-        return SCS::numeric;
+        return SCS::upperalpha;
 
     else if(mstruct.digit &&
         !(mstruct.lowercase || mstruct.uppercase || mstruct.special))
@@ -342,15 +350,19 @@ SCS scsParser(maskStruct mstruct)
 
     else if(mstruct.special &&
         !(mstruct.lowercase || mstruct.uppercase || mstruct.digit))
-        return SCS::numeric;
+        return SCS::special;
 
     else if((mstruct.uppercase && mstruct.lowercase) &&
-        !(mstruct.uppercase || mstruct.digit))
+        !(mstruct.special || mstruct.digit))
         return SCS::alpha;
 
     else if((mstruct.special && mstruct.uppercase && mstruct.lowercase) &&
         !(mstruct.digit))
         return SCS::mixalphaspecial;
+
+    else if((mstruct.digit && mstruct.uppercase && mstruct.lowercase) &&
+        !(mstruct.special))
+        return SCS::mixalphanum;
 
     else if((mstruct.digit && mstruct.special) &&
         !(mstruct.uppercase || mstruct.lowercase))

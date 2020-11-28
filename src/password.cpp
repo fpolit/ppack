@@ -28,12 +28,12 @@
  */
 
 
-#ifndef __INCLUDE_STD_STRING_H__
-#define __INCLUDE_STD_STRING_H__
-#include<string>
-#endif //__INCLUDE_STD_STRING_H__
+// #ifndef __INCLUDE_STD_STRING_H__
+// #define __INCLUDE_STD_STRING_H__
+// #include<string>
+// #endif //__INCLUDE_STD_STRING_H__
 
-using namespace std;
+//using namespace std;
 
 #ifndef __INCLUDE_PASSWORD_H__
 #define __INCLUDE_PASSWORD_H__
@@ -46,16 +46,16 @@ using namespace std;
 // #include "../include/character.hpp"
 // #endif //__INCLUDE_CHARACTER_H__
 
-#ifndef __INCLUDE_MASK_H__
-#define __INCLUDE_MASK_H__
-#include "../include/mask.hpp"
-#endif // __INCLUDE_MASK_H__
+// #ifndef __INCLUDE_MASK_H__
+// #define __INCLUDE_MASK_H__
+// #include "../include/mask.hpp"
+// #endif // __INCLUDE_MASK_H__
 
 
-#ifndef __INCLUDE_OMP_H__
-#define __INCLUDE_OMP_H__
-#include "omp.h"
-#endif //__INCLUDE_OMP_H__
+// #ifndef __INCLUDE_OMP_H__
+// #define __INCLUDE_OMP_H__
+// #include "omp.h"
+// #endif //__INCLUDE_OMP_H__
 
 
 // character.hpp
@@ -137,7 +137,25 @@ bool isspecial(string word)
   return true;
 }
 
-
+bool Password::checkLength(Password passwd, int minlength, int maxlength)
+/*
+ * maxlength = -1, means that the maximum length of password is infinite.
+ */
+{
+  int passwdLength = passwd.size();
+  if(maxlength != -1)
+  {
+    if(passwdLength >= minlength && passwdLength <= maxlength)
+    return true;
+  }  
+  else
+  {
+    if(passwdLength >= minlength)
+    return true;
+  }
+  
+  return false;
+}
 // tested - 24 nov 2020
 Password::Password(string passwd)
   :string(passwd), mask("")
@@ -181,7 +199,9 @@ Mask  analyzePassword(string passwd)
     }
 
     maskStruct mstruct = maskParser.getStruct();
-    maskParser.setSCS(scsParser(mstruct));
+    // scsParser is defined in mask.hpp and implemented in mask.cpp
+    // and password.cpp is importing mask.hpp
+    maskParser.setSCS(Mask::scsParser(mstruct)); 
 
     return maskParser;
 

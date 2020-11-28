@@ -24,102 +24,115 @@
 #ifndef __INCLUDE_PPACK_H__
 #define __INCLUDE_PPACK_H__
 #include "../include/ppack.hpp"
+#include <cstdlib>
+#include <exception>
+#include <fstream>
 #endif //__INCLUDE_PPACK_H__
 
 
-////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// Statsgen implementation  /////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////
+////////// statsgen  implementation   ////////
+//////////////////////////////////////////////
 
-// vector<Password>* passwdBlock(ifstream wordlist, int BLOCK)
-// {
-//   string passwd;
-//   vector<Password> *vpasswd = new vector<Password>;
-//   while((getline(wordlist, passwd) && passwd!="") && vpasswd->size() <= BLOCK)
-//     {
-//       vpasswd->push_back(passwd);
-//     }
+bool sfilter(Password passwd, sstruct pargs)
+{
+  // add more complx filter
+  if(Password::checkLength(passwd, pargs.minlength, pargs.maxlength))
+    return true;
+  return false;
+}
 
-//   if(getline(wordlist, passwd) && passwd!="")
-//     wordlist.close(); //closing wordlist file because it hasn't more passwords
+vector<Password> passwdBlock(ifstream *wordlist, int block, sstruct pargs)
+{
+  string passwd;
+  vector<Password> vpasswd;
+  while((getline(*wordlist, passwd) && passwd!="") && vpasswd.size() <= block)
+    {
+      Password password(passwd);
+      if(sfilter(passwd,  pargs))
+        vpasswd.push_back(password);
+    }
 
-//   return vpasswd;
-// }
+  getline(*wordlist, passwd);
+  if(passwd=="")
+    wordlist->close(); //closing wordlist file because it hasn't more passwords
 
+  return vpasswd;
+}
 
-// void statsgen(string wordlist, string output,                           //IO parameters
-//               bool hiderare, bool quiet,                      //print parameters
-//               vector<string> charset,                            //password charset
-//               int minlength, int maxlength)                         //length parameters
-// {
-//   ifstream wordlist_file(wordlist);
-//   //string passwd;
-//   int block_passwds=1000; // max block of pasword that i will read from wordlists
-//   statstruct sstruct; //stats struct
+statstruct coreStatsgen(sstruct pargs)
+{
+  ifstream *wordlist  = new ifstream(pargs.wordlist);
+  int block = 1000; // max block of pasword to read from wordlists
+  statstruct stats; //stats of wordlists
+  
+  try{
+    while(wordlist->is_open()) // ensure that you close the wordlist when it hasn't more password
+    {
+      //this function read at most 'block' filtered passwords. 
+      vector<Password> vpasswd = passwdBlock(wordlist, block, pargs); 
 
-//   while(wordlist_file.is_open()) // ensure that you close the wordlist when it hasn't more password
-//     {
-//       vector<Password> *vpasswd = passwdBlock(wordlist_file, block_passwds); // this function read at most 1000 passwords
+      //#pragma omp parallel for shared(vpasswd, sstruct)
+      for(int k=0; k<vpasswd.size(); k++)
+        {
+          Password passwd = vpasswd.at(k);
 
-// #pragma omp parallel for shared(vpasswd, sstruct)
-//       for(int k=0; k<vpasswd->size(); k++)
-//         {
-//           Password passwd = vpasswd->at(k);
-
-//           //length password stats
-//           if(sstruct.length.find(passwd.size()) != sstruct.length.end())
-//             {
-//               #pragma omp critical
-//               sstruct.length[passwd.size()] = 1;
-//             }
-//           else
-//             {
-//               #pragma omp atomic
-//               sstruct.length[passwd.size()] += 1;
-//             }
-
-//           // Character set stats
-//           if(sstruct.scs.find(passwd.scs()) != sstruct.scs.end())
-//             {
-//               #pragma omp critical
-//               sstruct.scs[passwd.scs()] = 1;
-//             }
-//           else
-//             {
-//               #pragma omp atomic
-//               sstruct.scs[passwd.scs()] += 1;
-//             }
+          //length password stats
+          int passwdSize = passwd.size();
+          if(stats.length.find(passwdSize) != stats.length.end())
+              stats.length[passwdSize] += 1;
+          else
+              stats.length[passwdSize] = 1;
+            
+          // Character set stats
+          SCS passwdSCS = passwd.getSCS();
+          if(stats.scs.find(passwdSCS) != stats.scs.end())
+              stats.scs[passwdSCS] += 1;
+          else
+              stats.scs[passwdSCS] = 1;
 
 
-//           // advance mask stats
-//           if(sstruct.mask.find(passwd.getMask()) != sstruct.mask.end())
-//             {
-//               #pragma omp critical
-//               sstruct.mask[passwd.getMask()] = 1;
-//             }
-//           else{
-//             #pragma omp atomic
-//             sstruct.mask[passwd.getMask()] += 1;
-//           }
+          // advance mask stats
+          Mask passwdMask = passwd.getMask();
+          if(stats.mask.find(passwdMask) != stats.mask.end())
+              stats.mask[passwdMask] += 1;
+          else
+            stats.mask[passwdMask] = 1;
+        }
+    }
+    return stats;
+  }
+  catch (std::exception& error)
+  {
+    cerr << error.what() << endl;
+    wordlist->close();
+    exit(EXIT_FAILURE);
+  }
+  
+}
 
-//         }
+void PPACK::statsgen(sstruct pargs)
+{
+  // PRINT LOGO
+  statstruct stats = coreStatsgen(pargs);
+  
+  cout << "PRINT ALL THE GENERATED STATSITCS." << endl;
+  
+  cout << "stats.scs:" << endl;
+  for(auto [scs, occurence] : stats.scs)
+    cout << scs << " : " << occurence << endl;
 
-//       // free vpasswd vector to read the other block of passwds
-//       delete [] vpasswd;
-//     }
+  cout << "stats.mask:" << endl;
+  for(auto [mask, occurence] : stats.mask)
+    cout << mask << " : " << occurence << endl;
 
+  cout << "stats.length:" << endl;
+  for(auto [length, occurence] : stats.length)
+    cout << length << " : " << occurence << endl;
 
-//   statsgen_results(sstruct);
-
-// }
-
-// void statsgen_results(statstruct sstruct)
-// {
-//   // using sstuct struct write the output file and show the generated stats
-
-//   cout << "Don't forget Implement statsgen_results" << endl;
-
-// }
+  cout << "PRINT ADITIONAL INFORMATION" << endl;
+  
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -209,11 +222,13 @@ namespace ppack{
   int release = 1;
 }
 
+//////////////////////////////////////////////
+////////// policygen implementation   ////////
+//////////////////////////////////////////////
+
 void PPACK::policygen(pstruct pargs)
 {
-  corePolicygen(pargs); //do almost all the work()
-
-
+  
   if(pargs.quiet == false) // print the ppack logo
     {
       //string ppack_logo = Logo::random();
@@ -223,19 +238,5 @@ void PPACK::policygen(pstruct pargs)
   cout << "Saving generated masks to [" + pargs.output +".hcmask]" << endl;
   //fine::print_status("Using 8 OMP Threads.");
 
-  // string password_policy =
-  //   "Password policy:"  +\
-  //   "\n\tPass Lengths:" + " min: " + minlength + " max: " + maxlength + \
-  //   "\n\tMin strength:" + " l:" + minlower + " u:" + minupper + " d:" + mindigit + " s:" + minspecial +\
-  //   "\n\tMin strength:" + " l:" + minlower + " u:" + minupper + " d:" + mindigit + " s:" + minspecial + "\n";
-
-  //print_status("Policy Masks: ");
-
-  if(pargs.show==true)
-    {
-      cout << "show generated masks" << endl;
-    }
-
-  //fine::print_status("Policy Masks: ");
-  cout << "Policy Masks: " << endl;
+  corePolicygen(pargs); //do almost all the work()
 }
