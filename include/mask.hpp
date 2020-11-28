@@ -127,7 +127,8 @@ public:
   vector<Mask> permutations();
 
   //  parser friend functions
-
+  // parse a maskStruct and get the complexity of the mask
+  friend int complexityParser(string mask); 
   static Mask analysis(string mask);
 };
 
@@ -147,7 +148,6 @@ bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
 SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
 ACS acsParser(maskStruct mstruct); // parse a maskStruct and get its ACS
 
-// parse a maskStruct and get the complexity of the mask
-int complexityParser(maskStruct mstruct); 
+
 
 #endif // __MASK_H__
