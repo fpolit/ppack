@@ -1,13 +1,17 @@
-### g++ cmd to debug ppack class (policygeb)
-g++ -ggdb ppackdebug.cpp ../../src/mask.cpp ../../src/password.cpp ../../src/pstructs.cpp ../../src/basepoli.cpp  ../../src/ppack.cpp -o ppackdebug -lboost_program_options
+### g++ cmd to debug policygen (run inside src directory)
+g++ -ggdb -std=c++17 policygen.cpp mask.cpp password.cpp pstructs.cpp basepoli.cpp  ppack.cpp csv.cpp -o policygen -lboost_program_options
 
 
-### g++ cmf to debug base class
+### g++ cmd to compile statsgen (run inside src directory)
+g++ -ggdb -std=c++17 statsgen.cpp pstructs.cpp mask.cpp ppack.cpp password.cpp basepoli.cpp csv.cpp -o statsgen -lboost_program_options
+
+
+### g++ cmd to compile maskgen (run inside src directory)
+g++ -ggdb -std=c++17 maskgen.cpp pstructs.cpp mask.cpp ppack.cpp password.cpp csv.cpp basepoli.cpp -lboost_program_options -o maskgen
+
+
+### EXTRA ###
+### g++ cmd to debug base class (run inside debug directory)
 g++ -ggdb basedebug.cpp ../../src/basepoli.cpp ../../src/pstructs.cpp ../../src/mask.cpp -o base -lboost_program_options
 
-### g++ cmd to compile statsgen
-g++ -ggdb -std=c++17 statsgen.cpp pstructs.cpp mask.cpp ppack.cpp password.cpp basepoli.cpp -o stats -lboost_program_options
 
-
-### g++ cmd to compile maskgen
-g++ -ggdb -std=c++17 maskgen.cpp pstructs.cpp mask.cpp ppack.cpp password.cpp csv.cpp basepoli.cpp -lboost_program_options -o maskgen
