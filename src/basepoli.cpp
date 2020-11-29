@@ -163,9 +163,11 @@ void corePolicygen(pstruct init)
   // now the length of base is equal to minlength-1(policygen paramemter)
   for(int step=base->getLength(); step < base->getMaxLength(); step++)
     {
-      base = maskStep(base);
       base->showMasks();
+      base = maskStep(base);
       // HERE PRINT THE OUTPUT OR WRITE TO FILE. 
     }
+  base->showMasks();
+
   delete base;
 }
