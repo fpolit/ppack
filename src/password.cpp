@@ -70,15 +70,15 @@ namespace charset{
 
 
 // head of functions
-bool isdigit(string word);
-bool islower(string word);
-bool isupper(string word);
-bool isspecial(string word);
+// bool isdigit(string word);
+// bool islower(string word);
+// bool isupper(string word);
+// bool isspecial(string word);
 Mask  analyzePassword(string passwd);
 
 
 // tested - 24 nov 2020
-bool isdigit(string word)
+bool Password::isdigit(string word)
 /*
  * verify if a word id only of digits or if a letther(word of one character) is a digit
  */
@@ -92,7 +92,7 @@ bool isdigit(string word)
 }
 
 // tested - 24 nov 2020
-bool islower(string word)
+bool Password::islower(string word)
 /*
  * verify if a word is only lowercase or if a letther(word of one character) is a lowercase
  */
@@ -107,7 +107,7 @@ bool islower(string word)
 }
 
 // tested - 24 nov 2020
-bool isupper(string word)
+bool Password::isupper(string word)
 /*
  * verify if a word is only uppercase characters or
  * if a letther(word of one character) is a uppercase character
@@ -122,7 +122,7 @@ bool isupper(string word)
 }
 
 // tested - 24 nov 2020
-bool isspecial(string word)
+bool Password::isspecial(string word)
 /*
  * verify if a word is only of special characters or
  * if a letther(word of one character) is a special character
@@ -165,7 +165,7 @@ Password::Password(string passwd)
 
 
 // tested - 24 nov 2020
-Mask  analyzePassword(string passwd)
+Mask analyzePassword(string passwd)
 /*
  * Analize a string and create a Mask object,
  * also parse the Simple Charset of the password and
@@ -178,24 +178,14 @@ Mask  analyzePassword(string passwd)
     //     shared(master_mask, passwd, symbols, passwdStruct)
     for(auto letther: passwd)
     {
-
-            if(islower(letther))
-            {
-              maskParser.realloc("?l");
-            }
-            else if(isupper(letther))
-            {
-              maskParser.realloc("?u");
-            }
-            else if(isdigit(letther))
-            {
-              maskParser.realloc("?d");
-            }
-            else //the character is a special character
-            {
-              maskParser.realloc("?s");
-            }
-
+      if(islower(letther))
+        maskParser.realloc("?l");
+      else if(isupper(letther))
+        maskParser.realloc("?u");
+      else if(isdigit(letther))
+        maskParser.realloc("?d");
+      else //the character is a special character
+        maskParser.realloc("?s");
     }
 
     maskStruct mstruct = maskParser.getStruct();

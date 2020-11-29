@@ -26,7 +26,7 @@ using namespace std;
 #endif // __INCLUDE_MASK_H__
 
 
-Mask passwdAnalysis(string passwd); //analyze the string passwd and get its mask
+//Mask passwdAnalysis(string passwd); //analyze the string passwd and get its mask
 
 class Password : public std::string
 {
@@ -50,19 +50,20 @@ public:
   void setACS(ACS asv){mask.setACS(asv);}
   void setSCS(SCS scs){mask.setSCS(scs);}
 
+  // parse function
+  //static Mask  analyzePassword(string passwd);
+
+
   //check functions
   static bool checkLength(Password passwd, int minlength, int maxlength);
 
-  
-
-  // / check functions
-
+  static bool isdigit(string word);
+  static bool islower(string word);
+  static bool isupper(string word);
+  static bool isspecial(string word);
 
 };
 
-bool isdigit(string letther);
-bool islower(string letther);
-bool isupper(string letther);
-bool isspecial(string letther);
+
 
 #endif // __PASSWORD_H__

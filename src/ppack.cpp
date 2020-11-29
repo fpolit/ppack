@@ -140,23 +140,31 @@ void PPACK::statsgen(sstruct pargs)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// bool checkOccurence(int occurence, int minoccurence, int maxoccurence)
-// {
-//   if(occurence > minoccurence && occurence < maxoccurence)
-//     return true;
-//   return false;
-// }
+bool checkOccurrence(unsigned int maskOccurrence, unsigned int minoccurence, int maxoccurence)
+{
+  if(maxoccurence != -1)
+  {
+    if(maskOccurrence >= minoccurence && maskOccurrence <= maxoccurence)
+    return true;
+  }  
+  else
+  {
+    if(maskOccurrence >= minoccurence)
+    return true;
+  }
+  return false;
+}
 
-// bool satisfyFilter(Mask mask, int occurence, maskgenStruct mskgn)
-// {
-//   //Mask mask(mask_str);
-//   if(checkLength(mask, mskgn.minlength, mskgn.maxlength) &&
-//      //checkChartset(mask, mskgn.charsets) &&
-//      checkOcurrence(occurence, mskgn.minoccurence, mskgn.maxoccurence) &&
-//      checkComplexity(mask, mskgn.mincompexity, mskgn.maxcomplexity))
-//     return true;
-//   return false;
-// }
+bool mFilter(Mask mask, unsigned int occurrence, mstruct pargs)
+{
+  //Mask mask(mask_str);
+  if(Mask::checkLength(mask, pargs.minlength, pargs.maxlength) &&
+     //checkChartset(mask, mskgn.charsets) &&
+     checkOccurrence(occurrence, pargs.minoccurrence, pargs.maxoccurrence) &&
+     Mask::checkComplexity(mask, pargs.mincomplexity, pargs.maxcomplexity))
+    return true;
+  return false;
+}
 
 // void maskgen(string statsgen_output, string output,    //IO parameters
 //              bool show, bool quiet,                           //print parameters
@@ -165,57 +173,71 @@ void PPACK::statsgen(sstruct pargs)
 //              int minlength, int maxlength,                         //length parameters
 //              int mincomplexity, int maxcomplexity,                 //complexity parameters
 //              int minoccurrence, int maxoccurrence)                 //occurrence parameters
-// {
-//   CSVReader statsgen(statsgen_output);
 
-//   maskgenStruct mskgn = init_maskgen_struct(minlength, maxlength,
-//                                             mincomplexity, maxcomplexity,
-//                                             minoccurrence, maxoccurrence,
-//                                             charset);
+void maskgenWrite(ofstream *maskgenOutput, vector<vector<string>> statsgenResults, mstruct pargs)
+/*
+ * first element in statsgenResults is mask and
+ * second element is occurence of the mask(first element)
+*/
+{
+  if(pargs.show)
+  {
+    for(int k=0; k < statsgenResults.size(); k++)
+    {
+      // first element in statsgen output is mask and
+      // second element is occurence of the mask(first element)
+      Mask mask(statsgenResults[k][0]);
+      int occurence = stoi(statsgenResults[k][1]); //convert from string to interger
 
-//   // mask and occurence map
-//   map<Mask, int> fmasks; //filtered masks (mask, occurence of mask)
-//   vector<vector<string>> results = statsgen.getData(); //result of statsgen
-// #pragma omp parallel for shared(statsgen_results)
-//   for(int k=0; k < results.size(); k++)
-//     {
-//       // first element in statsgen output is mask and
-//       // second element is occurence of the mask(first element)
-//       Mask mask(results[k][0]);
-//       int occurence = stoi(results[k][1]); //convert from string to interger
+      if(mFilter(mask, occurence, pargs))
+      {
+        //write mask to maskgenOutput file
+        cout << mask << endl;
+      }
+    }
+    maskgenOutput->close();
+  } 
+  else {
+    for(int k=0; k < statsgenResults.size(); k++)
+    {
+      // first element in statsgen output is mask and
+      // second element is occurence of the mask(first element)
+      Mask mask(statsgenResults[k][0]);
+      int occurence = stoi(statsgenResults[k][1]); //convert from string to interger
 
-//       if(satisfyFilter(mask, occurence, mskgn))
-//         {
-//           fmasks[mask] = occurence;
-//         }
-//     }
+      if(mFilter(mask, occurence, pargs))
+      {
+        cout <<  "Only write mask to maskgenOutput file" << endl;
+      }
+    }
+    maskgenOutput->close();
+    }
 
-//   if(!quiet)
-//     {
-//       string ppack_logo = Logo::random();
-//       cout << ppack_logo << endl;
-//     }
+}
+void PPACK::maskgen(mstruct pargs)
+{
+  CSVReader statsgen(pargs.statsgen);
 
-//   ofstream maskgen_output(output);
-//   //maskgen_output.open();
+  vector<vector<string>> results = statsgen.getData(); //results of statsgen
+  //#pragma omp parallel for shared(statsgen_results)
 
-//   if(show)
-//     {
+  if(!pargs.quiet)
+  {
+    //string ppack_logo = Logo::random();
+    cout << " -------- MASKGEN --------" << endl;
+  }
+  ofstream *maskgenOutput = new ofstream(pargs.output);
 
-//       for(auto [mask, occurence] : fmasks)
-//         {
-//           maskgen_output << mask  <<  endl;
-
-//           // print the mask and its occurence
-//         }
-//     }
-//   else
-//     {
-//       for(auto [mask, occurence] : fmasks)
-// 		maskgen_output << mask  <<  endl;
-
-//     }
-// }
+  try 
+  {
+    maskgenWrite(maskgenOutput, results, pargs);
+  }
+  catch (std::exception& error) {
+    cerr << error.what() << endl;
+    maskgenOutput->close();
+    exit(EXIT_FAILURE);
+  }
+}
 
 namespace ppack{
   string VERSION = "1.0";

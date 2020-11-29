@@ -118,8 +118,8 @@ public:
   unsigned int mincomplexity;
   int maxcomplexity;
 
-  unsigned int minoccurence;
-  int maxoccurence;
+  unsigned int minoccurrence;
+  int maxoccurrence;
 
   // print parameters
   bool show;

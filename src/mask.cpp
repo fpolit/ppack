@@ -74,12 +74,12 @@ map<ACS, string> acsValue = {
 // head of functions
 
 // check methods
-bool ismask(string mask);
-bool checkLength(Mask mask, int minlength, int maxlength);
-bool checkSCS(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
-bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
-bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
-bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
+// bool ismask(string mask);
+// bool checkLength(Mask mask, int minlength, int maxlength);
+// bool checkSCS(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
+// bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
+// bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
+// bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
 
 // get and set methods
 //ACS Mask::getACS()
@@ -152,7 +152,7 @@ Mask::Mask(string mask)
 
 // check friend methods
 
-bool ismask(string mask)
+bool Mask::ismask(string mask)
 {
   bool master_ismask = true;
   //#pragma omp parallel for shared(master_ismask, maskSymbols)
@@ -173,7 +173,7 @@ bool ismask(string mask)
 }
 
 
-bool checkLength(Mask mask, int minlength, int maxlength)
+bool Mask::checkLength(Mask mask, int minlength, int maxlength)
 {
   int maskLength = mask.length();
   if(maxlength != -1)
@@ -210,11 +210,19 @@ bool checkLength(Mask mask, int minlength, int maxlength)
 // }
 
 
-bool checkComplexity(Mask mask, int minCompexity, int maxComplexity)
+bool Mask::checkComplexity(Mask mask, int mincomplexity, int maxcomplexity)
 {
   int complexity = mask.getComplexity();
-  if(complexity > minCompexity && complexity < maxComplexity)
+  if(maxcomplexity != -1)
+  {
+    if(complexity >= mincomplexity && complexity <= maxcomplexity)
     return true;
+  }  
+  else
+  {
+    if(complexity >= mincomplexity)
+    return true;
+  }
   return false;
 }
 

@@ -282,27 +282,27 @@ mstruct::mstruct(po::variables_map vm)
 
   ////////// frequency parameters (frequency section) //////////
   //occurence
-  minoccurence = vm["minoccurence"].as<unsigned int>();
-  maxoccurence = vm["maxoccurence"].as<int>();
+  minoccurrence = vm["minoccurrence"].as<unsigned int>();
+  maxoccurrence = vm["maxoccurrence"].as<int>();
 
   try
   {
-    if(minoccurence >0 && maxoccurence == 0)
-      maxoccurence = -1; //there isn't a maximum occurence
-    else if (minoccurence > 0 && maxoccurence != 0)
+    if(minoccurrence >0 && maxoccurrence == 0)
+      maxoccurrence = -1; //there isn't a maximum occurence
+    else if (minoccurrence > 0 && maxoccurrence != 0)
     {
-      if(maxoccurence < 0)
-          maxoccurence = -1;
+      if(maxoccurrence < 0)
+          maxoccurrence = -1;
       else
        {
-         if((int)minoccurence > maxoccurence)
+         if((int)minoccurrence > maxoccurrence)
           throw "Invalid arguments(mask occurence).";
        }
     }
-    else if (minoccurence == 0 && maxoccurence != 0)
+    else if (minoccurrence == 0 && maxoccurrence != 0)
     {
-      if(maxoccurence < 0)
-        maxoccurence = -1; //there isn't a maximum length
+      if(maxoccurrence < 0)
+        maxoccurrence = -1; //there isn't a maximum length
     } // else case is when minoccurence == 0 and maxoccurence == 0
   }
   catch(std::exception &error)
@@ -314,7 +314,7 @@ mstruct::mstruct(po::variables_map vm)
 
 mstruct::mstruct(unsigned int min_length, int max_length,             //
           unsigned int min_complexity, int max_complexity,     // mask struct parameters
-          unsigned int min_occurence, int max_occurence,       //
+          unsigned int min_occurrence, int max_occurrence,       //
           bool quiet_print, bool show_masks,                   // print parametersxs
           vector<SCS> scharsets,
           vector<Mask> check_masks,string check_mask_file,
@@ -327,8 +327,8 @@ mstruct::mstruct(unsigned int min_length, int max_length,             //
   // password and mas structure requirements
   mincomplexity = min_complexity;
   maxcomplexity = max_complexity;
-  minoccurence = min_occurence;
-  maxoccurence = max_occurence;
+  minoccurrence = min_occurrence;
+  maxoccurrence = max_occurrence;
 
   // print parameters
   show = show_masks;
@@ -342,7 +342,7 @@ mstruct::mstruct(unsigned int min_length, int max_length,             //
 
 void mstruct::debug()
 {
-  cout << "debug sstruct\n";
+  cout << "debug mstruct\n";
 
   // file section
   cout << "--- file section ---"  << endl;
@@ -389,8 +389,8 @@ void mstruct::debug()
 
   // frequency section
   cout << "\n--- frequency section ---"  << endl;
-  cout << "minoccurence:  " << minoccurence << endl;
-  cout << "maxoccurence:  " << maxoccurence << endl;
+  cout << "minoccurence:  " << minoccurrence << endl;
+  cout << "maxoccurence:  " << maxoccurrence << endl;
 }
 
 

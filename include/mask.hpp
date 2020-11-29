@@ -130,11 +130,11 @@ public:
 
 
   // check functions
-  friend bool ismask(string mask);
-  friend bool checkLength(Mask mask, int minlength, int maxlength);
-  friend bool checkSCS(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
-  friend bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
-  friend bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
+  static bool ismask(string mask);
+  static bool checkLength(Mask mask, int minlength, int maxlength);
+  static bool checkSCS(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
+  static bool checkACS(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
+  static bool checkComplexity(Mask mask, int minCompexity, int maxComplexity);
   //static bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
 
 

@@ -32,6 +32,15 @@
 #include<vector>
 #endif //__INCLUDE_STD_VECTOR_H_
 
+using namespace std;
+
+#ifndef __INCLUDE_PROGRAM_OPTIONS_H__
+#define __INCLUDE_PROGRAM_OPTIONS_H__
+#include<boost/program_options.hpp>
+#endif //__INCLUDE_PROGRAM_OPTIONS_H__
+
+//using namespace boost;
+namespace po = boost::program_options;
 
 #ifndef __INCLUDE_PPACK_H__
 #define __INCLUDE_PPACK_H__
@@ -49,15 +58,7 @@
 #include "../include/pstructs.hpp"
 #endif //__INCLUDE_PSTRUCTS_H__
 
-#ifndef __INCLUDE_PROGRAM_OPTIONS_H__
-#define __INCLUDE_PROGRAM_OPTIONS_H__
-#include<boost/program_options.hpp>
-#endif //__INCLUDE_PROGRAM_OPTIONS_H__
 
-//using namespace boost;
-namespace po = boost::program_options;
-
-using namespace std;
 
 void testBoostOptions(po::variables_map vm)
 {
