@@ -1,8 +1,8 @@
-# PPACK - `uniprocessor`
+# PPACK with `openmp` support
 
 #### Dependences
 * boost
-* C++ compiler (`g++` GNU Compiler)
+* C++ compiler with `omp` support(`g++` GNU Compiler)
 * Cmake
 
 
