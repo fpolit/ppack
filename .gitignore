@@ -8,4 +8,6 @@ pack/*
 .*
 test/simples/*
 test/wordlists/*
+test/helpme.txt
+test/cmake/*
 doc/pack.wiki/*

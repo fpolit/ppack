@@ -256,14 +256,19 @@ bool mFilter(Mask mask, unsigned int occurrence, mstruct pargs)
 //              int mincomplexity, int maxcomplexity,                 //complexity parameters
 //              int minoccurrence, int maxoccurrence)                 //occurrence parameters
 
-void maskgenWrite(ofstream *maskgenOutput, vector<vector<string>> statsgenResults, mstruct pargs)
+void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults, mstruct pargs)
 /*
  * first element in statsgenResults is mask and
  * second element is occurence of the mask(first element)
 */
 {
+  FinePrint::status("Analyzing masks in [" + pargs.statsgen + "]");
+  FinePrint::empty();
   if(pargs.show)
   {
+
+    cout  << "[" << setw(3) << "L:" << "]" << setw(32) << std::left <<  " Mask:"
+          << "[" << setw(6) << "Occ:" << "]" << endl;
     for(int k=0; k < statsgenResults.size(); k++)
     {
       // first element in statsgen output is mask and
@@ -273,10 +278,14 @@ void maskgenWrite(ofstream *maskgenOutput, vector<vector<string>> statsgenResult
 
       if(mFilter(mask, occurence, pargs))
       {
-        //write mask to maskgenOutput file
-        cout << mask << endl;
+        //write mask to maskgenOutput file and print to cli
+        cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
+          << "[ " << setw(6) << occurence << "]" << endl;
       }
     }
+    FinePrint::empty();
+    FinePrint::status("Finished generating masks:");
+    cout << "\t" << "Masks generated: " << statsgenResults.size() << endl;
     maskgenOutput->close();
   } 
   else {
@@ -301,18 +310,15 @@ void PPACK::maskgen(mstruct pargs)
   CSVReader statsgen(pargs.statsgen);
 
   vector<vector<string>> results = statsgen.getData(); //results of statsgen
-  //#pragma omp parallel for shared(statsgen_results)
 
   if(!pargs.quiet)
-  {
-    //string ppack_logo = Logo::random();
-    cout << " -------- MASKGEN --------" << endl;
-  }
+    cout << Logo::randomLogo() << endl;
+  
   ofstream *maskgenOutput = new ofstream(pargs.output);
 
   try 
   {
-    maskgenWrite(maskgenOutput, results, pargs);
+    coreMaskgen(maskgenOutput, results, pargs);
   }
   catch (std::exception& error) {
     cerr << error.what() << endl;
