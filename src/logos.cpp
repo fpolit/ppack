@@ -154,11 +154,10 @@ Logo::Logo()
     };
 }
 
-string Logo::random()
+string Logo::randomLogo()
 {
-
-	srand(time(0));
-
-	int idxLogo = rand() % Logo::rawLogos.size();
-	return Logo::rawLogos[idxLogo];
+    Logo logo;
+	//srand(time(NULL));
+	int idxLogo = rand() % logo.rawLogos.size();
+	return logo.rawLogos[idxLogo];
 }

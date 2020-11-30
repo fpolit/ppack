@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <exception>
 #include <fstream>
+#include <iomanip>
 #endif //__INCLUDE_PPACK_H__
 
 
@@ -111,27 +112,49 @@ statstruct coreStatsgen(sstruct pargs)
   
 }
 
+// void printStatsgen(statstruct stats, sstruct pargs)
+// {
+//   if(!pargs.quiet)
+//     cout << Logo::randomLogo() << endl;
+//   FinePrint::status("Analyzing passwords in [" + pargs.wordlist + "]");
+//   FinePrint::empty();
+  
+//   FinePrint::status("Length:");
+//   for(auto [length, occurence]: stats.length)
+//   {
+//       cout  << FinePrint::greenText("[+]") 
+//             << setw(25) << length << ": "
+//             << setw(5)  << "N%"
+//             << " (" << occurence << ")" << endl;
+//   }
+
+//   FinePrint::status("Simple charset:");
+//   for(auto [scs, occurence]: stats.scs)
+//   {
+//       cout  << FinePrint::greenText("[+]") 
+//             << setw(25) << scs << ": "
+//             << setw(5)  << "N%"
+//             << " (" << occurence << ")" << endl;
+//   }
+
+//   FinePrint::status("Masks:");
+//   for(auto [mask, occurence]: stats.mask)
+//   {
+//       cout  << FinePrint::greenText("[+]") 
+//             << setw(25) << mask << ": "
+//             << setw(5)  << "N%"
+//             << " (" << occurence << ")" << endl;
+//   }
+  
+//   FinePrint::successful("Analized 100% (TOTAL)");
+// } 
+
 void PPACK::statsgen(sstruct pargs)
 {
-  // PRINT LOGO
   statstruct stats = coreStatsgen(pargs);
   
-  cout << "PRINT ALL THE GENERATED STATSITCS." << endl;
-  
-  cout << "stats.scs:" << endl;
-  for(auto [scs, occurence] : stats.scs)
-    cout << scs << " : " << occurence << endl;
-
-  cout << "stats.mask:" << endl;
-  for(auto [mask, occurence] : stats.mask)
-    cout << mask << " : " << occurence << endl;
-
-  cout << "stats.length:" << endl;
-  for(auto [length, occurence] : stats.length)
-    cout << length << " : " << occurence << endl;
-
-  cout << "PRINT ADITIONAL INFORMATION" << endl;
-  
+  // print to console the computed stats
+  //printStatsgen(stats, pargs);
 }
 
 

@@ -74,10 +74,10 @@ using namespace std;
 // #endif //__INCLUDE_LOGOS_H__
 
 
-// #ifndef __INCLUDE_COLOR_H__
-// #define __INCLUDE_COLOR_H__
-// #include "color.hpp"
-// #endif //__INCLUDE_COLOR_H__
+// #ifndef __INCLUDE_FINEPRINT_H__
+// #define __INCLUDE_FINEPRINT_H__
+// #include "fineprint.hpp"
+// #endif //__INCLUDE_FINEPRINT_H__
 
 
 #ifndef __INCLUDE_CSV_H__
@@ -108,6 +108,7 @@ public:
 
   // core of statsgen
   friend statstruct coreStatsgen(sstruct pargs);
+  friend void printStatsgen(statstruct stats, sstruct pargs); 
   
   // core of policygen is in basepoli.cpp
 };

@@ -30,16 +30,17 @@
 #include <ctime>
 #endif //__INCLUDE_STD_CTIME_H__
 
+#include <iostream>
 
 using namespace std;
 
 class Logo
 {
 protected:
-	static vector<string> rawLogos;
+	vector<string> rawLogos;
 
 public:
 	Logo();
-	static string random();
+	static string randomLogo();
 };
 #endif /* __LOGOS_H__ */

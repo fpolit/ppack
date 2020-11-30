@@ -40,11 +40,7 @@
 
 using namespace std;
 
-
-class Color{
-
-  // colors
-public:
+namespace color {
   string red = "\x1B[31m";
   string green = "\x1B[32m";
   string blue = "\x1B[34m";
@@ -53,52 +49,62 @@ public:
   string end = "\033[0m";
 
   vector<string> all{red, green, blue, yellow};
+}
+
+class FinePrint{
+
+  // colors
+public:
 
   // function to pint text in several color
-
-  string randomText(string text)
+  static string randomColorText(string text)
   {
+    
     //srand(time(0));
-    int rdm_idx = rand() % all.size();
+    int rdm_idx = rand() % color::all.size();
 
-    return all[rdm_idx] + text + end;
+    return color::all[rdm_idx] + text + color::end;
   }
 
-  string redText(string text)
+  static string redText(string text)
   {
-    return "\x1B[31m" + text + "\033[0m";
+    return color::red + text + color::end;
   }
 
-  string greenText(string text)
+  static string greenText(string text)
   {
-    return "\x1B[32m" + text + "\033[0m";
+    return color::green + text + color::end;
   }
 
-  string blueText(string text)
+  static string blueText(string text)
   {
-    return "\x1B[34m" +  text + "\033[0m";
+    return color::blue + text + color::end;
   }
 
-  string yellowText(string text)
+  static string yellowText(string text)
   {
-    return "\x1B[93m"  + text + "\033[0m";
-  }
-
-
-  void print_successful(string msg)
-  {
-    cout << greenText("[+] ") << msg << endl;
+    return color::yellow + text + color::end;
   }
 
 
-  void print_status(string msg)
+  static void successful(string msg)
   {
-    cout << blueText("[*] ") << msg << endl;
+    cout << FinePrint::greenText("[+] ") << msg << endl;
   }
 
-  void print_failure(string msg)
+
+  static void status(string msg)
   {
-    cout << redText("[-] ") << msg << endl;
+    cout << FinePrint::blueText("[*] ") << msg << endl;
+  }
+
+  static void failure(string msg)
+  {
+    cout << FinePrint::redText("[-] ") << msg << endl;
+  }
+  static void empty()
+  {
+      cout << endl;
   }
 
 };
