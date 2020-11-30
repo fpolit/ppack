@@ -143,7 +143,7 @@ void printStatsgen(statstruct stats, sstruct pargs)
     for(auto [length, occurence]: stats.length)
     {
       double percent = (double)occurence/total;
-      if(percent < minpercent)
+      if(percent > minpercent)
         cout  << FinePrint::greenText("[+]") 
               << setw(32) << length << " : "
               << setw(5)  << formatPercent(percent) << "%"
@@ -154,9 +154,9 @@ void printStatsgen(statstruct stats, sstruct pargs)
     for(auto [scs, occurence]: stats.scs)
     {
       double percent = (double)occurence/total;
-      if(percent < minpercent)
+      if(percent > minpercent)
         cout  << FinePrint::greenText("[+]") 
-              << setw(32) << scs << " : "
+              << setw(32) << Mask::scstoString(scs) << " : "
               << setw(5)  << formatPercent(percent) << "%"
               << " (" << occurence << ")" << endl;
   }
@@ -165,7 +165,7 @@ void printStatsgen(statstruct stats, sstruct pargs)
     for(auto [mask, occurence]: stats.mask)
     {
       double percent = (double)occurence/total;
-      if(percent < minpercent)
+      if(percent > minpercent)
         cout  << FinePrint::greenText("[+]") 
               << setw(32) << mask << " : "
               << setw(5)  <<  formatPercent(percent) << "%"
@@ -188,7 +188,7 @@ void printStatsgen(statstruct stats, sstruct pargs)
     {
       double percent = (double)occurence/total;
       cout  << FinePrint::greenText("[+]") 
-            << setw(32) << scs << " : "
+            << setw(32) << Mask::scstoString(scs) << " : "
             << setw(5)  <<  formatPercent(percent) << "%"
             << " (" << occurence << ")" << endl;
     }
@@ -334,13 +334,21 @@ void PPACK::policygen(pstruct pargs)
 {
   
   if(pargs.quiet == false) // print the ppack logo
-    {
-      //string ppack_logo = Logo::random();
-      cout << "LOGO PPACK" << endl;
-    }
-  //fine::print_status("Saving generated masks to [" + pargs.output +".hcmask]");
-  cout << "Saving generated masks to [" + pargs.output +".hcmask]" << endl;
-  //fine::print_status("Using 8 OMP Threads.");
+    cout << Logo::randomLogo() << endl;
 
+  FinePrint::status("Saving generated masks to [" + pargs.output + "]");
+  //FinePrint::status("Using 8 OMP Threads.");
+  FinePrint::status("Password policy:");
+  cout << "\t" << "Password Lengths: "  << " min:" << setw(2) << pargs.minlength 
+                                        << " max:" << setw(2) << pargs.maxlength << endl;
+  cout << "\t" << "Minimun strength: "  << " l:" << setw(3) << pargs.minlower
+                                        << " u:" << setw(3) << pargs.minupper
+                                        << " d:" << setw(3) << pargs.mindigit
+                                        << " s:" << setw(3) << pargs.minspecial << endl;
+
+  cout << "\t" << "Maximun strength: "  << " l:" << setw(3) << pargs.maxlower
+                                        << " u:" << setw(3) << pargs.maxupper
+                                        << " d:" << setw(3) << pargs.maxdigit
+                                        << " s:" << setw(3) << pargs.maxspecial << endl;
   corePolicygen(pargs); //do almost all the work()
 }

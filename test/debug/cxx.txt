@@ -1,5 +1,5 @@
 ### g++ cmd to debug policygen (run inside src directory)
-g++ -ggdb -std=c++17 policygen.cpp mask.cpp password.cpp pstructs.cpp basepoli.cpp  ppack.cpp csv.cpp -o policygen -lboost_program_options
+g++ -ggdb -std=c++17 policygen.cpp mask.cpp password.cpp pstructs.cpp basepoli.cpp ppack.cpp csv.cpp fineprint.cpp logos.cpp -o policygen -lboost_program_options
 
 
 ### g++ cmd to compile statsgen (run inside src directory)

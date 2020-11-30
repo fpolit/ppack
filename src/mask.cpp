@@ -40,7 +40,7 @@ string masksymbols = R"(ludsa)";
 // characterSet map (SCS or ACS -> string values)
 
 // string Values of Simple Charsets
-map<SCS, string> scsValue = {
+map<SCS, string> scsMap = {
   {SCS::loweralpha, "loweralpha"},
   {SCS::upperalpha,"upperalpha"},
   {SCS::numeric,"numeric"},
@@ -55,7 +55,7 @@ map<SCS, string> scsValue = {
 
 
 // string Values of advance Charsets
-map<ACS, string> acsValue = {
+map<ACS, string> acsMap = {
   {ACS::alphaspecial, "alphaspecial"},
   {ACS::loweralphaspecial, "loweralphaspecial"},
   {ACS::upperalphaspecial, "upperalphaspecial"},
@@ -243,12 +243,12 @@ bool isMaskCharset(string maskCharset) // check if a symbols is a valid symbol m
 // get and set methods
 string Mask::getValueSCS()
 {
-  return scsValue[charset];
+  return scsMap[charset];
 }
 string Mask::getValueACS()
 {
   ACS acs = this->getACS();
-  return acsValue[acs];
+  return acsMap[acs];
 }
 
 
@@ -381,4 +381,15 @@ SCS Mask::scsParser(maskStruct mstruct)
 
     else
         return SCS::none;
+}
+
+
+string Mask::scstoString(SCS simpleCharset) // return the string value of the SCS simpleCharset
+{
+  return scsMap[simpleCharset];
+}
+
+string Mask::acstoString(ACS advanceCharset) // return the string value of the ACS advanceCharset
+{
+  return acsMap[advanceCharset];
 }

@@ -22,6 +22,12 @@
 #include "../include/basepoli.hpp"
 #endif //__INCLUDE_BASE_H__
 
+#ifndef __INCLUDE_FINEPRINT_H__
+#define __INCLUDE_FINEPRINT_H__
+#include "../include/fineprint.hpp"
+#endif //__INCLUDE_FINEPRINT_H_
+
+
 
 #ifndef __INCLUDE_STD_IOSTREAM_H__
 #define __INCLUDE_STD_IOSTREAM_H__
@@ -128,7 +134,7 @@ Base* maskStep(Base *base)
 
 void Base::showMasks()
 {
-  cout << "Base " << length << " :" << endl;
+  cout << FinePrint::greenText("[+]") << " Base " << length << " :" << endl;
   for(auto mask: *baseMasks)
   {
     cout << "\t" << mask << endl;
@@ -161,13 +167,29 @@ void corePolicygen(pstruct init)
 
 
   // now the length of base is equal to minlength-1(policygen paramemter)
-  for(int step=base->getLength(); step < base->getMaxLength(); step++)
+  vector<Base*>* basePoli = new vector<Base*>;
+  if(init.show)
+  {
+    for(int step=base->getLength(); step < base->getMaxLength(); step++)
     {
       base->showMasks();
+      //basePoli->push_back(base);
       base = maskStep(base);
       // HERE PRINT THE OUTPUT OR WRITE TO FILE. 
     }
-  base->showMasks();
-
+    base->showMasks();
+  }
+  else
+  {
+    for(int step=base->getLength(); step < base->getMaxLength(); step++)
+    {
+      //base->showMasks();
+      //basePoli->push_back(base);
+      base = maskStep(base);
+      // HERE PRINT THE OUTPUT OR WRITE TO FILE. 
+    }
+  //base->showMasks();
+  }
+  
   delete base;
 }

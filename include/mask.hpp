@@ -86,7 +86,6 @@ typedef enum ACS{
 } ACS;
 
 
-
 typedef struct maskStruct
 {
   unsigned  int lowercase  = 0;
@@ -143,6 +142,9 @@ public:
   //Mask analysis(string mask);
   static SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
   static ACS acsParser(string mask); // parse a maskStruct and get its ACS
+  
+  static string scstoString(SCS simpleCharset); // return the string value of the SCS simpleCharset
+  static string acstoString(ACS advanceCharset); // return the string value of the ACS advanceCharset
 
   // parse a maskStruct and get the complexity of the mask
   int complexityParser(maskStruct mstruct); 
