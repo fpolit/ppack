@@ -126,7 +126,7 @@ int main(int argc ,char* argv[])
         }
 
         mstruct pargs(vm);
-        pargs.debug();
+        //pargs.debug();
 
         PPACK::maskgen(pargs);
         return 0;

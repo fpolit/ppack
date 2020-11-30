@@ -6,8 +6,8 @@
  */
 
 
-#ifndef __COLOR_H__
-#define __COLOR_H__
+#ifndef __FINEPRINT_H__
+#define __FINEPRINT_H__
 
 #ifndef __INCLUDE_STD_STRING_H__
 #define __INCLUDE_STD_STRING_H__
@@ -40,73 +40,22 @@
 
 using namespace std;
 
-namespace color {
-  string red = "\x1B[31m";
-  string green = "\x1B[32m";
-  string blue = "\x1B[34m";
-  string yellow = "\x1B[93m";
 
-  string end = "\033[0m";
 
-  vector<string> all{red, green, blue, yellow};
-}
-
-class FinePrint{
-
-  // colors
+class FinePrint
+{
 public:
-
   // function to pint text in several color
-  static string randomColorText(string text)
-  {
-    
-    //srand(time(0));
-    int rdm_idx = rand() % color::all.size();
+  static string randomColorText(string text);
+  static string redText(string text);
+  static string greenText(string text);
+  static string blueText(string text);
+  static string yellowText(string text);
 
-    return color::all[rdm_idx] + text + color::end;
-  }
-
-  static string redText(string text)
-  {
-    return color::red + text + color::end;
-  }
-
-  static string greenText(string text)
-  {
-    return color::green + text + color::end;
-  }
-
-  static string blueText(string text)
-  {
-    return color::blue + text + color::end;
-  }
-
-  static string yellowText(string text)
-  {
-    return color::yellow + text + color::end;
-  }
-
-
-  static void successful(string msg)
-  {
-    cout << FinePrint::greenText("[+] ") << msg << endl;
-  }
-
-
-  static void status(string msg)
-  {
-    cout << FinePrint::blueText("[*] ") << msg << endl;
-  }
-
-  static void failure(string msg)
-  {
-    cout << FinePrint::redText("[-] ") << msg << endl;
-  }
-  static void empty()
-  {
-      cout << endl;
-  }
-
+  static void successful(string msg);
+  static void status(string msg);
+  static void failure(string msg);
+  static void empty();
 };
 
-#endif // __COLOR_H__
+#endif // __FINEPRINT_H__

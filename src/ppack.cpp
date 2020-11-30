@@ -24,10 +24,12 @@
 #ifndef __INCLUDE_PPACK_H__
 #define __INCLUDE_PPACK_H__
 #include "../include/ppack.hpp"
+//#include "../include/fineprint.hpp"
 #include <cstdlib>
 #include <exception>
 #include <fstream>
 #include <iomanip>
+#include <string>
 #endif //__INCLUDE_PPACK_H__
 
 
@@ -43,13 +45,15 @@ bool sfilter(Password passwd, sstruct pargs)
   return false;
 }
 
-vector<Password> passwdBlock(ifstream *wordlist, int block, sstruct pargs)
+vector<Password> passwdBlock(ifstream *wordlist, int block, 
+                              sstruct pargs, unsigned long* passwdCounter)
 {
   string passwd;
   vector<Password> vpasswd;
   while((getline(*wordlist, passwd) && passwd!="") && vpasswd.size() <= block)
     {
       Password password(passwd);
+      *passwdCounter += 1;
       if(sfilter(passwd,  pargs))
         vpasswd.push_back(password);
     }
@@ -66,12 +70,13 @@ statstruct coreStatsgen(sstruct pargs)
   ifstream *wordlist  = new ifstream(pargs.wordlist);
   int block = 1000; // max block of pasword to read from wordlists
   statstruct stats; //stats of wordlists
+  unsigned long passwdCounter = 0; //total number of analyzed password 
   
   try{
     while(wordlist->is_open()) // ensure that you close the wordlist when it hasn't more password
     {
       //this function read at most 'block' filtered passwords. 
-      vector<Password> vpasswd = passwdBlock(wordlist, block, pargs); 
+      vector<Password> vpasswd = passwdBlock(wordlist, block, pargs, &passwdCounter); 
 
       //#pragma omp parallel for shared(vpasswd, sstruct)
       for(int k=0; k<vpasswd.size(); k++)
@@ -101,6 +106,7 @@ statstruct coreStatsgen(sstruct pargs)
             stats.mask[passwdMask] = 1;
         }
     }
+    stats.total = passwdCounter;
     return stats;
   }
   catch (std::exception& error)
@@ -112,49 +118,102 @@ statstruct coreStatsgen(sstruct pargs)
   
 }
 
-// void printStatsgen(statstruct stats, sstruct pargs)
-// {
-//   if(!pargs.quiet)
-//     cout << Logo::randomLogo() << endl;
-//   FinePrint::status("Analyzing passwords in [" + pargs.wordlist + "]");
-//   FinePrint::empty();
-  
-//   FinePrint::status("Length:");
-//   for(auto [length, occurence]: stats.length)
-//   {
-//       cout  << FinePrint::greenText("[+]") 
-//             << setw(25) << length << ": "
-//             << setw(5)  << "N%"
-//             << " (" << occurence << ")" << endl;
-//   }
+double formatPercent(double decimalPercent)
+{
+  double percent = decimalPercent*100;
+  return  percent;
+}
 
-//   FinePrint::status("Simple charset:");
-//   for(auto [scs, occurence]: stats.scs)
-//   {
-//       cout  << FinePrint::greenText("[+]") 
-//             << setw(25) << scs << ": "
-//             << setw(5)  << "N%"
-//             << " (" << occurence << ")" << endl;
-//   }
+void printStatsgen(statstruct stats, sstruct pargs)
+{
+  if(!pargs.quiet)
+    cout << Logo::randomLogo() << endl;
+  FinePrint::status("Analyzing passwords in [" + pargs.wordlist + "]");
+  FinePrint::empty();
+  unsigned long total = stats.total;
 
-//   FinePrint::status("Masks:");
-//   for(auto [mask, occurence]: stats.mask)
-//   {
-//       cout  << FinePrint::greenText("[+]") 
-//             << setw(25) << mask << ": "
-//             << setw(5)  << "N%"
-//             << " (" << occurence << ")" << endl;
-//   }
+  cout.setf(ios::fixed); // fix the number of decimal to print
+  cout.setf(ios::showpoint);
+  cout<<setprecision(1);
+
+  FinePrint::status("Length:");
+  if(pargs.hiderare)
+  {
+    double minpercent = 0.10;
+    for(auto [length, occurence]: stats.length)
+    {
+      double percent = (double)occurence/total;
+      if(percent < minpercent)
+        cout  << FinePrint::greenText("[+]") 
+              << setw(32) << length << " : "
+              << setw(5)  << formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;
+    }
+
+    FinePrint::status("Simple charset:");
+    for(auto [scs, occurence]: stats.scs)
+    {
+      double percent = (double)occurence/total;
+      if(percent < minpercent)
+        cout  << FinePrint::greenText("[+]") 
+              << setw(32) << scs << " : "
+              << setw(5)  << formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;
+  }
+
+    FinePrint::status("Masks:");
+    for(auto [mask, occurence]: stats.mask)
+    {
+      double percent = (double)occurence/total;
+      if(percent < minpercent)
+        cout  << FinePrint::greenText("[+]") 
+              << setw(32) << mask << " : "
+              << setw(5)  <<  formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;
+    }
+  }
+  else
+  {
+    for(auto [length, occurence]: stats.length)
+    {
+      double percent = (double)occurence/total;
+      cout  << FinePrint::greenText("[+]") 
+            << setw(32) << length << " : "
+            << setw(5)  << formatPercent(percent) << "%"
+            << " (" << occurence << ")" << endl;
+    }
+
+    FinePrint::status("Simple charset:");
+    for(auto [scs, occurence]: stats.scs)
+    {
+      double percent = (double)occurence/total;
+      cout  << FinePrint::greenText("[+]") 
+            << setw(32) << scs << " : "
+            << setw(5)  <<  formatPercent(percent) << "%"
+            << " (" << occurence << ")" << endl;
+    }
+
+    FinePrint::status("Masks:");
+    for(auto [mask, occurence]: stats.mask)
+    {
+      double percent = (double)occurence/total;
+      cout  << FinePrint::greenText("[+]") 
+            << setw(32) << mask << " : "
+            << setw(5)  << formatPercent(percent) << "%"
+            << " (" << occurence << ")" << endl;
+    }
+  }
   
-//   FinePrint::successful("Analized 100% (TOTAL)");
-// } 
+  FinePrint::empty();
+  FinePrint::successful("Analized 100% (" + to_string(total) +")");
+} 
 
 void PPACK::statsgen(sstruct pargs)
 {
   statstruct stats = coreStatsgen(pargs);
   
   // print to console the computed stats
-  //printStatsgen(stats, pargs);
+  printStatsgen(stats, pargs);
 }
 
 

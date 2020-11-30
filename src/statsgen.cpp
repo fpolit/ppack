@@ -152,9 +152,9 @@ int main(int argc ,char* argv[])
     //cout << "--- vm(before parsing arguments) ---" << endl;
     //testBoostOptions(vm);
 
-    cout << "--- vm(parsing arguments) ---" << endl;
+    //cout << "--- vm(parsing arguments) ---" << endl;
     sstruct pargs(vm);
-    pargs.debug();  
+    //pargs.debug();  
 
 
     PPACK::statsgen(pargs);

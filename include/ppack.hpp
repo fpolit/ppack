@@ -68,16 +68,16 @@ using namespace std;
 #include "basepoli.hpp"
 #endif //__INCLUDE_BASE_H__
 
-// #ifndef __INCLUDE_LOGOS_H__
-// #define __INCLUDE_LOGOS_H__
-// #include "logos.hpp"
-// #endif //__INCLUDE_LOGOS_H__
+#ifndef __INCLUDE_LOGOS_H__
+#define __INCLUDE_LOGOS_H__
+#include "logos.hpp"
+#endif //__INCLUDE_LOGOS_H__
 
 
-// #ifndef __INCLUDE_FINEPRINT_H__
-// #define __INCLUDE_FINEPRINT_H__
-// #include "fineprint.hpp"
-// #endif //__INCLUDE_FINEPRINT_H__
+#ifndef __INCLUDE_FINEPRINT_H__
+#define __INCLUDE_FINEPRINT_H__
+#include "fineprint.hpp"
+#endif //__INCLUDE_FINEPRINT_H_
 
 
 #ifndef __INCLUDE_CSV_H__
@@ -90,11 +90,6 @@ using namespace std;
 
 class PPACK
 {
-// private:
-//   static string wordlist_file;
-//   static string output_statsgen;
-//   static string output_maskgen;
-//   static string output_policygen;
 
 public:
 
