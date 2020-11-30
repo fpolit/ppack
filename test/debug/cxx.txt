@@ -3,7 +3,7 @@ g++ -ggdb -std=c++17 policygen.cpp mask.cpp password.cpp pstructs.cpp basepoli.c
 
 
 ### g++ cmd to compile statsgen (run inside src directory)
-g++ -ggdb -std=c++17 statsgen.cpp pstructs.cpp mask.cpp ppack.cpp password.cpp basepoli.cpp csv.cpp -o statsgen -lboost_program_options
+g++  -std=c++17 statsgen.cpp pstructs.cpp mask.cpp ppack.cpp password.cpp basepoli.cpp csv.cpp fineprint.cpp logos.cpp -o statsgen -lboost_program_options
 
 
 ### g++ cmd to compile maskgen (run inside src directory)
