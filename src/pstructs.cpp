@@ -20,21 +20,6 @@
  */
 
 
-#ifndef __INCLUDE_STD_IOSTREAM_H__
-#define __INCLUDE_STD_IOSTREAM_H__
-#include <cstdlib>
-#include <iostream>
-#endif //__INCLUDE_STD_IOSTREAM_H__
-
-
-
-#ifndef __INCLUDE_STD_EXCEPTION_H__
-#define __INCLUDE_STD_EXCEPTION_H__
-#include <exception>
-#endif //__INCLUDE_STD_EXCEPTION_H__
-
-using namespace std;
-
 
 #ifndef __INCLUDE_PSTRUCTS_H__
 #define __INCLUDE_PSTRUCTS_H__
@@ -126,10 +111,14 @@ sstruct::sstruct(po::variables_map vm)
   
   // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
   quiet = vm["quiet"].as<bool>();
+  
 
   // if there is a hiderare paramenter assign to hiderare attribute, otherwise assign the default value
   hiderare = vm["hiderare"].as<bool>();
 
+  // if there is a pretty paramenter assign to pretty attribute, otherwise assign the default value
+  pretty = vm["pretty"].as<bool>();
+  
   ////////// check parameters (check section) //////////
   // NO CHECK SECTION
 
@@ -230,6 +219,9 @@ mstruct::mstruct(po::variables_map vm)
 
   // if there is a show paramenter assign to show attribute, otherwise assign the default value
   show = vm["show"].as<bool>();
+
+  // if there is a pretty paramenter assign to pretty attribute, otherwise assign the default value
+  pretty = vm["pretty"].as<bool>();
 
   ////////// check parameters (check section) //////////
   if(vm.count("checkmasks"))
@@ -451,6 +443,9 @@ pstruct::pstruct(po::variables_map vm)
 
   // if there is a show paramenter assign to show attribute, otherwise assign the default value
   show = vm["show"].as<bool>();
+
+  // if there is a pretty paramenter assign to pretty attribute, otherwise assign the default value
+  pretty = vm["pretty"].as<bool>();
 
   ////////// mask parameters (mask section) //////////
   //length

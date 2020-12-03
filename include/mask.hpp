@@ -1,7 +1,7 @@
 /*
  * Mask class definition
- * Mask class reimplemented 23 nov 20202
- *
+ * Mask class reimplemented 23 nov 2020
+ * Mask class with omp support - 30 nov 2020
  *
  * Depuration:
  * Mask class tested 24 nov 2020.
@@ -14,6 +14,8 @@
  * No implemented functions:
  * vector<Mask> Mask::permutations();
  *
+ * Functions with OMP support:
+ * bool Mask::ismask(string mask)
  *
  *
  * Maintainer: glozanoa <glozanoa@uni.pe>
@@ -22,6 +24,11 @@
 
 #ifndef __MASK_H__
 #define __MASK_H__
+
+#ifndef __INCLUDE_STD_IOSTREAM_H__
+#define __INCLUDE_STD_IOSTREAM_H__
+#include <iostream>
+#endif //__INCLUDE_STD_IOSTREAM_H__
 
 
 #ifndef __INCLUDE_STD_MAP_H__
@@ -42,6 +49,15 @@
 using namespace std;
 
 
+// #ifndef __INCLUDE_MASK_EXCEPTIONS_H__
+// #define __INCLUDE_MASK_EXCEPTIONS_H__
+// #include "../include/mask_exceptions.hpp"
+// #endif //__INCLUDE_MASK_EXCEPTIONS_H__
+
+#ifndef __INCLUDE_STD_EXCEPTION_H__
+#define __INCLUDE_STD_EXCEPTION_H__
+#include <exception>
+#endif //__INCLUDE_STD_EXCEPTION_H__
 
 typedef enum SCS {
 // base types
@@ -142,11 +158,10 @@ public:
   //Mask analysis(string mask);
   static SCS scsParser(maskStruct mstruct); // parse a maskStruct and get its SCS
   static ACS acsParser(string mask); // parse a maskStruct and get its ACS
-  
   static string scstoString(SCS simpleCharset); // return the string value of the SCS simpleCharset
   static string acstoString(ACS advanceCharset); // return the string value of the ACS advanceCharset
 
   // parse a maskStruct and get the complexity of the mask
-  int complexityParser(maskStruct mstruct); 
+  int complexityParser(maskStruct mstruct);
 };
 #endif // __MASK_H__

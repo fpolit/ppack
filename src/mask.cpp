@@ -5,34 +5,35 @@
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
-#ifndef __INCLUDE_STD_IOSTREAM_H__
-#define __INCLUDE_STD_IOSTREAM_H__
-#include <iostream>
-#endif //__INCLUDE_STD_IOSTREAM_H__
 
-
-#ifndef __INCLUDE_STD_STRING_H__
-#define __INCLUDE_STD_STRING_H__
-#include<string>
-#endif //__INCLUDE_STD_STRING_H__
-
-using namespace std;
 
 #ifndef __INCLUDE_MASK_H__
 #define __INCLUDE_MASK_H__
 #include "../include/mask.hpp"
 #endif //__INCLUDE_MASK_H__
 
+/*
+ * Mask exceptions
+*/
+struct invalid_maskcharset : public std::exception
+{
+  const char * what () const throw ()
+  {
+    return "Invalid mask charset.";
+  }
+}invalid_maskcharset;
 
-#ifndef __INCLUDE_MASK_EXCEPTIONS_H__
-#define __INCLUDE_MASK_EXCEPTIONS_H__
-#include "../include/mask_exceptions.hpp"
-#endif //__INCLUDE_MASK_EXCEPTIONS_H__
 
-// #ifndef __INCLUDE_CHARACTER_H__
-// #define __INCLUDE_CHARACTER_H__
-// #include "../include/character.hpp"
-// #endif //__INCLUDE_CHARACTER_H__
+
+struct invalid_mask : public std::exception
+{
+  const char * what () const throw ()
+  {
+    return "Invalid mask.";
+  }
+}invalid_mask;
+
+
 
 // character.hpp
 string masksymbols = R"(ludsa)";
@@ -151,21 +152,19 @@ Mask::Mask(string mask)
 
 
 // check friend methods
-
+// Tested with omp support
 bool Mask::ismask(string mask)
 {
   bool master_ismask = true;
-  //#pragma omp parallel for shared(master_ismask, maskSymbols)
+#pragma omp parallel for shared(master_ismask)
   for(int k=1; k<(int)mask.size(); k+=2)
     {
-
-
       // if the string mask  isn't a mask, then only pass.
       if(!master_ismask)  continue;
 
       if(masksymbols.find(mask[k], 0) == string::npos)
         {
-          //#pragma omp critical
+          #pragma omp critical
           master_ismask = false;
         }
     }
@@ -285,10 +284,6 @@ void Mask::realloc(string maskCharset)
     {
       cerr << error.what() << endl;
     }
-  // catch (invalid_maskcharset &error)
-  //   {
-  //     cerr << error.what() << endl;
-  //   }
 
 }
 

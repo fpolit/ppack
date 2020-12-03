@@ -22,17 +22,7 @@
 #include "../include/basepoli.hpp"
 #endif //__INCLUDE_BASE_H__
 
-#ifndef __INCLUDE_FINEPRINT_H__
-#define __INCLUDE_FINEPRINT_H__
-#include "../include/fineprint.hpp"
-#endif //__INCLUDE_FINEPRINT_H_
 
-
-
-#ifndef __INCLUDE_STD_IOSTREAM_H__
-#define __INCLUDE_STD_IOSTREAM_H__
-#include <iostream>
-#endif //__INCLUDE_STD_IOSTREAM_H__
 
 //tested 27 nov 2020
 string repeat(string str, int n)
@@ -132,9 +122,13 @@ Base* maskStep(Base *base)
     return baseStep;
 }
 
-void Base::showMasks()
+void Base::showMasks(bool prettyOutput)
 {
-  cout << FinePrint::greenText("[+]") << " Base " << length << " :" << endl;
+  if(prettyOutput)
+    cout << FinePrint::greenText("[+]") << " Base " << length << " :" << endl;
+  else
+   cout << "[+] Base " << length << " :" << endl;
+  
   for(auto mask: *baseMasks)
   {
     cout << "\t" << mask << endl;
@@ -153,9 +147,9 @@ void permuteMasks(Base base)
 // compute a set of bases[PoliBase]
 // (with length equal to minlength  till maxlength)
 // tested 27 nov 2020 
-void corePolicygen(pstruct init)
+void corePolicygen(pstruct pargs)
 {
-  Base *base = new Base(init);
+  Base *base = new Base(pargs);
   
   int minlength = base->getMinLength();
   int baseLength = base->getLength();
@@ -168,16 +162,16 @@ void corePolicygen(pstruct init)
 
   // now the length of base is equal to minlength-1(policygen paramemter)
   vector<Base*>* basePoli = new vector<Base*>;
-  if(init.show)
+  if(pargs.show)
   {
     for(int step=base->getLength(); step < base->getMaxLength(); step++)
     {
-      base->showMasks();
+      base->showMasks(pargs.pretty);
       //basePoli->push_back(base);
       base = maskStep(base);
       // HERE PRINT THE OUTPUT OR WRITE TO FILE. 
     }
-    base->showMasks();
+    base->showMasks(pargs.pretty);
   }
   else
   {

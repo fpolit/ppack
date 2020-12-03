@@ -157,7 +157,7 @@ Logo::Logo()
 string Logo::randomLogo()
 {
     Logo logo;
-	//srand(time(NULL));
+	srand(time(NULL));
 	int idxLogo = rand() % logo.rawLogos.size();
 	return logo.rawLogos[idxLogo];
 }

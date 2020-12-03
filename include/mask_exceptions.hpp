@@ -5,17 +5,10 @@
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
-
-#ifndef __INCLUDE_STD_IOSTREAM_H__
-#define __INCLUDE_STD_IOSTREAM_H__
-#include <iostream>
-#endif //__INCLUDE_STD_IOSTREAM_H__
-
 #ifndef __INCLUDE_STD_EXCEPTION_H__
 #define __INCLUDE_STD_EXCEPTION_H__
 #include <exception>
 #endif //__INCLUDE_STD_EXCEPTION_H__
-
 
 struct invalid_maskcharset : public std::exception
 {
@@ -34,3 +27,5 @@ struct invalid_mask : public std::exception
     return "Invalid mask.";
   }
 }invalid_mask;
+
+

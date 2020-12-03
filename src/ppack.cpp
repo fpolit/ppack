@@ -24,12 +24,8 @@
 #ifndef __INCLUDE_PPACK_H__
 #define __INCLUDE_PPACK_H__
 #include "../include/ppack.hpp"
-//#include "../include/fineprint.hpp"
-#include <cstdlib>
 #include <exception>
 #include <fstream>
-#include <iomanip>
-#include <string>
 #endif //__INCLUDE_PPACK_H__
 
 
@@ -78,7 +74,7 @@ statstruct coreStatsgen(sstruct pargs)
       //this function read at most 'block' filtered passwords. 
       vector<Password> vpasswd = passwdBlock(wordlist, block, pargs, &passwdCounter); 
 
-      //#pragma omp parallel for shared(vpasswd, sstruct)
+      //#pragma omp parallel for shared(vpasswd, stats)
       for(int k=0; k<vpasswd.size(); k++)
         {
           Password passwd = vpasswd.at(k);
@@ -86,24 +82,42 @@ statstruct coreStatsgen(sstruct pargs)
           //length password stats
           int passwdSize = passwd.size();
           if(stats.length.find(passwdSize) != stats.length.end())
+            {
+              //#pragma omp atomic
               stats.length[passwdSize] += 1;
+            }
           else
+            {
+              //#pragma omp critical
               stats.length[passwdSize] = 1;
-            
+            }
+
           // Character set stats
           SCS passwdSCS = passwd.getSCS();
           if(stats.scs.find(passwdSCS) != stats.scs.end())
+            {
+              //#pragma omp atomic
               stats.scs[passwdSCS] += 1;
+            }
           else
+            {
+              //#pragma omp critical
               stats.scs[passwdSCS] = 1;
+            }
 
 
           // advance mask stats
           Mask passwdMask = passwd.getMask();
           if(stats.mask.find(passwdMask) != stats.mask.end())
+            {
+              //#pragma omp atomic
               stats.mask[passwdMask] += 1;
+            }
           else
-            stats.mask[passwdMask] = 1;
+            {
+              //#pragma omp critical
+              stats.mask[passwdMask] = 1;
+            }
         }
     }
     stats.total = passwdCounter;
@@ -115,7 +129,6 @@ statstruct coreStatsgen(sstruct pargs)
     wordlist->close();
     exit(EXIT_FAILURE);
   }
-  
 }
 
 double formatPercent(double decimalPercent)
@@ -128,48 +141,89 @@ void printStatsgen(statstruct stats, sstruct pargs)
 {
   if(!pargs.quiet)
     cout << Logo::randomLogo() << endl;
-  FinePrint::status("Analyzing passwords in [" + pargs.wordlist + "]");
-  FinePrint::empty();
+
+  bool prettyOutput = pargs.pretty;
+  if(prettyOutput)
+  {
+    FinePrint::status("Analyzing passwords in [" + pargs.wordlist + "]");
+    FinePrint::empty();
+  }
+  else
+    cout << "Analyzing passwords in [" + pargs.wordlist + "]" << endl;
+  
   unsigned long total = stats.total;
 
   cout.setf(ios::fixed); // fix the number of decimal to print
   cout.setf(ios::showpoint);
   cout<<setprecision(1);
 
-  FinePrint::status("Length:");
+  if(prettyOutput)
+    FinePrint::status("Length:");
+  else
+    cout << "[*] Length:" << endl;
   if(pargs.hiderare)
   {
-    double minpercent = 0.10;
+    double minpercent = 0.01;
     for(auto [length, occurence]: stats.length)
     {
       double percent = (double)occurence/total;
       if(percent > minpercent)
-        cout  << FinePrint::greenText("[+]") 
+      {
+        if(prettyOutput)
+          cout  << FinePrint::greenText("[+]")
               << setw(32) << length << " : "
               << setw(5)  << formatPercent(percent) << "%"
               << " (" << occurence << ")" << endl;
+        else
+         cout  << "[+]"
+              << setw(32) << length << " : "
+              << setw(5)  << formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;;
+      }
     }
-
-    FinePrint::status("Simple charset:");
+    if(prettyOutput)
+      FinePrint::status("Simple charset:");
+    else
+      cout << "[*] Simple charset:" << endl;
+    
     for(auto [scs, occurence]: stats.scs)
     {
       double percent = (double)occurence/total;
       if(percent > minpercent)
-        cout  << FinePrint::greenText("[+]") 
+      {
+        if(prettyOutput)
+          cout  << FinePrint::greenText("[+]")
               << setw(32) << Mask::scstoString(scs) << " : "
               << setw(5)  << formatPercent(percent) << "%"
               << " (" << occurence << ")" << endl;
+        else
+         cout  << "[+]"
+              << setw(32) << Mask::scstoString(scs) << " : "
+              << setw(5)  << formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;;
+      }
   }
-
-    FinePrint::status("Masks:");
+    if(prettyOutput)
+      FinePrint::status("Masks:");
+    else
+      cout << "Masks:" << endl;
+    
     for(auto [mask, occurence]: stats.mask)
     {
       double percent = (double)occurence/total;
       if(percent > minpercent)
-        cout  << FinePrint::greenText("[+]") 
-              << setw(32) << mask << " : "
-              << setw(5)  <<  formatPercent(percent) << "%"
-              << " (" << occurence << ")" << endl;
+      {
+        if(prettyOutput)
+          cout  << FinePrint::greenText("[+]")
+                << setw(32) << mask << " : "
+                << setw(5)  <<  formatPercent(percent) << "%"
+                << " (" << occurence << ")" << endl;
+        else
+          cout  << "[+]"
+                << setw(32) << mask << " : "
+                << setw(5)  <<  formatPercent(percent) << "%"
+                << " (" << occurence << ")" << endl;;
+      }
     }
   }
   else
@@ -177,45 +231,82 @@ void printStatsgen(statstruct stats, sstruct pargs)
     for(auto [length, occurence]: stats.length)
     {
       double percent = (double)occurence/total;
-      cout  << FinePrint::greenText("[+]") 
-            << setw(32) << length << " : "
-            << setw(5)  << formatPercent(percent) << "%"
-            << " (" << occurence << ")" << endl;
+      if(prettyOutput)
+        cout  << FinePrint::greenText("[+]")
+              << setw(32) << length << " : "
+              << setw(5)  << formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;
+      else
+        cout  << "[+]"
+              << setw(32) << length << " : "
+              << setw(5)  << formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;;
     }
-
-    FinePrint::status("Simple charset:");
+    if(prettyOutput)
+      FinePrint::status("Simple charset:");
+    else
+      cout << "[*] Simple charset:" << endl;
+    
     for(auto [scs, occurence]: stats.scs)
     {
       double percent = (double)occurence/total;
-      cout  << FinePrint::greenText("[+]") 
+      if(prettyOutput)
+        cout  << FinePrint::greenText("[+]")
+              << setw(32) << Mask::scstoString(scs) << " : "
+              << setw(5)  <<  formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;
+      else
+       cout  << "[+]"
             << setw(32) << Mask::scstoString(scs) << " : "
             << setw(5)  <<  formatPercent(percent) << "%"
-            << " (" << occurence << ")" << endl;
+            << " (" << occurence << ")" << endl;;
     }
 
-    FinePrint::status("Masks:");
+    if(prettyOutput)
+      FinePrint::status("Masks:");
+    else
+      cout << "Masks:" << endl;
+    
     for(auto [mask, occurence]: stats.mask)
     {
       double percent = (double)occurence/total;
-      cout  << FinePrint::greenText("[+]") 
-            << setw(32) << mask << " : "
-            << setw(5)  << formatPercent(percent) << "%"
-            << " (" << occurence << ")" << endl;
+      if(prettyOutput)
+        cout  << FinePrint::greenText("[+]")
+              << setw(32) << mask << " : "
+              << setw(5)  << formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;
+      else
+       cout  << "[+]"
+              << setw(32) << mask << " : "
+              << setw(5)  << formatPercent(percent) << "%"
+              << " (" << occurence << ")" << endl;;
     }
   }
-  
-  FinePrint::empty();
-  FinePrint::successful("Analized 100% (" + to_string(total) +")");
-} 
+  if(prettyOutput)
+  {
+    FinePrint::empty();
+    FinePrint::successful("Analized 100% (" + to_string(total) +")");
+  }
+  else
+    cout << "Analized 100% (" + to_string(total) +")" << endl;
+}
 
 void PPACK::statsgen(sstruct pargs)
 {
   statstruct stats = coreStatsgen(pargs);
-  
+
   // print to console the computed stats
   printStatsgen(stats, pargs);
+  if(pargs.output != "")
+  {
+    ofstream statsgenOutput;
+    statsgenOutput.open(pargs.output);
+    for(auto [mask, occurence]: stats.mask)
+    {
+      statsgenOutput << mask << " , " << occurence << endl;
+    }
+  }
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// maskgen implementation   /////////////////////////////////
@@ -228,7 +319,7 @@ bool checkOccurrence(unsigned int maskOccurrence, unsigned int minoccurence, int
   {
     if(maskOccurrence >= minoccurence && maskOccurrence <= maxoccurence)
     return true;
-  }  
+  }
   else
   {
     if(maskOccurrence >= minoccurence)
@@ -248,13 +339,14 @@ bool mFilter(Mask mask, unsigned int occurrence, mstruct pargs)
   return false;
 }
 
-// void maskgen(string statsgen_output, string output,    //IO parameters
-//              bool show, bool quiet,                           //print parameters
-//              vector<Mask> checkmasks,string checkmasksfile,       //checkmask parameters
-//              vector<string> charset,                            //password charset
-//              int minlength, int maxlength,                         //length parameters
-//              int mincomplexity, int maxcomplexity,                 //complexity parameters
-//              int minoccurrence, int maxoccurrence)                 //occurrence parameters
+
+class invalid_options: public std::exception
+{
+  virtual const char* what() const throw()
+  {
+    return "Invalid options(no show or output options supplied)";
+  }
+} invalid_options;
 
 void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults, mstruct pargs)
 /*
@@ -262,11 +354,50 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
  * second element is occurence of the mask(first element)
 */
 {
-  FinePrint::status("Analyzing masks in [" + pargs.statsgen + "]");
-  FinePrint::empty();
-  if(pargs.show)
-  {
+  bool prettyOutput = pargs.pretty;
 
+  if(prettyOutput)
+  {
+    FinePrint::status("Analyzing masks in [" + pargs.statsgen + "]");
+    FinePrint::empty();
+  }
+  else
+  {
+    cout << "[*] Analyzing masks in [" + pargs.statsgen + "]" << endl;
+  }
+  
+  if(pargs.output != "" && !pargs.show)
+  {
+    maskgenOutput = new ofstream(pargs.output);
+    for(int k=0; k < statsgenResults.size(); k++)
+    {
+      // first element in statsgen output is mask and
+      // second element is occurence of the mask(first element)
+      Mask mask(statsgenResults[k][0]);
+      int occurence = stoi(statsgenResults[k][1]); //convert from string to interger
+
+      if(mFilter(mask, occurence, pargs))
+        *maskgenOutput << mask << endl;
+    }
+    maskgenOutput->close();
+    
+    if(prettyOutput)
+    {
+      FinePrint::empty();
+      FinePrint::status("Finished generating masks:");
+      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
+      FinePrint::successful("Mask wrote in " +  pargs.output);
+    }
+    else
+    {
+      cout << "\nFinished generating masks:" << endl;
+      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
+      cout << "[+] Mask wrote in " +  pargs.output << endl;
+    } 
+  }
+  else if(pargs.output != "" && pargs.show)
+  {
+    maskgenOutput = new ofstream(pargs.output);
     cout  << "[" << setw(3) << "L:" << "]" << setw(32) << std::left <<  " Mask:"
           << "[" << setw(6) << "Occ:" << "]" << endl;
     for(int k=0; k < statsgenResults.size(); k++)
@@ -277,18 +408,32 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
       int occurence = stoi(statsgenResults[k][1]); //convert from string to interger
 
       if(mFilter(mask, occurence, pargs))
-      {
-        //write mask to maskgenOutput file and print to cli
-        cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
-          << "[ " << setw(6) << occurence << "]" << endl;
-      }
+        {
+          *maskgenOutput << mask << endl;
+          cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
+              << "[ " << setw(6) << occurence << "]" << endl;
+        }
     }
-    FinePrint::empty();
-    FinePrint::status("Finished generating masks:");
-    cout << "\t" << "Masks generated: " << statsgenResults.size() << endl;
     maskgenOutput->close();
-  } 
-  else {
+
+    if(prettyOutput)
+    {
+      FinePrint::empty();
+      FinePrint::status("Finished generating masks:");
+      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
+      FinePrint::successful("Mask wrote in " +  pargs.output);
+    }
+    else
+    {
+      cout << "\nFinished generating masks:" << endl;
+      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
+      cout << "[+] Mask wrote in " +  pargs.output << endl;
+    } 
+  }
+  else if(pargs.show && pargs.output == "")
+  {
+    cout  << "[" << setw(3) << "L:" << "]" << setw(32) << std::left <<  " Mask:"
+          << "[" << setw(6) << "Occ:" << "]" << endl;
     for(int k=0; k < statsgenResults.size(); k++)
     {
       // first element in statsgen output is mask and
@@ -297,13 +442,23 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
       int occurence = stoi(statsgenResults[k][1]); //convert from string to interger
 
       if(mFilter(mask, occurence, pargs))
-      {
-        cout <<  "Only write mask to maskgenOutput file" << endl;
-      }
+        cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
+              << "[ " << setw(6) << occurence << "]" << endl;
     }
-    maskgenOutput->close();
+    if(prettyOutput)
+    {
+      FinePrint::empty();
+      FinePrint::status("Finished generating masks:");
+      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
     }
-
+    else
+    {
+      cout << "\nFinished generating masks:" << endl;
+      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
+    }  
+  } else {
+  throw invalid_options;
+}
 }
 void PPACK::maskgen(mstruct pargs)
 {
@@ -314,7 +469,7 @@ void PPACK::maskgen(mstruct pargs)
   if(!pargs.quiet)
     cout << Logo::randomLogo() << endl;
   
-  ofstream *maskgenOutput = new ofstream(pargs.output);
+  ofstream *maskgenOutput;
 
   try 
   {
@@ -322,7 +477,7 @@ void PPACK::maskgen(mstruct pargs)
   }
   catch (std::exception& error) {
     cerr << error.what() << endl;
-    maskgenOutput->close();
+    //delete maskgenOutput;
     exit(EXIT_FAILURE);
   }
 }
@@ -338,15 +493,22 @@ namespace ppack{
 
 void PPACK::policygen(pstruct pargs)
 {
-  
   if(pargs.quiet == false) // print the ppack logo
     cout << Logo::randomLogo() << endl;
 
-  FinePrint::status("Saving generated masks to [" + pargs.output + "]");
-  //FinePrint::status("Using 8 OMP Threads.");
-  FinePrint::status("Password policy:");
-  cout << "\t" << "Password Lengths: "  << " min:" << setw(2) << pargs.minlength 
+  if(pargs.pretty)
+  {
+    FinePrint::status("Saving generated masks to [" + pargs.output + "]");
+    //FinePrint::status("Using 8 OMP Threads.");
+    FinePrint::status("Password policy:");
+  }
+  else {
+    cout << "[*] Saving generated masks to [" + pargs.output + "]" << endl;
+    cout << "[*] Password policy:" << endl;
+  }
+  cout << "\t" << "Password Lengths: "  << " min:" << setw(2) << pargs.minlength
                                         << " max:" << setw(2) << pargs.maxlength << endl;
+
   cout << "\t" << "Minimun strength: "  << " l:" << setw(3) << pargs.minlower
                                         << " u:" << setw(3) << pargs.minupper
                                         << " d:" << setw(3) << pargs.mindigit
