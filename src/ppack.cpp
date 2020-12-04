@@ -12,7 +12,7 @@
  *  
  *
  *
- * NO COMPLETED
+ * COMPLETED: (3 dec 2020)
  * --- Use pstruct class to manage the parameter of statsgen, maskgen and policygen ---
  *
  *
