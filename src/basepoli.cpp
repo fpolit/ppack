@@ -229,6 +229,12 @@ void corePolicygen(pstruct pargs)
       base->showMasks(pargs.pretty);
       writeMasks(base, outputPolicygen);
       outputPolicygen->close();
+
+      if(pargs.pretty)
+        FinePrint::successful("Generated masks have written in [" + pargs.output + "]");
+      else
+       cout << "Generated masks have written in [" + pargs.output + "]" << endl;
+
     } catch (std::exception& error) {
       cout << error.what() << endl;
       outputPolicygen->close();
@@ -247,6 +253,11 @@ void corePolicygen(pstruct pargs)
       }
       writeMasks(base, outputPolicygen);
       outputPolicygen->close();
+      
+      if(pargs.pretty)
+        FinePrint::successful("Generated masks have written in [" + pargs.output + "]");
+      else
+       cout << "Generated masks have written in [" + pargs.output + "]" << endl;
     } catch (std::exception& error) {
       cout << error.what() << endl;
       outputPolicygen->close();

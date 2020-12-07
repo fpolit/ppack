@@ -305,6 +305,11 @@ void PPACK::statsgen(sstruct pargs)
     {
       statsgenOutput << mask << " , " << occurence << endl;
     }
+
+    if(pargs.pretty)
+      FinePrint::successful("Writing masks in [" + pargs.output +"]");
+    else
+     cout << "[+] Writing mask in [" << pargs.output << "]" << endl;;
   }
 }
 
@@ -366,6 +371,7 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
     cout << "[*] Analyzing masks in [" + pargs.statsgen + "]" << endl;
   }
   
+  int counterGeneratedMasks=0;
   if(pargs.output != "" && !pargs.show)
   {
     maskgenOutput = new ofstream(pargs.output);
@@ -377,7 +383,10 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
       int occurence = stoi(statsgenResults[k][1]); //convert from string to interger
 
       if(mFilter(mask, occurence, pargs))
+      {
         *maskgenOutput << mask << endl;
+        counterGeneratedMasks++;
+      }
     }
     maskgenOutput->close();
     
@@ -385,14 +394,14 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
     {
       FinePrint::empty();
       FinePrint::status("Finished generating masks:");
-      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
-      FinePrint::successful("Mask wrote in " +  pargs.output);
+      cout << "\t" << "Masks generated: " << counterGeneratedMasks << endl; 
+      FinePrint::successful("Mask wrote in [" +  pargs.output + "]");
     }
     else
     {
       cout << "\nFinished generating masks:" << endl;
-      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
-      cout << "[+] Mask wrote in " +  pargs.output << endl;
+      cout << "\t" << "Masks generated: " << counterGeneratedMasks << endl; 
+      cout << "[+] Mask wrote in [" +  pargs.output + "]" << endl;
     } 
   }
   else if(pargs.output != "" && pargs.show)
@@ -410,6 +419,7 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
       if(mFilter(mask, occurence, pargs))
         {
           *maskgenOutput << mask << endl;
+          counterGeneratedMasks++;
           cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
               << "[ " << setw(6) << occurence << "]" << endl;
         }
@@ -420,14 +430,14 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
     {
       FinePrint::empty();
       FinePrint::status("Finished generating masks:");
-      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
-      FinePrint::successful("Mask wrote in " +  pargs.output);
+      cout << "\t" << "Masks generated: " << counterGeneratedMasks << endl; 
+      FinePrint::successful("Mask wrote in [" +  pargs.output + "]");
     }
     else
     {
       cout << "\nFinished generating masks:" << endl;
-      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
-      cout << "[+] Mask wrote in " +  pargs.output << endl;
+      cout << "\t" << "Masks generated: " << counterGeneratedMasks << endl; 
+      cout << "[+] Mask wrote in [" +  pargs.output + "]" << endl;
     } 
   }
   else if(pargs.show && pargs.output == "")
@@ -442,19 +452,22 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
       int occurence = stoi(statsgenResults[k][1]); //convert from string to interger
 
       if(mFilter(mask, occurence, pargs))
+      {
+        counterGeneratedMasks++;
         cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
               << "[ " << setw(6) << occurence << "]" << endl;
+      }
     }
     if(prettyOutput)
     {
       FinePrint::empty();
       FinePrint::status("Finished generating masks:");
-      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
+      cout << "\t" << "Masks generated: " << counterGeneratedMasks << endl; 
     }
     else
     {
       cout << "\nFinished generating masks:" << endl;
-      cout << "\t" << "Masks generated(UPDATE COUNTER): " << statsgenResults.size() << endl; 
+      cout << "\t" << "Masks generated: " << counterGeneratedMasks << endl; 
     }  
   } else {
   throw invalid_options;
