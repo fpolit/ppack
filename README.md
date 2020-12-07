@@ -1,8 +1,8 @@
-# PPACK - `uniprocessor`
+# PPACK - `uniprocessor version`
 
-#### Dependences
+## Dependences
 * boost
 * C++ compiler (`g++` GNU Compiler)
 * Cmake
 
-
+Visit our [PPACK wiki](https://github.com/wtchdog/ppack/wiki) to more details.
