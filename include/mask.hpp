@@ -131,6 +131,7 @@ public:
   string getValueSCS();
   string getValueACS();
   maskStruct getStruct(){return mstruct;}
+  string getSymbols(); //get only the symbols of a mask without ? character
   int length(){return this->size()/2;}
 
   void setComplexity(int complex){complexity = complex;}
@@ -160,7 +161,7 @@ public:
   static ACS acsParser(string mask); // parse a maskStruct and get its ACS
   static string scstoString(SCS simpleCharset); // return the string value of the SCS simpleCharset
   static string acstoString(ACS advanceCharset); // return the string value of the ACS advanceCharset
-
+  static bool equalStruct(Mask kmask, Mask imask); //return true if the maskStruct of the mask are equal otherwise return false 
   // parse a maskStruct and get the complexity of the mask
   int complexityParser(maskStruct mstruct);
 };

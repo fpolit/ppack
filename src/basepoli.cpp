@@ -20,6 +20,9 @@
 #ifndef __INCLUDE_BASE_H__
 #define __INCLUDE_BASE_H__
 #include "../include/basepoli.hpp"
+#include <exception>
+#include <fstream>
+#include <ostream>
 #endif //__INCLUDE_BASE_H__
 
 
@@ -74,6 +77,18 @@ void Base::appendMask(Mask step)
 {
   baseMasks->push_back(step);
 }
+
+// check is base have a mask with similar structure of baseMask
+// bool isDuplicateBaseMask(Base base, Mask mask)
+// {
+//   for(auto bmask: base.getBaseMasks())
+//   {
+//     if(Mask::equalStruct(bmask, mask))
+//       return true;
+//   }
+//   return false;
+// }
+
 
 // tested 27 nov 2020
 Base* maskStep(Base *base)
@@ -134,14 +149,52 @@ void Base::showMasks(bool prettyOutput)
     cout << "\t" << mask << endl;
   }
 }
+Mask Base::getMask(int k)
+{
+  return baseMasks->at(k);
+}
 
-void permuteMasks(Base base)
+void writeMasks(Base* base, ofstream* outputPolicygen)
 /*
  * This function compute all the permutations without repetitions
  * and write all of them to a file.
  */
 {
-  cout << "Compute all the permutation without repetitions." << endl;
+  vector<Mask> baseMasks;
+  for(int k=0; k<base->getNumberMasks(); k++)
+  {
+    Mask kmask = base->getMask(k);
+    bool repeatMask = false;
+    for(int i=k+1; i<base->getNumberMasks(); i++)
+    {
+      Mask imask = base->getMask(i);
+      if(Mask::equalStruct(kmask, imask))
+      {
+        repeatMask = true;
+        break;
+      }
+    }
+    if(!repeatMask)
+      baseMasks.push_back(kmask);
+  }
+
+  
+  for(auto mask: baseMasks)
+  {
+    string maskSymbols = mask.getSymbols();
+    string smask;
+    do {
+      smask = "";
+      for(auto character: maskSymbols)
+          smask += "?" + string(1,character);
+      *outputPolicygen << smask << endl;
+    } while ( std::next_permutation(maskSymbols.begin(),maskSymbols.end()) );
+
+    smask = "";
+    for(auto character: maskSymbols)
+      smask += "?" + string(1,character);
+    *outputPolicygen << smask << endl;
+  }
 }
 
 // compute a set of bases[PoliBase]
@@ -164,26 +217,40 @@ void corePolicygen(pstruct pargs)
   vector<Base*>* basePoli = new vector<Base*>;
   if(pargs.show)
   {
-    for(int step=base->getLength(); step < base->getMaxLength(); step++)
-    {
+    ofstream* outputPolicygen = new ofstream;
+    outputPolicygen->open(pargs.output);
+    try {
+      for(int step=base->getLength(); step < base->getMaxLength(); step++)
+      {
+        base->showMasks(pargs.pretty);
+        base = maskStep(base);
+        writeMasks(base, outputPolicygen);
+      }
       base->showMasks(pargs.pretty);
-      //basePoli->push_back(base);
-      base = maskStep(base);
-      // HERE PRINT THE OUTPUT OR WRITE TO FILE. 
+      writeMasks(base, outputPolicygen);
+      outputPolicygen->close();
+    } catch (std::exception& error) {
+      cout << error.what() << endl;
+      outputPolicygen->close();
     }
-    base->showMasks(pargs.pretty);
   }
   else
   {
-    for(int step=base->getLength(); step < base->getMaxLength(); step++)
-    {
-      //base->showMasks();
-      //basePoli->push_back(base);
-      base = maskStep(base);
-      // HERE PRINT THE OUTPUT OR WRITE TO FILE. 
+
+    ofstream* outputPolicygen = new ofstream;
+    outputPolicygen->open(pargs.output);
+    try {
+      for(int step=base->getLength(); step < base->getMaxLength(); step++)
+      {
+        base = maskStep(base);
+        writeMasks(base, outputPolicygen);
+      }
+      writeMasks(base, outputPolicygen);
+      outputPolicygen->close();
+    } catch (std::exception& error) {
+      cout << error.what() << endl;
+      outputPolicygen->close();
     }
-  //base->showMasks();
   }
-  
   delete base;
 }

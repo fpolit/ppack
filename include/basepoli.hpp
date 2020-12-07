@@ -60,6 +60,7 @@ public:
   int getNumberMasks(){return baseMasks->size();}
   int getMinLength(){return bstruct.minlength;}
   int getMaxLength(){return bstruct.maxlength;}
+  Mask getMask(int k);
   
   vector<Mask> getBaseMasks(){return *baseMasks;}
   pstruct getBaseStruct(){return bstruct;}

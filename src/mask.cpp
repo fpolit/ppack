@@ -250,6 +250,15 @@ string Mask::getValueACS()
   return acsMap[acs];
 }
 
+string Mask::getSymbols()
+{
+  string symbols = "";
+  for(int k =1; k<this->size(); k+=2)
+    symbols += this->at(k);
+
+  return symbols;
+}
+
 
 ACS Mask::getACS()
 {
@@ -387,4 +396,16 @@ string Mask::scstoString(SCS simpleCharset) // return the string value of the SC
 string Mask::acstoString(ACS advanceCharset) // return the string value of the ACS advanceCharset
 {
   return acsMap[advanceCharset];
+}
+
+bool Mask::equalStruct(Mask kmask, Mask imask)
+{
+  maskStruct kmstruct = kmask.getStruct();
+  maskStruct imstruct = imask.getStruct();
+  if( kmstruct.lowercase == imstruct.lowercase &&
+      kmstruct.uppercase == imstruct.uppercase &&
+      kmstruct.digit == imstruct.digit &&
+      kmstruct.special == imstruct.special)
+    return true;
+  return false;
 }
