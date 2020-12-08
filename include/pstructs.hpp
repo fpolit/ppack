@@ -23,13 +23,22 @@
 #include<map>
 #endif // __INCLUDE_STD_MAP_H_
 
+#ifndef __INCLUDE_STD_IOSTREAM_H__
+#define __INCLUDE_STD_IOSTREAM_H__
+#include <iostream>
+#endif //__INCLUDE_STD_IOSTREAM_H__
 
+#ifndef __INCLUDE_STD_CSTDLIB_H__
+#define __INCLUDE_STD_CSTDLIB_H__
+#include <cstdlib>
+#endif //__INCLUDE_STD_CSTDLIB_H__
 
-#ifndef __INCLUDE_MASK_H__
-#define __INCLUDE_MASK_H__
-#include "mask.hpp"
-#endif // __INCLUDE_MASK_H__
+#ifndef __INCLUDE_STD_EXCEPTION_H__
+#define __INCLUDE_STD_EXCEPTION_H__
+#include <exception>
+#endif //__INCLUDE_STD_EXCEPTION_H__
 
+using namespace std;
 
 #ifndef __INCLUDE_PROGRAM_OPTIONS_H__
 #define __INCLUDE_PROGRAM_OPTIONS_H__
@@ -39,6 +48,10 @@
 using namespace boost;
 namespace po = boost::program_options;
 
+#ifndef __INCLUDE_MASK_H__
+#define __INCLUDE_MASK_H__
+#include "mask.hpp"
+#endif // __INCLUDE_MASK_H__
 
 
 // requirement struct (maskgen and policygen requirements)
@@ -56,6 +69,7 @@ public:
 
   // print requirements
   bool quiet;
+  bool pretty;
 
   // io parameters
   string input; // input file

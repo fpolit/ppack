@@ -24,6 +24,18 @@
 #include "pstructs.hpp"
 #endif //__INCLUDE_PSTRUCTS_H__
 
+#ifndef __INCLUDE_FINEPRINT_H__
+#define __INCLUDE_FINEPRINT_H__
+#include "../include/fineprint.hpp"
+#endif //__INCLUDE_FINEPRINT_H_
+
+
+
+#ifndef __INCLUDE_STD_IOSTREAM_H__
+#define __INCLUDE_STD_IOSTREAM_H__
+#include <iostream>
+#endif //__INCLUDE_STD_IOSTREAM_H__
+
 
 
 // base class of policygen
@@ -48,32 +60,18 @@ public:
   int getNumberMasks(){return baseMasks->size();}
   int getMinLength(){return bstruct.minlength;}
   int getMaxLength(){return bstruct.maxlength;}
+  Mask getMask(int k);
   
   vector<Mask> getBaseMasks(){return *baseMasks;}
   pstruct getBaseStruct(){return bstruct;}
 
   //show baseMasks
-  void showMasks();
+  void showMasks(bool prettyOutput);
 
   ~Base();
 };
 
-// class PoliBase
-// // this class is equal to Base, but hasn't the pstruct(bstruct) attribute. 
-// {
-//   private:
-//   vector<Mask> *baseMasks;
-//   unsigned int length;
-
-//   public:
-//   PoliBase(Base base)
-//   {
-//     baseMasks = base.baseMasks;
-//     length = base.length;
-//   }
-// }
-
 //void permuteMasks(Base base);
-void corePolicygen(pstruct init); //bases without permitations
+void corePolicygen(pstruct init); //bases without permutations
 
 #endif //__BASE_H__

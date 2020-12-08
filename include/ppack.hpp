@@ -22,6 +22,20 @@
 #ifndef __PPACK_H__
 #define __PPACK_H__
 
+#ifndef __INCLUDE_STD_CSTDLIB_H__
+#define __INCLUDE_STD_CSTDLIB_H__
+#include <cstdlib>
+#endif //__INCLUDE_STD_CSTDLIB_H__
+
+#ifndef __INCLUDE_STD_EXCEPTION_H__
+#define __INCLUDE_STD_EXCEPTION_H__
+#include <exception>
+#endif //__INCLUDE_STD_EXECPTION_H__
+
+#ifndef __INCLUDE_STD_IOMANIP_H__
+#define __INCLUDE_STD_IOMANIP_H__
+#include <iomanip>
+#endif //__INCLUDE_STD_IOMANIP_H__
 
 #ifndef __INCLUDE_STD_IOSTREAM_H__
 #define __INCLUDE_STD_IOSTREAM_H__
@@ -103,8 +117,7 @@ public:
 
   // core of statsgen
   friend statstruct coreStatsgen(sstruct pargs);
-  friend void printStatsgen(statstruct stats, sstruct pargs); 
-  
+  friend void printStatsgen(statstruct stats, sstruct pargs);
   // core of policygen is in basepoli.cpp
 };
 #endif // __PPACK_H__

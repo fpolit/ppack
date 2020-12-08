@@ -3,6 +3,8 @@
  * Password class reimplemented 23 nov 20202
  *
  *
+ * Password class with omp support - 30 nov 2020*
+ *
  * Depuration:
  * Passowrd class tested 24 nov 2020.
  *
@@ -22,40 +24,21 @@
  * in such case implement a loop over all the letther in that word and return true
  * if all the letthers are of SOMETHING type.
  *
+ * Functions with OMP support:
+ * static bool isdigit(string word);
+ * static bool islower(string word);
+ * static bool isupper(string word);
+ * static bool isspecial(string word);
  *
  *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
 
-// #ifndef __INCLUDE_STD_STRING_H__
-// #define __INCLUDE_STD_STRING_H__
-// #include<string>
-// #endif //__INCLUDE_STD_STRING_H__
-
-//using namespace std;
-
 #ifndef __INCLUDE_PASSWORD_H__
 #define __INCLUDE_PASSWORD_H__
 #include "../include/password.hpp"
 #endif //__INCLUDE_PASSWORD_H__
-
-
-// #ifndef __INCLUDE_CHARACTER_H__
-// #define __INCLUDE_CHARACTER_H__
-// #include "../include/character.hpp"
-// #endif //__INCLUDE_CHARACTER_H__
-
-// #ifndef __INCLUDE_MASK_H__
-// #define __INCLUDE_MASK_H__
-// #include "../include/mask.hpp"
-// #endif // __INCLUDE_MASK_H__
-
-
-// #ifndef __INCLUDE_OMP_H__
-// #define __INCLUDE_OMP_H__
-// #include "omp.h"
-// #endif //__INCLUDE_OMP_H__
 
 
 // character.hpp
@@ -69,59 +52,73 @@ namespace charset{
 }
 
 
-// head of functions
-// bool isdigit(string word);
-// bool islower(string word);
-// bool isupper(string word);
-// bool isspecial(string word);
+
 Mask  analyzePassword(string passwd);
 
 
-// tested - 24 nov 2020
+
+// Tested with omp support - 30 nov 2020
 bool Password::isdigit(string word)
 /*
  * verify if a word id only of digits or if a letther(word of one character) is a digit
  */
 {
-  for(auto letther: word)
+  bool isdigitMaster = true;
+#pragma omp parallel for shared(word)
+  for(int k=0; k<word.size(); k++)
     {
-      if (charset::digits.find(letther) == string::npos)
-        return false;
+      if(!isdigitMaster) continue;
+
+      if (charset::digits.find(word[k]) == string::npos)
+        isdigitMaster =  false;
     }
-  return true;
+
+  return isdigitMaster;
 }
 
-// tested - 24 nov 2020
+
+// Tested with omp support - 30 nov 2020
 bool Password::islower(string word)
 /*
  * verify if a word is only lowercase or if a letther(word of one character) is a lowercase
  */
 {
-
-  for(auto letther: word)
+  bool islowerMaster = true;
+#pragma omp parallel for shared(word)
+  for(int k=0; k<word.size(); k++)
     {
-      if (charset::ascii_lowercase.find(letther) == string::npos)
-        return false;
+      if(!islowerMaster) continue;
+
+      if (charset::ascii_lowercase.find(word[k]) == string::npos)
+        islowerMaster =  false;
     }
-  return true;
+
+  return islowerMaster;
 }
 
-// tested - 24 nov 2020
+
+// Tested with omp support - 30 nov 2020
 bool Password::isupper(string word)
 /*
  * verify if a word is only uppercase characters or
  * if a letther(word of one character) is a uppercase character
  */
 {
-  for(auto letther: word)
+  bool isupperMaster = true;
+#pragma omp parallel for shared(word)
+  for(int k=0; k<word.size(); k++)
     {
-      if (charset::ascii_uppercase.find(letther) == string::npos)
-        return false;
+      if(!isupperMaster) continue;
+
+      if (charset::ascii_uppercase.find(word[k]) == string::npos)
+        isupperMaster =  false;
     }
-  return true;
+
+  return isupperMaster;
 }
 
-// tested - 24 nov 2020
+
+// Tested with omp support - 30 nov 2020
 bool Password::isspecial(string word)
 /*
  * verify if a word is only of special characters or
@@ -129,12 +126,17 @@ bool Password::isspecial(string word)
  */
 {
 
-  for(auto letther: word)
+  bool isspecialMaster = true;
+#pragma omp parallel for shared(word)
+  for(int k=0; k<word.size(); k++)
     {
-      if (charset::special.find(letther) == string::npos)
-        return false;
+      if(!isspecialMaster) continue;
+
+      if (charset::special.find(word[k]) == string::npos)
+        isspecialMaster =  false;
     }
-  return true;
+
+  return isspecialMaster;
 }
 
 bool Password::checkLength(Password passwd, int minlength, int maxlength)
@@ -147,7 +149,7 @@ bool Password::checkLength(Password passwd, int minlength, int maxlength)
   {
     if(passwdLength >= minlength && passwdLength <= maxlength)
     return true;
-  }  
+  }
   else
   {
     if(passwdLength >= minlength)

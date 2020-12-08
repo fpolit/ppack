@@ -20,19 +20,12 @@
 #ifndef __INCLUDE_BASE_H__
 #define __INCLUDE_BASE_H__
 #include "../include/basepoli.hpp"
+#include <exception>
+#include <fstream>
+#include <ostream>
 #endif //__INCLUDE_BASE_H__
 
-#ifndef __INCLUDE_FINEPRINT_H__
-#define __INCLUDE_FINEPRINT_H__
-#include "../include/fineprint.hpp"
-#endif //__INCLUDE_FINEPRINT_H_
 
-
-
-#ifndef __INCLUDE_STD_IOSTREAM_H__
-#define __INCLUDE_STD_IOSTREAM_H__
-#include <iostream>
-#endif //__INCLUDE_STD_IOSTREAM_H__
 
 //tested 27 nov 2020
 string repeat(string str, int n)
@@ -85,6 +78,18 @@ void Base::appendMask(Mask step)
   baseMasks->push_back(step);
 }
 
+// check is base have a mask with similar structure of baseMask
+// bool isDuplicateBaseMask(Base base, Mask mask)
+// {
+//   for(auto bmask: base.getBaseMasks())
+//   {
+//     if(Mask::equalStruct(bmask, mask))
+//       return true;
+//   }
+//   return false;
+// }
+
+
 // tested 27 nov 2020
 Base* maskStep(Base *base)
 {
@@ -132,30 +137,72 @@ Base* maskStep(Base *base)
     return baseStep;
 }
 
-void Base::showMasks()
+void Base::showMasks(bool prettyOutput)
 {
-  cout << FinePrint::greenText("[+]") << " Base " << length << " :" << endl;
+  if(prettyOutput)
+    cout << FinePrint::greenText("[+]") << " Base " << length << " :" << endl;
+  else
+   cout << "[+] Base " << length << " :" << endl;
+  
   for(auto mask: *baseMasks)
   {
     cout << "\t" << mask << endl;
   }
 }
+Mask Base::getMask(int k)
+{
+  return baseMasks->at(k);
+}
 
-void permuteMasks(Base base)
+void writeMasks(Base* base, ofstream* outputPolicygen)
 /*
  * This function compute all the permutations without repetitions
  * and write all of them to a file.
  */
 {
-  cout << "Compute all the permutation without repetitions." << endl;
+  vector<Mask> baseMasks;
+  for(int k=0; k<base->getNumberMasks(); k++)
+  {
+    Mask kmask = base->getMask(k);
+    bool repeatMask = false;
+    for(int i=k+1; i<base->getNumberMasks(); i++)
+    {
+      Mask imask = base->getMask(i);
+      if(Mask::equalStruct(kmask, imask))
+      {
+        repeatMask = true;
+        break;
+      }
+    }
+    if(!repeatMask)
+      baseMasks.push_back(kmask);
+  }
+
+  
+  for(auto mask: baseMasks)
+  {
+    string maskSymbols = mask.getSymbols();
+    string smask;
+    do {
+      smask = "";
+      for(auto character: maskSymbols)
+          smask += "?" + string(1,character);
+      *outputPolicygen << smask << endl;
+    } while ( std::next_permutation(maskSymbols.begin(),maskSymbols.end()) );
+
+    smask = "";
+    for(auto character: maskSymbols)
+      smask += "?" + string(1,character);
+    *outputPolicygen << smask << endl;
+  }
 }
 
 // compute a set of bases[PoliBase]
 // (with length equal to minlength  till maxlength)
 // tested 27 nov 2020 
-void corePolicygen(pstruct init)
+void corePolicygen(pstruct pargs)
 {
-  Base *base = new Base(init);
+  Base *base = new Base(pargs);
   
   int minlength = base->getMinLength();
   int baseLength = base->getLength();
@@ -168,28 +215,53 @@ void corePolicygen(pstruct init)
 
   // now the length of base is equal to minlength-1(policygen paramemter)
   vector<Base*>* basePoli = new vector<Base*>;
-  if(init.show)
+  if(pargs.show)
   {
-    for(int step=base->getLength(); step < base->getMaxLength(); step++)
-    {
-      base->showMasks();
-      //basePoli->push_back(base);
-      base = maskStep(base);
-      // HERE PRINT THE OUTPUT OR WRITE TO FILE. 
+    ofstream* outputPolicygen = new ofstream;
+    outputPolicygen->open(pargs.output);
+    try {
+      for(int step=base->getLength(); step < base->getMaxLength(); step++)
+      {
+        base->showMasks(pargs.pretty);
+        base = maskStep(base);
+        writeMasks(base, outputPolicygen);
+      }
+      base->showMasks(pargs.pretty);
+      writeMasks(base, outputPolicygen);
+      outputPolicygen->close();
+
+      if(pargs.pretty)
+        FinePrint::successful("Generated masks have written in [" + pargs.output + "]");
+      else
+       cout << "Generated masks have written in [" + pargs.output + "]" << endl;
+
+    } catch (std::exception& error) {
+      cout << error.what() << endl;
+      outputPolicygen->close();
     }
-    base->showMasks();
   }
   else
   {
-    for(int step=base->getLength(); step < base->getMaxLength(); step++)
-    {
-      //base->showMasks();
-      //basePoli->push_back(base);
-      base = maskStep(base);
-      // HERE PRINT THE OUTPUT OR WRITE TO FILE. 
+
+    ofstream* outputPolicygen = new ofstream;
+    outputPolicygen->open(pargs.output);
+    try {
+      for(int step=base->getLength(); step < base->getMaxLength(); step++)
+      {
+        base = maskStep(base);
+        writeMasks(base, outputPolicygen);
+      }
+      writeMasks(base, outputPolicygen);
+      outputPolicygen->close();
+      
+      if(pargs.pretty)
+        FinePrint::successful("Generated masks have written in [" + pargs.output + "]");
+      else
+       cout << "Generated masks have written in [" + pargs.output + "]" << endl;
+    } catch (std::exception& error) {
+      cout << error.what() << endl;
+      outputPolicygen->close();
     }
-  //base->showMasks();
   }
-  
   delete base;
 }

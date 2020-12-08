@@ -44,90 +44,6 @@ namespace po = boost::program_options;
 
 using namespace std;
 
-void testBoostOptions(po::variables_map vm)
-{
-
-  // Files I/O section
-  if(vm.count("output"))
-    cout << "output: " << vm["output"].as<string>() << endl;
-  else
-    cout << "No output option supplied. Default value: " << vm["output"].as<string>() << endl;
-
-  if(vm.count("input"))
-    cout << "input: " << vm["input"].as<string>() << endl;
-  else
-    cout << "No input option supplied. NO Default value."  << endl; //<< vm["input"].as<string>() << endl;
-
-  // Print section
-  if(vm.count("show"))
-    cout << "show: " << vm["show"].as<bool>() << endl;
-  else
-    cout << "No show option supplied. Default value: " << vm["show"].as<string>() << endl;
-
-  if(vm.count("quiet"))
-    cout << "quiet: " << vm["quiet"].as<bool>() << endl;
-  else
-    cout << "No quiet option supplied. Default value: " << vm["quiet"].as<string>() << endl;
-
-
-  // Mask struct section
-  if(vm.count("minlength"))
-    cout << "minlength: " << vm["minlength"].as<unsigned int>() << endl;
-  else
-    cout << "No minlength option supplied. Default value: " << vm["minlength"].as<string>() << endl;
-
-  if(vm.count("maxlength"))
-    cout << "maxlength: " << vm["maxlength"].as<int>() << endl;
-  else
-    cout << "No maxlength option supplied. Default value: " << vm["maxlength"].as<string>() << endl;
-
-
-  if(vm.count("minlower"))
-    cout << "minlower: " << vm["minlower"].as<unsigned int>() << endl;
-  else
-    cout << "No minlower option supplied. Default value: " << vm["minlower"].as<string>() << endl;
-
-  if(vm.count("maxlower"))
-    cout << "maxlower: " << vm["maxlower"].as<int>() << endl;
-  else
-    cout << "No maxlower option supplied. Default value: " << vm["maxlower"].as<string>() << endl;
-
-
-  if(vm.count("minupper"))
-    cout << "minupper: " << vm["minupper"].as<unsigned int>() << endl;
-  else
-    cout << "No minupper option supplied. Default value: " << vm["minupper"].as<string>() << endl;
-
-  if(vm.count("maxupper"))
-    cout << "maxupper: " << vm["maxupper"].as<int>() << endl;
-  else
-    cout << "No maxupper option supplied. Default value: " << vm["maxupper"].as<string>() << endl;
-
-
-  if(vm.count("mindigit"))
-    cout << "mindigit: " << vm["mindigit"].as<unsigned int>() << endl;
-  else
-    cout << "No mindigit option supplied. Default value: " << vm["mindigit"].as<string>() << endl;
-
-  if(vm.count("maxdigit"))
-    cout << "maxdigit: " << vm["maxdigit"].as<int>() << endl;
-  else
-    cout << "No maxdigit option supplied. Default value: " << vm["maxdigit"].as<string>() << endl;
-
-
-  if(vm.count("minspecial"))
-    cout << "minspecial: " << vm["minspecial"].as<unsigned int>() << endl;
-  else
-    cout << "No minspecial option supplied. Default value: " << vm["minspecial"].as<string>() << endl;
-
-  if(vm.count("maxspecial"))
-    cout << "maxspecial: " << vm["maxspecial"].as<int>() << endl;
-  else
-    cout << "No maxspecial option supplied. Default value: " << vm["maxspecial"].as<string>() << endl;
-}
-
-
-
 int main(int argc ,char* argv[])
 {
     try
@@ -142,25 +58,26 @@ int main(int argc ,char* argv[])
     po::options_description print("Print");
     print.add_options()
         ("show", po::value<bool>()->implicit_value(true)->default_value(false), "Show generated masks.")
-        ("quiet, q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).");
+        ("quiet, q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).")
+        ("pretty", po::value<bool>()->implicit_value(true)->default_value(false), "Pretty output.");
 
 
     po::options_description mask("Mask Structure");
 
     /*
-        * MEANS of -1 value as a default value:
-        *
-        * EXAMPLES:
-        * (we use lower as a concrete case, but this can be used equal for other cases[upper, digit and special also length])
-        *
-        * (if minlower=3 and (maxlower isn't entered)maxlower=-1 this means that the generated mask can have from 3 to more lower alpha)
-        *
-        * (if minlower and maxlower isn't entered: then minlower=0 and maxlower=0  that means that the password haven't loweralpha charactes), we create this rule to avoid enter unnecesary flags as --maxlower=0 , so instead of that you do not have to enter the flag related to lowers
-        *
-        *
-        *
-        * we create this rule to avoid enter unnecesary flags as --maxlower=0 , so instead of that you do not have to enter the flag related to lowers
-        */
+    * MEANS of -1 value as a default value:
+    *
+    * EXAMPLES:
+    * (we use lower as a concrete case, but this can be used equal for other cases[upper, digit and special also length])
+    *
+    * (if minlower=3 and (maxlower isn't entered)maxlower=-1 this means that the generated mask can have from 3 to more lower alpha)
+    *
+    * (if minlower and maxlower isn't entered: then minlower=0 and maxlower=0  that means that the password haven't loweralpha charactes), we create this rule to avoid enter unnecesary flags as --maxlower=0 , so instead of that you do not have to enter the flag related to lowers
+    *
+    *
+    *
+    * we create this rule to avoid enter unnecesary flags as --maxlower=0 , so instead of that you do not have to enter the flag related to lowers
+    */
 
 
     mask.add_options()
@@ -203,16 +120,10 @@ int main(int argc ,char* argv[])
         return 1;
     }
 
-    // cout << "--- vm(before parsing arguments) ---" << endl;
-    // testBoostOptions(vm);
-
-    //cout << "--- vm(after parsing arguments) ---" << endl;
     pstruct pargs(vm);
-    //pargs.debug();  
-
     PPACK::policygen(pargs);
 
-        return 0;
+    return 0;
     }
     catch(std::exception& e)
     {

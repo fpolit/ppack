@@ -48,64 +48,14 @@ namespace po = boost::program_options;
 #endif // __INCLUDE_PPACK_H__
 
 
-// #ifndef __INCLUDE_LOGOS_H__
-// #define __INCLUDE_LOGOS_H__
-// #include "../include/logos.hpp"
-// #endif //__INCLUDE_LOGOS_H__
-
-#ifndef __INCLUDE_PSTRUCTS_H__
-#define __INCLUDE_PSTRUCTS_H__
-#include "../include/pstructs.hpp"
-#endif //__INCLUDE_PSTRUCTS_H__
-
-
-
-void testBoostOptions(po::variables_map vm)
-{
-
-  // Files I/O section
-  if(vm.count("output"))
-    cout << "output: " << vm["output"].as<string>() << endl;
-  else
-    cout << "No output option supplied. Default value: " << vm["output"].as<string>() << endl;
-
-  if(vm.count("input"))
-    cout << "input: " << vm["input"].as<string>() << endl;
-  else
-    cout << "No input option supplied. Default value: "  << vm["input"].as<string>() << endl;
-
-  // Print section
-  if(vm.count("hiderare"))
-    cout << "hiderare: " << vm["hiderare"].as<bool>() << endl;
-  else
-    cout << "No hiderare option supplied. Default value: " << vm["hiderare"].as<string>() << endl;
-
-  if(vm.count("quiet"))
-    cout << "quiet: " << vm["quiet"].as<bool>() << endl;
-  else
-    cout << "No quiet option supplied. Default value: " << vm["quiet"].as<string>() << endl;
-
-
-  // Mask struct section
-  if(vm.count("minlength"))
-    cout << "minlength: " << vm["minlength"].as<unsigned int>() << endl;
-  else
-    cout << "No minlength option supplied. Default value: " << vm["minlength"].as<string>() << endl;
-
-  if(vm.count("maxlength"))
-    cout << "maxlength: " << vm["maxlength"].as<int>() << endl;
-  else
-    cout << "No maxlength option supplied. Default value: " << vm["maxlength"].as<string>() << endl;
-}
-
 int main(int argc ,char* argv[])
 {
   try
   {
     po::options_description files("Files I/O");
     files.add_options()
-        ("wordlist, w", po::value<string>(), "Wordlist.")
-        ("output, o", po::value<string>()->default_value("statsgen.masks"), "Ouput File.")
+        ("wordlist, w", po::value<string>(), "Wordlist File.")
+        ("output, o", po::value<string>()->default_value(""), "Ouput File.")
       ("input, i", po::value<string>()->default_value(""), "Input File.");
 
 
@@ -119,7 +69,8 @@ int main(int argc ,char* argv[])
     po::options_description print("Print");
     print.add_options()
         ("hiderare", po::value<bool>()->implicit_value(true)->default_value(false), "Omit items with occurrence of less than 1%.")
-        ("quiet, q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).");
+        ("quiet, q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).")
+        ("pretty", po::value<bool>()->implicit_value(true)->default_value(false), "Pretty output.");
 
     po::options_description statsgen("Generate statistic of a wordlists that help you crack passwords");
     statsgen.add_options()

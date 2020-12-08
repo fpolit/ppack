@@ -50,20 +50,6 @@ namespace po = boost::program_options;
 #endif // __INCLUDE_PPACK_H__
 
 
-// #ifndef __INCLUDE_LOGOS_H__
-// #define __INCLUDE_LOGOS_H__
-// #include "../include/logos.hpp"
-// #endif //__INCLUDE_LOGOS_H__
-
-
-#ifndef __INCLUDE_PSTRUCTS_H__
-#define __INCLUDE_PSTRUCTS_H__
-#include "../include/pstructs.hpp"
-#endif //__INCLUDE_PSTRUCTS_H__
-
-
-
-
 int main(int argc ,char* argv[])
 {
     try
@@ -77,7 +63,8 @@ int main(int argc ,char* argv[])
         po::options_description print("Print");
         print.add_options()
             ("show", po::value<bool>()->implicit_value(true)->default_value(false), "Show generated masks.")
-            ("quiet, q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).");
+            ("quiet, q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).")
+            ("pretty", po::value<bool>()->implicit_value(true)->default_value(false), "Pretty output.");
 
         po::options_description check("Compare mask o file of mask against an already cracked list.");
         check.add_options()
@@ -126,9 +113,8 @@ int main(int argc ,char* argv[])
         }
 
         mstruct pargs(vm);
-        //pargs.debug();
-
         PPACK::maskgen(pargs);
+
         return 0;
     }
     catch(std::exception& e)

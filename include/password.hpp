@@ -1,9 +1,17 @@
 /*
  * Password class definition
  * Password class reimplemented 23 nov 20202
+ * Password class with omp support - 30 nov 2020
  *
  * Password class debuged - 24 nov 2020
  *
+ *
+ *
+ * Functions with OMP support:
+ * static bool isdigit(string word);
+ * static bool islower(string word);
+ * static bool isupper(string word);
+ * static bool isspecial(string word);
  *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */

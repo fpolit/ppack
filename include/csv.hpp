@@ -9,15 +9,34 @@
 #ifndef __CSV_H__
 #define __CSV_H__
 
+#ifndef __INCLUDE_STD_VECTOR_H__
+#define __INCLUDE_STD_VECTOR_H__
+#include<vector>
+#endif // __INCLUDE_STD_VECTOR_H_
+
 #ifndef __INCLUDE_STD_STRING_H__
 #define __INCLUDE_STD_STRING_H__
 #include<string>
 #endif //__INCLUDE_STD_STRING_H_
 
-#ifndef __INCLUDE_STD_VECTOR_H__
-#define __INCLUDE_STD_VECTOR_H__
-#include<vector>
-#endif // __INCLUDE_STD_VECTOR_H_
+
+#ifndef __INCLUDE_FSTREAM_H__
+#define __INCLUDE_FSTREAM_H__
+#include<fstream>
+#endif //__INCLUDE_FSTREAM_H__
+
+
+#ifndef __INCLUDE_ALGORITHM_H__
+#define __INCLUDE_ALGORITHM_H__
+#include<algorithm>
+#endif //__INCLUDE_ALGORITHM_H__
+
+
+#ifndef __INCLUDE_BOOST_ALGORITHM_H__
+#define __INCLUDE_BOOST_ALGORITHM_H__
+#include <boost/algorithm/string.hpp>
+#endif //__INCLUDE_BOOST_ALGORITHM_H__
+
 
 
 class CSVReader
