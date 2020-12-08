@@ -202,7 +202,7 @@ public:
 // statgen stats struct (property , occurence)
 typedef struct statstruct
 {
-  unsigned long total; //total number of analyzed passwords
+  unsigned long total=0; //total number of analyzed passwords
   map<SCS, int> scs;
   map<Mask, int> mask;
   map<unsigned int, int> length;

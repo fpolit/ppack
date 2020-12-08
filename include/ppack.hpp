@@ -60,6 +60,13 @@
 using namespace std;
 
 
+#ifndef __INCLUDE_OMP_H__
+#define __INCLUDE_OMP_H__
+#include "omp.h"
+#endif //__INCLUDE_OMP_H__
+
+
+
 #ifndef __INCLUDE_MASK_H__
 #define __INCLUDE_MASK_H__
 #include "mask.hpp"

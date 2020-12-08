@@ -42,14 +42,14 @@ bool sfilter(Password passwd, sstruct pargs)
 }
 
 vector<Password> passwdBlock(ifstream *wordlist, int block, 
-                              sstruct pargs, unsigned long* passwdCounter)
+                              sstruct pargs, unsigned long* totalPasswd)
 {
   string passwd;
   vector<Password> vpasswd;
   while((getline(*wordlist, passwd) && passwd!="") && vpasswd.size() <= block)
     {
       Password password(passwd);
-      *passwdCounter += 1;
+      *totalPasswd += 1;
       if(sfilter(passwd,  pargs))
         vpasswd.push_back(password);
     }
@@ -66,29 +66,30 @@ statstruct coreStatsgen(sstruct pargs)
   ifstream *wordlist  = new ifstream(pargs.wordlist);
   int block = 1000; // max block of pasword to read from wordlists
   statstruct stats; //stats of wordlists
-  unsigned long passwdCounter = 0; //total number of analyzed password 
+  unsigned long totalPasswd = 0; //total number of analyzed password
   
   try{
     while(wordlist->is_open()) // ensure that you close the wordlist when it hasn't more password
     {
       //this function read at most 'block' filtered passwords. 
-      vector<Password> vpasswd = passwdBlock(wordlist, block, pargs, &passwdCounter); 
+      vector<Password> vpasswd = passwdBlock(wordlist, block, pargs, &totalPasswd);
 
-      //#pragma omp parallel for shared(vpasswd, stats)
+#pragma omp parallel for shared(vpasswd, stats)
       for(int k=0; k<vpasswd.size(); k++)
         {
           Password passwd = vpasswd.at(k);
+          //cout << "Thread " << omp_get_thread_num() << " Processing " << passwd << endl;
 
           //length password stats
           int passwdSize = passwd.size();
           if(stats.length.find(passwdSize) != stats.length.end())
             {
-              //#pragma omp atomic
+              #pragma omp atomic update
               stats.length[passwdSize] += 1;
             }
           else
             {
-              //#pragma omp critical
+              #pragma omp atomic write
               stats.length[passwdSize] = 1;
             }
 
@@ -96,12 +97,12 @@ statstruct coreStatsgen(sstruct pargs)
           SCS passwdSCS = passwd.getSCS();
           if(stats.scs.find(passwdSCS) != stats.scs.end())
             {
-              //#pragma omp atomic
+              #pragma omp atomic update
               stats.scs[passwdSCS] += 1;
             }
           else
             {
-              //#pragma omp critical
+              #pragma omp atomic write
               stats.scs[passwdSCS] = 1;
             }
 
@@ -110,17 +111,17 @@ statstruct coreStatsgen(sstruct pargs)
           Mask passwdMask = passwd.getMask();
           if(stats.mask.find(passwdMask) != stats.mask.end())
             {
-              //#pragma omp atomic
+              #pragma omp atomic update
               stats.mask[passwdMask] += 1;
             }
           else
             {
-              //#pragma omp critical
+              #pragma omp atomic write
               stats.mask[passwdMask] = 1;
             }
         }
     }
-    stats.total = passwdCounter;
+    stats.total = totalPasswd;
     return stats;
   }
   catch (std::exception& error)
@@ -146,11 +147,15 @@ void printStatsgen(statstruct stats, sstruct pargs)
   if(prettyOutput)
   {
     FinePrint::status("Analyzing passwords in [" + pargs.wordlist + "]");
+    FinePrint::status("Using " + to_string(omp_get_max_threads()) + " threads.");
     FinePrint::empty();
   }
   else
-    cout << "Analyzing passwords in [" + pargs.wordlist + "]" << endl;
-  
+    {
+      cout << "[*] Analyzing passwords in [" + pargs.wordlist + "]" << endl;
+      cout << "[*] Using " << omp_get_max_threads() + " threads." << endl;
+    }
+
   unsigned long total = stats.total;
 
   cout.setf(ios::fixed); // fix the number of decimal to print
@@ -185,7 +190,7 @@ void printStatsgen(statstruct stats, sstruct pargs)
       FinePrint::status("Simple charset:");
     else
       cout << "[*] Simple charset:" << endl;
-    
+
     for(auto [scs, occurence]: stats.scs)
     {
       double percent = (double)occurence/total;
@@ -207,7 +212,7 @@ void printStatsgen(statstruct stats, sstruct pargs)
       FinePrint::status("Masks:");
     else
       cout << "Masks:" << endl;
-    
+
     for(auto [mask, occurence]: stats.mask)
     {
       double percent = (double)occurence/total;
@@ -246,7 +251,7 @@ void printStatsgen(statstruct stats, sstruct pargs)
       FinePrint::status("Simple charset:");
     else
       cout << "[*] Simple charset:" << endl;
-    
+
     for(auto [scs, occurence]: stats.scs)
     {
       double percent = (double)occurence/total;
@@ -266,7 +271,7 @@ void printStatsgen(statstruct stats, sstruct pargs)
       FinePrint::status("Masks:");
     else
       cout << "Masks:" << endl;
-    
+
     for(auto [mask, occurence]: stats.mask)
     {
       double percent = (double)occurence/total;
@@ -293,6 +298,7 @@ void printStatsgen(statstruct stats, sstruct pargs)
 
 void PPACK::statsgen(sstruct pargs)
 {
+  double elapsedTime = omp_get_wtime();
   statstruct stats = coreStatsgen(pargs);
 
   // print to console the computed stats
@@ -306,10 +312,17 @@ void PPACK::statsgen(sstruct pargs)
       statsgenOutput << mask << " , " << occurence << endl;
     }
 
+    elapsedTime = omp_get_wtime() - elapsedTime;
     if(pargs.pretty)
-      FinePrint::successful("Writing masks in [" + pargs.output +"]");
+      {
+        FinePrint::successful("Writing masks in [" + pargs.output +"]");
+        FinePrint::successful("Elapsed Time: " + to_string(elapsedTime));
+      }
     else
-     cout << "[+] Writing mask in [" << pargs.output << "]" << endl;;
+      {
+        cout << "[+] Writing mask in [" << pargs.output << "]" << endl;
+        cout << "[+] Elapsed Time: " << elapsedTime << endl;
+      }
   }
 }
 
@@ -364,17 +377,20 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
   if(prettyOutput)
   {
     FinePrint::status("Analyzing masks in [" + pargs.statsgen + "]");
+    FinePrint::status("Using " + to_string(omp_get_max_threads()) + " threads.");
     FinePrint::empty();
   }
   else
   {
     cout << "[*] Analyzing masks in [" + pargs.statsgen + "]" << endl;
+    cout << "[*] Using " + to_string(omp_get_max_threads()) + " threads." << endl;
   }
   
   int counterGeneratedMasks=0;
   if(pargs.output != "" && !pargs.show)
   {
     maskgenOutput = new ofstream(pargs.output);
+#pragma omp parallel for shared(statsgenResults, maskgenOutput)
     for(int k=0; k < statsgenResults.size(); k++)
     {
       // first element in statsgen output is mask and
@@ -382,9 +398,14 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
       Mask mask(statsgenResults[k][0]);
       int occurence = stoi(statsgenResults[k][1]); //convert from string to interger
 
+      //cout << "thread " << omp_get_thread_num() << " process " << mask << " mask." << endl;
+
       if(mFilter(mask, occurence, pargs))
       {
+        #pragma omp critical
         *maskgenOutput << mask << endl;
+
+        #pragma omp atomic update
         counterGeneratedMasks++;
       }
     }
@@ -409,6 +430,7 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
     maskgenOutput = new ofstream(pargs.output);
     cout  << "[" << setw(3) << "L:" << "]" << setw(32) << std::left <<  " Mask:"
           << "[" << setw(6) << "Occ:" << "]" << endl;
+#pragma omp parallel shared(statsgenResults, maskgenOutput)
     for(int k=0; k < statsgenResults.size(); k++)
     {
       // first element in statsgen output is mask and
@@ -418,10 +440,16 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
 
       if(mFilter(mask, occurence, pargs))
         {
-          *maskgenOutput << mask << endl;
+          #pragma omp critical
+          {
+            *maskgenOutput << mask << endl;
+            cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
+                  << "[ " << setw(6) << occurence << "]" << endl;
+          }
+
+          #pragma omp atomic update
           counterGeneratedMasks++;
-          cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
-              << "[ " << setw(6) << occurence << "]" << endl;
+
         }
     }
     maskgenOutput->close();
@@ -444,6 +472,8 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
   {
     cout  << "[" << setw(3) << "L:" << "]" << setw(32) << std::left <<  " Mask:"
           << "[" << setw(6) << "Occ:" << "]" << endl;
+
+#pragma omp parallel shared(statsgenResults, maskgenOutput)
     for(int k=0; k < statsgenResults.size(); k++)
     {
       // first element in statsgen output is mask and
@@ -453,9 +483,13 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
 
       if(mFilter(mask, occurence, pargs))
       {
-        counterGeneratedMasks++;
+        #pragma omp critical
         cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
               << "[ " << setw(6) << occurence << "]" << endl;
+
+        #pragma omp atomic update
+        counterGeneratedMasks++;
+
       }
     }
     if(prettyOutput)
@@ -468,25 +502,27 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
     {
       cout << "\nFinished generating masks:" << endl;
       cout << "\t" << "Masks generated: " << counterGeneratedMasks << endl; 
-    }  
+    }
   } else {
   throw invalid_options;
 }
 }
 void PPACK::maskgen(mstruct pargs)
 {
+  double elapsedTime = omp_get_wtime();
   CSVReader statsgen(pargs.statsgen);
 
   vector<vector<string>> results = statsgen.getData(); //results of statsgen
 
   if(!pargs.quiet)
     cout << Logo::randomLogo() << endl;
-  
   ofstream *maskgenOutput;
 
-  try 
+  try
   {
     coreMaskgen(maskgenOutput, results, pargs);
+    elapsedTime = omp_get_wtime() - elapsedTime;
+    cout << "[+] Elapsed Time: " << elapsedTime << endl;
   }
   catch (std::exception& error) {
     cerr << error.what() << endl;
@@ -506,17 +542,19 @@ namespace ppack{
 
 void PPACK::policygen(pstruct pargs)
 {
+  double elapsedTime = omp_get_wtime();
   if(pargs.quiet == false) // print the ppack logo
     cout << Logo::randomLogo() << endl;
 
   if(pargs.pretty)
   {
     FinePrint::status("Saving generated masks to [" + pargs.output + "]");
-    //FinePrint::status("Using 8 OMP Threads.");
+    FinePrint::status("Using " + to_string(omp_get_max_threads()) + " threads.");
     FinePrint::status("Password policy:");
   }
   else {
     cout << "[*] Saving generated masks to [" + pargs.output + "]" << endl;
+    cout << "[*] Using " << omp_get_max_threads() << " threads." << endl;
     cout << "[*] Password policy:" << endl;
   }
   cout << "\t" << "Password Lengths: "  << " min:" << setw(2) << pargs.minlength
@@ -532,4 +570,6 @@ void PPACK::policygen(pstruct pargs)
                                         << " d:" << setw(3) << pargs.maxdigit
                                         << " s:" << setw(3) << pargs.maxspecial << endl;
   corePolicygen(pargs); //do almost all the work()
+  elapsedTime = omp_get_wtime() - elapsedTime;
+  cout << "[*] Elapsed Time : " << elapsedTime << endl;
 }

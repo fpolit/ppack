@@ -165,34 +165,41 @@ void writeMasks(Base* base, ofstream* outputPolicygen)
   {
     Mask kmask = base->getMask(k);
     bool repeatMask = false;
+#pragma omp parallel for shared(repeatMask, kmask, base)
     for(int i=k+1; i<base->getNumberMasks(); i++)
     {
       Mask imask = base->getMask(i);
+
+      if(repeatMask) continue;
       if(Mask::equalStruct(kmask, imask))
       {
         repeatMask = true;
-        break;
+        //break;
       }
     }
     if(!repeatMask)
       baseMasks.push_back(kmask);
   }
 
-  
-  for(auto mask: baseMasks)
+#pragma omp parallel for shared(baseMasks)
+  for(int k=0; k<baseMasks.size(); k++)
   {
+    Mask mask = baseMasks.at(k);
     string maskSymbols = mask.getSymbols();
     string smask;
     do {
       smask = "";
       for(auto character: maskSymbols)
           smask += "?" + string(1,character);
+      #pragma omp critical
       *outputPolicygen << smask << endl;
     } while ( std::next_permutation(maskSymbols.begin(),maskSymbols.end()) );
 
     smask = "";
     for(auto character: maskSymbols)
       smask += "?" + string(1,character);
+
+    #pragma omp critical
     *outputPolicygen << smask << endl;
   }
 }
@@ -220,9 +227,12 @@ void corePolicygen(pstruct pargs)
     ofstream* outputPolicygen = new ofstream;
     outputPolicygen->open(pargs.output);
     try {
+#pragma omp parallel for shared(base, outputPolicygen) ordered
       for(int step=base->getLength(); step < base->getMaxLength(); step++)
       {
+        #pragma omp ordered
         base->showMasks(pargs.pretty);
+
         base = maskStep(base);
         writeMasks(base, outputPolicygen);
       }
