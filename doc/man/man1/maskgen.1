@@ -1,0 +1,119 @@
+.TH statsgen "1" "PPACK Commands" "November 2020" "PPACK Commands"
+
+.SH "NAME"
+statsgen \-
+
+.SH "SYNOPSIS"
+\fBstatsgen\fR [\fIOPTIONS\fR...]
+
+.SH "DESCRIPTION"
+.PP
+Generate statistics to generated optimal masks.
+
+.SH "OPTIONS"
+
+.TP "10"
+
+\f3\-w\fP\f3,\fP \f3\-\-wordlist\fP
+Wordlist file to analize.
+.IP
+
+\f3\-o\fP\f3,\fP \f3\-\-output\fP
+This file contains all the generated masks and they occurrence  that meet all requirements that we have entered.
+.IP
+
+.TP
+\f3\-i \fP\f3, \fP \f3\-\-input\fP\
+Input File. This one contains all the requiements for policygen, so this file can be used instead of all the requirement flags.
+.IP
+
+
+.TP
+\fP \f3\-\-scs\fP
+Simple charset.
+.IP
+
+.TP
+\fP \f3\-\-acs\fP
+Advance charset.
+.IP
+
+.TP
+\fP \f3\-\-minlength\fP
+Minimum masks' length.
+.IP
+
+.TP
+\fP \f3\-\-maxlength\fP
+Maximum masks' length.
+.IP
+
+
+
+.TP
+\f3\-q\fP\f3,\fP \f3\-\-quiet\fP
+Ocult the PPACK's banner.
+.IP
+
+.TP
+\f3\-\-pretty\fP
+Print the result in a pretty format.
+.IP
+
+.TP
+\fP \f3\-\-hiderare\fP
+Hide masks with a occurence percent lower than 1%.
+.IP
+
+
+.SH "EXAMPLES"
+This examples ilustrate the use of \f3statsgen\fP:
+.RS
+.PP
+.nf
+.ft 3
+$ statsgen --wordlist john.txt --output john.masks --minlength 3
+
+
+.ft 1
+.fi
+.RE
+.PP
+This example ilustrate how to enter  \f3statsgen\fP requiments using a \f3ini\fP file, because
+sometime there are a lot of requirements:
+.RS
+.PP
+.nf
+.ft 3
+$ statsgen -i filter.ini
+
+.PP
+\fIfilter.ini\fR
+        [statsgen]
+        WORDLIST="weak.txt"
+        OUTPUT="weak.masks"
+        HIDERARE=true
+        QUIET=false
+        SCS={"loweralpha, mixalphanum"}
+        ACS={"alphaspecial, numspecial"}
+        MINLENGTH=5
+        MAXLENGTH=8
+        
+.TP
+\f3Note:\fP
+.PP
+The ini file no necessary will hace an unique section \fIstatsgen\fR instead it can have diferent sections but the \f3statsgen\fP section will be the unique read.
+
+
+.ft 1
+.fi
+.RE
+.PP
+This example ilustrate how to run statsgen with 4 threads\fIopenmp\fR:
+.RS
+.PP
+.nf
+.ft 3
+# export OMP_NUM_THREADS=4
+$ statsgen --wordlist john.txt --output john.masks --minlength 3
+$ policygen -i filter.ini
