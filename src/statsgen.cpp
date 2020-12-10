@@ -61,7 +61,8 @@ int main(int argc ,char* argv[])
 
     po::options_description password("Password Structure");
     password.add_options()
-        ("charset, c", po::value<vector<string>>(), "Password's charset.")
+        ("scs", po::value<vector<string>>(), "Simple charset.")
+      ("acs", po::value<vector<string>>(), "Advance charset.")
         ("minlength", po::value<unsigned int>()->default_value(0), "Minimum password length.")
         // if no length option entered minlength=0 and maxlength=-1 (without eny filter of length)
         ("maxlength", po::value<int>()->default_value(-1), "Miximum password length.");
