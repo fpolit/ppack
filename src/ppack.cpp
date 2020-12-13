@@ -179,13 +179,13 @@ void writeStatsgen(statstruct stats, sstruct pargs)
   if(prettyOutput)
   {
     FinePrint::status("Analyzing passwords in [" + pargs.wordlist + "]");
-    FinePrint::status("Using " + to_string(omp_get_max_threads()) + " threads.");
+    FinePrint::status("Using " + to_string(pargs.threads) + " threads.");
     FinePrint::empty();
   }
   else
     {
       cout << "[*] Analyzing passwords in [" + pargs.wordlist + "]" << endl;
-      cout << "[*] Using " << omp_get_max_threads() + " threads." << endl;
+      cout << "[*] Using " << pargs.threads << " threads." << endl;
     }
 
   unsigned long total = stats.total;
@@ -406,6 +406,8 @@ void writeStatsgen(statstruct stats, sstruct pargs)
 void PPACK::statsgen(sstruct pargs)
 {
   double elapsedTime = omp_get_wtime();
+  
+  omp_set_num_threads(pargs.threads);
   statstruct stats = coreStatsgen(pargs);
 
   // print to console the computed stats and write
@@ -469,13 +471,13 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
   if(prettyOutput)
   {
     FinePrint::status("Analyzing masks in [" + pargs.statsgen + "]");
-    FinePrint::status("Using " + to_string(omp_get_max_threads()) + " threads.");
+    FinePrint::status("Using " + to_string(pargs.threads) + " threads.");
     FinePrint::empty();
   }
   else
   {
     cout << "[*] Analyzing masks in [" + pargs.statsgen + "]" << endl;
-    cout << "[*] Using " + to_string(omp_get_max_threads()) + " threads." << endl;
+    cout << "[*] Using " << pargs.threads << " threads." << endl;
   }
   
   int generatedMasks=0;
@@ -613,6 +615,8 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
 void PPACK::maskgen(mstruct pargs)
 {
   double elapsedTime = omp_get_wtime();
+  
+  omp_set_num_threads(pargs.threads);
   CSVReader statsgen(pargs.statsgen);
 
   vector<vector<string>> results = statsgen.getData(); //results of statsgen
@@ -651,18 +655,19 @@ void PPACK::policygen(pstruct pargs)
       throw Exception("No output file supplied!");
     
     double elapsedTime = omp_get_wtime();
+    omp_set_num_threads(pargs.threads);
     if(pargs.quiet == false) // print the ppack logo
       cout << Logo::randomLogo() << endl;
 
     if(pargs.pretty)
     {
       FinePrint::status("Saving generated masks to [" + pargs.output + "]");
-      FinePrint::status("Using " + to_string(omp_get_max_threads()) + " threads.");
+      FinePrint::status("Using " + to_string(pargs.threads) + " threads.");
       FinePrint::status("Password policy:");
     }
     else {
       cout << "[*] Saving generated masks to [" + pargs.output + "]" << endl;
-      cout << "[*] Using " << omp_get_max_threads() << " threads." << endl;
+      cout << "[*] Using " << pargs.threads << " threads." << endl;
       cout << "[*] Password policy:" << endl;
     }
     cout << "\t" << "Password Lengths: "  << " min:" << setw(2) << pargs.minlength
