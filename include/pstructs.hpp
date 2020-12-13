@@ -53,6 +53,33 @@ namespace po = boost::program_options;
 #include "mask.hpp"
 #endif // __INCLUDE_MASK_H__
 
+#ifndef __INCLUDE_OMP_H__
+#define __INCLUDE_OMP_H__
+#include "omp.h"
+#endif //__INCLUDE_OMP_H__
+
+#ifndef __INCLUDE_SIMPLEINI_H__
+#define __INCLUDE_SIMPLEINI_H__
+#include "simpleini/SimpleIni.h"
+#endif // __INCLUDE_SIMPLEINI_H__
+
+
+class Exception : public std::exception
+{
+  private:
+    string warning;
+
+  public:
+    Exception(string warningMsg)
+    {
+      warning = warningMsg;
+    }
+    const char* what() const throw()
+    {
+      return warning.c_str();
+    }
+};
+
 
 // requirement struct (maskgen and policygen requirements)
 class rstruct
@@ -61,7 +88,8 @@ public:
   rstruct(){};
   rstruct(unsigned int min_length, int max_length,
           bool quietPrint,
-          string outputFile, string inputFile);
+          string outputFile, string inputFile,
+          unsigned int nthreads);
 
   // password and mas structure requirements
   unsigned int minlength;
@@ -75,6 +103,9 @@ public:
   string input; // input file
   string output; //output file
 
+  // parallel parameters
+  unsigned int threads;
+
   virtual void debug();
   ~rstruct(){}
 };
@@ -83,12 +114,13 @@ public:
 class sstruct: public rstruct
 {
 public:
-  sstruct(po::variables_map vm);
+  sstruct(po::variables_map vm, po::options_description statsgen);
   sstruct(unsigned int min_length, int max_length, //mask struct parameters
-          bool quiet_print, bool hide_rare,          //print parameters
+          bool quiet_print, double hide_rare,          //print parameters
           string output_file, string input_file,     // IO parameters
-          vector<SCS> scharsets);                  // check parameters
-
+          vector<string> scharsets, 
+          vector<string> acharsets,                  // check parameters
+          unsigned int nthreads);
 
 
   // password and mas structure requirements
@@ -97,11 +129,12 @@ public:
 
 
   // print parameters
-  bool hiderare;
+  double hiderare;
   // bool quiet; - inheritance attribute
 
   // check requierement
-  vector<SCS> charsets;
+  vector<SCS> scs;
+  vector<ACS> acs;
 
 
   // io parameters
@@ -117,14 +150,15 @@ public:
 class mstruct: public rstruct
 {
 public:
-  mstruct(po::variables_map vm);
+  mstruct(po::variables_map vm, po::options_description maskgen);
   mstruct(unsigned int min_length, int max_length,             //
           unsigned int min_complexity, int max_complexity,     // mask struct parameters
           unsigned int min_occurence, int max_occurence,       //
           bool quiet_print, bool show_masks,                   // print parametersxs
-          vector<SCS> scharsets,
+          vector<string> scharsets, vector<string> acharsets,
           vector<Mask> checkmasks,string checkmasksfile,
-          string output_file, string statgen_ouput);
+          string output_file, string statgen_ouput,
+          unsigned int nthreads);
 
   // password and mas structure requirements
   //unsigned int minlength; - inheritance attribute
@@ -142,8 +176,8 @@ public:
   // check requierement
   vector<Mask> checkMasks;
   string checkMaskFile;
-  vector<SCS> charsets;
-  vector<ACS> advCharsets;
+  vector<SCS> scs;
+  vector<ACS> acs;
 
   // io paramemters
   //string input; // input options - inehritance attribute
@@ -159,15 +193,15 @@ class pstruct:public rstruct
 {
 public:
   pstruct(){};
-  pstruct(po::variables_map vm);
+  pstruct(po::variables_map vm, po::options_description policygen);
   pstruct(unsigned int min_length, int max_length,    //
                  unsigned int min_lower, int max_lower,      // masks
                  unsigned int min_upper, int max_upper,      // struct
                  unsigned int min_digit, int max_digit,      // parameters
                  unsigned int min_special, int max_special,  // 
                  bool quiet_print, bool show_masks,          // print parameters
-                 string output_file, string input_file);      // io parameters
-
+                 string output_file, string input_file,      // io parameters
+                 unsigned nthreads);
 
   // password and mas structure requirements
   //unsigned int minlength; - inehritance attribute

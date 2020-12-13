@@ -38,6 +38,7 @@
 #ifndef __INCLUDE_PASSWORD_H__
 #define __INCLUDE_PASSWORD_H__
 #include "../include/password.hpp"
+#include <algorithm>
 #endif //__INCLUDE_PASSWORD_H__
 
 
@@ -158,6 +159,23 @@ bool Password::checkLength(Password passwd, int minlength, int maxlength)
   
   return false;
 }
+
+// check if a password have a SCS type in pscs(posibles SCS)
+bool Password::checkSCS(Password passwd, vector<SCS> pscs)
+{
+  if(std::find(pscs.begin(), pscs.end(), passwd.getSCS()) == pscs.end())
+    return false;
+  return true;
+}
+
+// check if a password have a ACS type in pscs(posibles ACS)  
+bool Password::checkACS(Password passwd, vector<ACS> pacs)
+{
+  if(std::find(pacs.begin(), pacs.end(), passwd.getACS()) == pacs.end())
+    return false;
+  return true;
+}
+
 // tested - 24 nov 2020
 Password::Password(string passwd)
   :string(passwd), mask("")

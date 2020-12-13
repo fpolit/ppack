@@ -12,7 +12,9 @@ test/wordlists/*
 test/helpme.txt
 test/cmake/*
 test/omp/*
+
 doc/pack.wiki/*
+doc/README
 
 src/maskgen
 src/policygen

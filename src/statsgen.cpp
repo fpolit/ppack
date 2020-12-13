@@ -54,30 +54,46 @@ int main(int argc ,char* argv[])
   {
     po::options_description files("Files I/O");
     files.add_options()
-        ("wordlist, w", po::value<string>(), "Wordlist File.")
-        ("output, o", po::value<string>()->default_value(""), "Ouput File.")
-      ("input, i", po::value<string>()->default_value(""), "Input File.");
+        ("wordlist,w", po::value<string>(), "Wordlist File.")
+        ("output,o", po::value<string>()->default_value(""), "Ouput File.")
+      ("input,i", po::value<string>(), "Input File.");
 
 
     po::options_description password("Password Structure");
+
+    // string help_scs =   "Simple charset.\n" +
+    //                     "Availables scs:\n" +
+    //                     "\tloweralpha,upperalpha,numeric,special,alpha,\n" +
+    //                     "\tmixalphaspecial,mixalphanum,mixspecialnum,mixall";
+
+    // string help_acs =   "Advance charset.\n" +
+    //                     "Availables acs:\n"  +
+    //                     "\talphaspecial,loweralphaspecial,upperalphaspecial,\n" +
+    //                     "\tspecialalpha,specialloweralpha,specialupperalpha,\n" +
+    //                     "\talphanum,loweralphanum,upperalphanum,specialnum,numspecial";
+
     password.add_options()
         ("scs", po::value<vector<string>>(), "Simple charset.")
-      ("acs", po::value<vector<string>>(), "Advance charset.")
+        ("acs", po::value<vector<string>>(), "Advance charset.")
         ("minlength", po::value<unsigned int>()->default_value(0), "Minimum password length.")
         // if no length option entered minlength=0 and maxlength=-1 (without eny filter of length)
         ("maxlength", po::value<int>()->default_value(-1), "Miximum password length.");
 
     po::options_description print("Print");
     print.add_options()
-        ("hiderare", po::value<bool>()->implicit_value(true)->default_value(false), "Omit items with occurrence of less than 1%.")
-        ("quiet, q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).")
-        ("pretty", po::value<bool>()->implicit_value(true)->default_value(false), "Pretty output.");
+        ("hiderare,r", po::value<double>()->default_value(0.0), "Omit items with occurrence lower that you supplied.")
+        ("quiet,q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).")
+        ("pretty,p", po::value<bool>()->implicit_value(true)->default_value(false), "Pretty output.");
+
+    po::options_description parallel("Parallel");
+    parallel.add_options()
+      ("threads,t", po::value<unsigned int>()->default_value(2), "Number of OMP threads.");
 
     po::options_description statsgen("Generate statistic of a wordlists that help you crack passwords");
     statsgen.add_options()
-        ("version, v", "PPACK version.")
-        ("help, h", "Show help.");
-    statsgen.add(files).add(password).add(print);
+        ("version,v", "PPACK version.")
+        ("help,h", "Show help.");
+    statsgen.add(files).add(password).add(print).add(parallel);
 
     po::variables_map vm;
 
@@ -105,7 +121,7 @@ int main(int argc ,char* argv[])
     //testBoostOptions(vm);
 
     //cout << "--- vm(parsing arguments) ---" << endl;
-    sstruct pargs(vm);
+    sstruct pargs(vm, statsgen);
     //pargs.debug();  
 
 

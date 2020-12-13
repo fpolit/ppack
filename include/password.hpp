@@ -64,6 +64,9 @@ public:
 
   //check functions
   static bool checkLength(Password passwd, int minlength, int maxlength);
+  static bool checkSCS(Password passwd, vector<SCS> pscs); // check if a password have a SCS type in pscs(posibles SCS) 
+  static bool checkACS(Password passwd, vector<ACS> pacs); // check if a password have a ACS type in pscs(posibles ACS) 
+
 
   static bool isdigit(string word);
   static bool islower(string word);

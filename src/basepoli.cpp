@@ -168,14 +168,11 @@ void writeMasks(Base* base, ofstream* outputPolicygen)
 #pragma omp parallel for shared(repeatMask, kmask, base)
     for(int i=k+1; i<base->getNumberMasks(); i++)
     {
-      Mask imask = base->getMask(i);
-
       if(repeatMask) continue;
+      Mask imask = base->getMask(i);
+      
       if(Mask::equalStruct(kmask, imask))
-      {
         repeatMask = true;
-        //break;
-      }
     }
     if(!repeatMask)
       baseMasks.push_back(kmask);

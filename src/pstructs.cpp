@@ -3,17 +3,7 @@
  * pstruct implemented 24 nov 2020
  *
  *
- * Depuration:
- *
- *
- *
- * No tested functions:
- *
- *
- *
- * No implemented functions:
- *
- *
+ * Depuration: Dec 12 2020 
  *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  *
@@ -24,7 +14,29 @@
 #ifndef __INCLUDE_PSTRUCTS_H__
 #define __INCLUDE_PSTRUCTS_H__
 #include "../include/pstructs.hpp"
+#include <cstdlib>
+#include <exception>
 #endif // __INCLUDE_PSTRUCTS_H__
+
+
+class InvalidCharset : public std::exception
+{
+  private:
+    string scharset;
+
+  public:
+    InvalidCharset(string pscs)
+    {
+      scharset = pscs;
+    }
+    const char* what() const throw()
+    {
+      //return "Invalid SCS type : " + scharset;
+      return "Invalid SCS type";
+    }
+};
+
+
 
 //////////////////////////////////
 ///// rstruct implementation /////
@@ -32,7 +44,8 @@
 
 rstruct::rstruct(unsigned int min_length, int max_length,
                  bool quiet_print,
-                 string output_file, string input_file)
+                 string output_file, string input_file,
+                 unsigned int nthreads)
 {
 
   // mask struct
@@ -45,6 +58,9 @@ rstruct::rstruct(unsigned int min_length, int max_length,
   // I/O paramemters
   output = output_file;
   input = input_file;
+
+  // parallel parameters
+  threads = nthreads;
 }
 
 void rstruct::debug()
@@ -64,6 +80,10 @@ void rstruct::debug()
   cout << "\n--- mask section ---"  << endl;
   cout << "minlenght:  " << minlength << endl;
   cout << "maxlength:  " << maxlength << endl;
+
+  //parallel section
+  cout << "\n--- parallel section --" << endl;
+  cout << "threads: " << threads << endl;
 }
 
 //////////////////////////////////
@@ -72,18 +92,42 @@ void rstruct::debug()
 
 
 sstruct::sstruct(unsigned int min_length, int max_length, //mask struct parameters
-          bool quietPrint, bool hideRare,          //print parameters
+          bool quietPrint, double hideRare,          //print parameters
           string output_file, string input_file,     // IO parameters
-          vector<SCS> scharsets)                  // check parameters
+          vector<string> scharsets,
+          vector<string> acharsets,                  // check parameters
+          unsigned int nthreads)
   :rstruct(min_length, max_length,
            quietPrint,
-           output_file, input_file)
+           output_file, input_file,
+           nthreads)
 {
-  charsets = scharsets;
-  hiderare = hideRare;
+  try {
+    for(auto charset: scharsets)
+    {
+      SCS scharset = Mask::checkSCS(charset);
+      if(SCS::none == scharset)
+        throw InvalidCharset(charset);
+      scs.push_back(scharset);
+    }
+
+    for(auto charset: acharsets)
+    {
+      ACS acharset = Mask::checkACS(charset);
+      if(ACS::advnone == acharset)
+        throw InvalidCharset(charset);
+      acs.push_back(acharset);
+    }
+
+    hiderare = hideRare;
+
+  } catch (std::exception& error) {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
-sstruct::sstruct(po::variables_map vm)
+sstruct::sstruct(po::variables_map vm, po::options_description statsgen)
 /*
  * init a sstruct with all the paramenters entered to vm
  * (from cli using flags)
@@ -91,67 +135,119 @@ sstruct::sstruct(po::variables_map vm)
 {
   ////////// Output File parameter(files section) //////////
 
-  if(vm.count("wordlist"))
-    wordlist = vm["wordlist"].as<string>();
-  else
-    {
-      cerr << "No wordlist to analize." << endl;
-      exit(EXIT_FAILURE); // no wordlist to analyze
-    }
-
-  // if there is a output paramenter assign to output attribute, 
-  // otherwise assign the default value
-  output = vm["output"].as<string>();
-
-  // if there is a output paramenter assign to output attribute, 
-  // otherwise assign the default value
-  input = vm["input"].as<string>();
-
-  ////////// print parameters(print section) //////////
-  
-  // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
-  quiet = vm["quiet"].as<bool>();
-  
-
-  // if there is a hiderare paramenter assign to hiderare attribute, otherwise assign the default value
-  hiderare = vm["hiderare"].as<bool>();
-
-  // if there is a pretty paramenter assign to pretty attribute, otherwise assign the default value
-  pretty = vm["pretty"].as<bool>();
-  
-  ////////// check parameters (check section) //////////
-  // NO CHECK SECTION
-
-
-  ////////// mask parameters (mask section) //////////
-  //length
-  minlength = vm["minlength"].as<unsigned int>();
-  maxlength = vm["maxlength"].as<int>();
-
-  try
+// if there is a input paramenter assign to input attribute,
+  // and read flags from it ini file
+  // otherwise assign the default value ("")
+  if(vm.count("input"))
   {
-    if(minlength >0 && maxlength == 0)
-      maxlength = -1; //there isn't a maximum length
-    else if (minlength > 0 && maxlength != 0)
-    {
-      if(maxlength < 0)
-          maxlength = -1;
-      else
-       {
-         if((int)minlength > maxlength)
-          throw "Invalid arguments(mask length).";
-       }
+    try{
+      input = vm["input"].as<string>();
+      CSimpleIniA filterFile;
+      filterFile.SetUnicode();
+      SI_Error rc = filterFile.LoadFile(input.c_str());
+      if(rc < 0)
+        throw std::exception();
+
+      CSimpleIniA::TNamesDepend filters;
+      filterFile.GetAllKeys("statsgen", filters);
+      cout << "readed keys." << endl;
     }
-    else if (minlength == 0 && maxlength != 0)
+    catch(std::exception& error)
     {
-      if(maxlength < 0)
-        maxlength = -1; //there isn't a maximum length
-    } // else case is when minlength == 0 and maxlength == 0
+      cout << error.what() << endl;
+      cout << statsgen << endl;
+      exit(EXIT_FAILURE);
+    }
   }
-  catch(std::exception &error)
-  {
-    cout << error.what() << endl;
-    exit(EXIT_FAILURE);
+  else {
+    try{
+      if(vm.count("wordlist"))
+        wordlist = vm["wordlist"].as<string>();
+      else
+      {
+        throw Exception("No wordlist to analize.");
+      }
+
+      // if there is a output paramenter assign to output attribute, 
+      // otherwise assign the default value
+      output = vm["output"].as<string>();
+
+      
+
+      ////////// print parameters(print section) //////////
+      
+      // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
+      quiet = vm["quiet"].as<bool>();
+    
+
+      // if there is a hiderare paramenter assign to hiderare attribute, otherwise assign the default value
+      if(vm.count("hiderare"))
+        hiderare = vm["hiderare"].as<double>();
+
+      // if there is a pretty paramenter assign to pretty attribute, otherwise assign the default value
+      pretty = vm["pretty"].as<bool>();
+    
+      ////////// password parameters (password section) //////////
+      // charsets
+      if(vm.count("scs"))
+      {
+        for(auto charset: vm["scs"].as<vector<string>>())
+        {
+          SCS scharset = Mask::checkSCS(charset);
+          if(SCS::none == scharset)
+            throw InvalidCharset(charset);
+          scs.push_back(scharset);
+        }
+      }
+    
+
+      if(vm.count("acs"))
+      {
+        for(auto charset: vm["acs"].as<vector<string>>())
+        {
+          ACS scharset = Mask::checkACS(charset);
+          if(ACS::advnone == scharset)
+            throw InvalidCharset(charset);
+          acs.push_back(scharset);
+        }
+     }
+
+
+      ////////// mask parameters (mask section) //////////
+      //length
+      minlength = vm["minlength"].as<unsigned int>();
+      maxlength = vm["maxlength"].as<int>();
+
+      if(minlength >0 && maxlength == 0)
+        maxlength = -1; //there isn't a maximum length
+      else if (minlength > 0 && maxlength != 0)
+      {
+        if(maxlength < 0)
+            maxlength = -1;
+        else
+        {
+          if((int)minlength > maxlength)
+            throw Exception("Invalid arguments(mask length).");
+        }
+      }
+      else if (minlength == 0 && maxlength != 0)
+      {
+        if(maxlength < 0)
+          maxlength = -1; //there isn't a maximum length
+      } // else case is when minlength == 0 and maxlength == 0
+    
+      ////////// parallel parameters (parallel section) //////////
+      threads = vm["threads"].as<unsigned int>();
+      int maxthreads = omp_get_max_threads();
+      if((int)threads > maxthreads)
+        throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
+    }
+    catch(std::exception &error)
+    {
+      cout << error.what() << endl;
+      cout << statsgen << endl;
+      exit(EXIT_FAILURE);
+    }
   }
 }
 
@@ -176,74 +272,158 @@ void sstruct::debug()
   cout << "maxlength:  " << maxlength << endl;
 
   // check requirements
-  cout << "chasets:";
-  for(SCS charset: charsets)
+  cout << "scs:";
+  for(SCS charset: scs)
   //scsValue is in mask.cpp(ans mask.hpp was included)
-    cout << charset << ", "; 
+    cout << charset << ", ";
   cout << endl;
+
+  cout << "acs:";
+  for(ACS charset: acs)
+  //scsValue is in mask.cpp(ans mask.hpp was included)
+    cout << charset << ", ";
+  cout << endl;
+
+  //parallel section
+  cout << "\n--- parallel section --" << endl;
+  cout << "threads: " << threads << endl;
 }
 
 //////////////////////////////////
 ///// mstruct implementation /////
 //////////////////////////////////
 
+mstruct::mstruct(unsigned int min_length, int max_length,             //
+          unsigned int min_complexity, int max_complexity,     // mask struct parameters
+          unsigned int min_occurrence, int max_occurrence,       //
+          bool quiet_print, bool show_masks,                   // print parametersxs
+          vector<string> scharsets, vector<string> acharsets,
+          vector<Mask> check_masks,string check_mask_file,
+          string output_file, string statsgen_output,
+          unsigned int nthreads)
+  :rstruct(min_length, max_length,
+           quiet_print,
+           output_file, statsgen_output,
+           nthreads)
+{
+  try {
+    for(auto charset: scharsets)
+    {
+      SCS scharset = Mask::checkSCS(charset);
+      if(SCS::none == scharset)
+        throw InvalidCharset(charset);
+      scs.push_back(scharset);
+    }
 
-mstruct::mstruct(po::variables_map vm)
+    for(auto charset: acharsets)
+    {
+      ACS acharset = Mask::checkACS(charset);
+      if(ACS::advnone == acharset)
+        throw InvalidCharset(charset);
+      acs.push_back(acharset);
+    }
+    // password and mas structure requirements
+    mincomplexity = min_complexity;
+    maxcomplexity = max_complexity;
+    minoccurrence = min_occurrence;
+    maxoccurrence = max_occurrence;
+
+    // print parameters
+    show = show_masks;
+    quiet = quiet_print;
+
+    // check requierement
+    for(auto mask: check_masks)
+    {
+      if(Mask::ismask(mask))
+        throw InvalidMask(mask);
+      checkMasks.push_back(Mask(mask));
+    }
+
+    checkMaskFile = check_mask_file;
+
+  } catch (std::exception& error) {
+    cout << error.what() << endl;
+    exit(EXIT_FAILURE);
+  }
+}
+
+mstruct::mstruct(po::variables_map vm, po::options_description maskgen)
 /*
  * init a mstruct with all the paramenters entered to vm
  * (from cli using flags)
  */
 {
   ////////// Output File parameter(files section) //////////
+  try{
+    if(vm.count("statsgen"))
+      statsgen = vm["statsgen"].as<string>();
+    else
+      throw Exception("No statsgen's output to analize.");
 
-  if(vm.count("statsgen"))
-    statsgen = vm["statsgen"].as<string>();
-  else
+    // if there is a output paramenter assign to output attribute, 
+    // otherwise assign the default value
+    output = vm["output"].as<string>();
+
+    // if there is a input paramenter assign to output attribute, 
+    // otherwise assign the default value
+    input = vm["input"].as<string>();
+
+    ////////// print parameters(print section) //////////
+    
+    // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
+    quiet = vm["quiet"].as<bool>();
+
+    // if there is a show paramenter assign to show attribute, otherwise assign the default value
+    show = vm["show"].as<bool>();
+
+    // if there is a pretty paramenter assign to pretty attribute, otherwise assign the default value
+    pretty = vm["pretty"].as<bool>();
+
+    ////////// check parameters (check section) //////////
+    if(vm.count("checkmasks"))
     {
-      cerr << "No statsgen's output to analize." << endl;
-      exit(EXIT_FAILURE); // no wordlist to analyze
+
+        for(string mask : vm["checkmasks"].as<vector<string>>())
+        {
+          if(!Mask::ismask(mask))
+            throw InvalidMask(mask);  
+          checkMasks.push_back(Mask(mask));
+        }
     }
 
-  // if there is a output paramenter assign to output attribute, 
-  // otherwise assign the default value
-  output = vm["output"].as<string>();
+    if(vm.count("checkmasksfile"))
+      checkMaskFile = vm["checkmasksfile"].as<string>();
 
-  // if there is a input paramenter assign to output attribute, 
-  // otherwise assign the default value
-  input = vm["input"].as<string>();
+    ////////// password parameters (password section) //////////
+    // charsets
+    if(vm.count("scs"))
+    {
 
-  ////////// print parameters(print section) //////////
+      for(auto charset: vm["scs"].as<vector<string>>())
+      {
+        SCS scharset = Mask::checkSCS(charset);
+        if(SCS::none == scharset)
+          throw InvalidCharset(charset);
+        scs.push_back(scharset);
+      }
+    }
+
+    if(vm.count("acs"))
+    {
+      for(auto charset: vm["acs"].as<vector<string>>())
+      {
+        ACS scharset = Mask::checkACS(charset);
+        if(ACS::advnone == scharset)
+          throw InvalidCharset(charset);
+        acs.push_back(scharset);
+      }
+    }
   
-  // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
-  quiet = vm["quiet"].as<bool>();
+    //length
+    minlength = vm["minlength"].as<unsigned int>();
+    maxlength = vm["maxlength"].as<int>();
 
-  // if there is a show paramenter assign to show attribute, otherwise assign the default value
-  show = vm["show"].as<bool>();
-
-  // if there is a pretty paramenter assign to pretty attribute, otherwise assign the default value
-  pretty = vm["pretty"].as<bool>();
-
-  ////////// check parameters (check section) //////////
-  if(vm.count("checkmasks"))
-    checkMasks = vm["checkmasks"].as<vector<Mask>>();
-
-  if(vm.count("checkmasksfile"))
-    checkMaskFile = vm["checkmasksfile"].as<string>();
-
-  ////////// password parameters (password section) //////////
-  // charsets
-  if(vm.count("scharset"))
-    charsets = vm["scharset"].as<vector<SCS>>();
-
-  if(vm.count("acharset"))
-    advCharsets = vm["acharset"].as<vector<ACS>>();
-  
-  //length
-  minlength = vm["minlength"].as<unsigned int>();
-  maxlength = vm["maxlength"].as<int>();
-
-  try
-  {
     if(minlength >0 && maxlength == 0)
       maxlength = -1; //there isn't a maximum length
     else if (minlength > 0 && maxlength != 0)
@@ -253,7 +433,7 @@ mstruct::mstruct(po::variables_map vm)
       else
        {
          if((int)minlength > maxlength)
-          throw "Invalid arguments(mask length).";
+          throw Exception("Invalid arguments(mask length).");
        }
     }
     else if (minlength == 0 && maxlength != 0)
@@ -261,24 +441,16 @@ mstruct::mstruct(po::variables_map vm)
       if(maxlength < 0)
         maxlength = -1; //there isn't a maximum length
     } // else case is when minlength == 0 and maxlength == 0
-  }
-  catch(std::exception &error)
-  {
-    cout << error.what() << endl;
-    exit(EXIT_FAILURE);
-  }
 
-  //complexity : IMPLEMENT COMPLEXITU ANALYSIS
-  mincomplexity = vm["mincomplexity"].as<unsigned int>();
-  maxcomplexity = vm["maxcomplexity"].as<int>();
+    //complexity : IMPLEMENT COMPLEXITY ANALYSIS
+    mincomplexity = vm["mincomplexity"].as<unsigned int>();
+    maxcomplexity = vm["maxcomplexity"].as<int>();
 
-  ////////// frequency parameters (frequency section) //////////
-  //occurence
-  minoccurrence = vm["minoccurrence"].as<unsigned int>();
-  maxoccurrence = vm["maxoccurrence"].as<int>();
+    ////////// frequency parameters (frequency section) //////////
+    //occurence
+    minoccurrence = vm["minoccurrence"].as<unsigned int>();
+    maxoccurrence = vm["maxoccurrence"].as<int>();
 
-  try
-  {
     if(minoccurrence >0 && maxoccurrence == 0)
       maxoccurrence = -1; //there isn't a maximum occurence
     else if (minoccurrence > 0 && maxoccurrence != 0)
@@ -288,7 +460,7 @@ mstruct::mstruct(po::variables_map vm)
       else
        {
          if((int)minoccurrence > maxoccurrence)
-          throw "Invalid arguments(mask occurence).";
+          throw Exception("Invalid arguments(mask occurence).");
        }
     }
     else if (minoccurrence == 0 && maxoccurrence != 0)
@@ -296,40 +468,20 @@ mstruct::mstruct(po::variables_map vm)
       if(maxoccurrence < 0)
         maxoccurrence = -1; //there isn't a maximum length
     } // else case is when minoccurence == 0 and maxoccurence == 0
+
+    ////////// parallel parameters (parallel section) //////////
+    threads = vm["threads"].as<unsigned int>();
+    int maxthreads = omp_get_max_threads();
+    if((int)threads > maxthreads)
+      throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
+  
   }
   catch(std::exception &error)
   {
     cout << error.what() << endl;
+    cout << maskgen << endl;
     exit(EXIT_FAILURE);
   }
-}
-
-mstruct::mstruct(unsigned int min_length, int max_length,             //
-          unsigned int min_complexity, int max_complexity,     // mask struct parameters
-          unsigned int min_occurrence, int max_occurrence,       //
-          bool quiet_print, bool show_masks,                   // print parametersxs
-          vector<SCS> scharsets,
-          vector<Mask> check_masks,string check_mask_file,
-          string output_file, string statsgen_output)
-  :rstruct(min_length, max_length,
-           quiet_print,
-           output_file, statsgen_output)
-{
-
-  // password and mas structure requirements
-  mincomplexity = min_complexity;
-  maxcomplexity = max_complexity;
-  minoccurrence = min_occurrence;
-  maxoccurrence = max_occurrence;
-
-  // print parameters
-  show = show_masks;
-  quiet = quiet_print;
-
-  // check requierement
-  checkMasks = check_masks;
-  checkMaskFile = check_mask_file;
-  charsets = scharsets;
 }
 
 void mstruct::debug()
@@ -338,37 +490,37 @@ void mstruct::debug()
 
   // file section
   cout << "--- file section ---"  << endl;
-  cout << "input    :  " << input << endl;
-  cout << "output   : " << output << endl;
   cout << "statsgen : " << statsgen << endl;
+  cout << "output   : " << output << endl;
+  cout << "input    :  " << input << endl;
+
 
   // print section
   cout << "\n--- print section ---"  << endl;
-  cout << "quiet: " << quiet << endl;
-  cout << "show : " << show << endl;
+  cout << "show  : " << show << endl;
+  cout << "quiet : " << quiet << endl;
+  cout << "pretty: " << pretty << endl;
 
 
   // check requirements
   cout << "\n--- check section ---"  << endl;
   cout << "checkMasks:";
   for(Mask mask: checkMasks)
-  //scsValue is in mask.cpp(ans mask.hpp was included)
     cout << mask << ", "; 
   cout << endl;
   
   cout << "checkMaskFile:" << checkMaskFile << endl;
-  
 
   // password section
   cout << "\n--- password section ---"  << endl;
-  cout << "schasets:";
-  for(SCS charset: charsets)
+  cout << "scs:";
+  for(SCS charset: scs)
   //scsValue is in mask.cpp(ans mask.hpp was included)
     cout << charset << ", "; 
   cout << endl;
 
-  cout << "advChasets:";
-  for(ACS acharset: advCharsets)
+  cout << "acs:";
+  for(ACS acharset: acs)
   //scsValue is in mask.cpp(ans mask.hpp was included)
     cout << acharset << ", "; 
   cout << endl;
@@ -383,6 +535,10 @@ void mstruct::debug()
   cout << "\n--- frequency section ---"  << endl;
   cout << "minoccurence:  " << minoccurrence << endl;
   cout << "maxoccurence:  " << maxoccurrence << endl;
+
+    //parallel section
+  cout << "\n--- parallel section --" << endl;
+  cout << "threads: " << threads << endl;
 }
 
 
@@ -397,10 +553,12 @@ pstruct::pstruct(unsigned int min_length, int max_length,    //
                  unsigned int min_digit, int max_digit,      // parameters
                  unsigned int min_special, int max_special,  // 
                  bool quiet_print, bool show_masks,          // print parameters
-                 string output_file, string input_file)      // io parameters
-  :rstruct(min_length, max_length,
-           quiet_print,
-           output_file, input_file)
+                 string output_file, string input_file,      // io parameters
+                unsigned int nthreads)
+                :rstruct(min_length, max_length,
+                          quiet_print,
+                          output_file, input_file,
+                          nthreads)
 {
   // masks struct parameters
   minlower = min_lower;
@@ -419,41 +577,43 @@ pstruct::pstruct(unsigned int min_length, int max_length,    //
   show = show_masks;
 }
 
-pstruct::pstruct(po::variables_map vm)
+pstruct::pstruct(po::variables_map vm, po::options_description policygen)
 /*
  * init a pstruct with all the paramenters entered to vm
  * (from cli using flags)
  */
 {
-  ////////// Output File parameter(files section) //////////
-  
-  // if there is a output paramenter assign to output attribute, 
-  // otherwise assign the default value
-  output = vm["output"].as<string>();
+  try{
+    ////////// Output File parameter(files section) //////////
+    
+    // if there is a output paramenter assign to output attribute, 
+    // otherwise assign the default value
+    output = vm["output"].as<string>();
+    if(output == "")
+      throw Exception("No output file supplied!");
 
-  // if there is a output paramenter assign to output attribute, 
-  // otherwise assign the default value
-  input = vm["input"].as<string>();
+    // if there is a output paramenter assign to output attribute, 
+    // otherwise assign the default value
+    input = vm["input"].as<string>();
 
-  
-  ////////// print parameters(print section) //////////
-  
-  // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
-  quiet = vm["quiet"].as<bool>();
+    
+    ////////// print parameters(print section) //////////
+    
+    // if there is a quiet paramenter assign to quiet attribute, otherwise assign the default value
+    quiet = vm["quiet"].as<bool>();
 
-  // if there is a show paramenter assign to show attribute, otherwise assign the default value
-  show = vm["show"].as<bool>();
+    // if there is a show paramenter assign to show attribute, otherwise assign the default value
+    show = vm["show"].as<bool>();
 
-  // if there is a pretty paramenter assign to pretty attribute, otherwise assign the default value
-  pretty = vm["pretty"].as<bool>();
+    // if there is a pretty paramenter assign to pretty attribute, otherwise assign the default value
+    pretty = vm["pretty"].as<bool>();
 
-  ////////// mask parameters (mask section) //////////
-  //length
-  minlength = vm["minlength"].as<unsigned int>();
-  maxlength = vm["maxlength"].as<int>();
+    ////////// mask parameters (mask section) //////////
+    //length
+    minlength = vm["minlength"].as<unsigned int>();
+    maxlength = vm["maxlength"].as<int>();
 
-  try
-  {
+ 
     if(minlength >0 && maxlength == 0)
       maxlength = -1; //there isn't a maximum length
     else if (minlength > 0 && maxlength != 0)
@@ -463,7 +623,7 @@ pstruct::pstruct(po::variables_map vm)
       else
        {
          if((int)minlength > maxlength)
-          throw "Invalid arguments(mask length).";
+          throw Exception("Invalid arguments(mask length).");
        }
     }
     else if (minlength == 0 && maxlength != 0)
@@ -471,47 +631,42 @@ pstruct::pstruct(po::variables_map vm)
       if(maxlength < 0)
         maxlength = -1; //there isn't a maximum length
     } // else case is when minlength == 0 and maxlength == 0
-  }
-  catch(std::exception &error)
-  {
-    cout << error.what() << endl;
-    exit(EXIT_FAILURE);
-  }
   
-  //  complexity 
-  // mincomplexity = vm["mincomplexity"].as<unsigned int>();
-  // maxcomplexity = vm["maxcomplexity"].as<int>();
 
-  // try
-  // {
-  //   if(minspecial >0 && maxspecial == 0)
-  //     maxspecial = -1; //there isn't a maximum special  characters
-  //   else if (minspecial > 0 && maxspecial != 0)
-  //   {
-  //     if(maxspecial > 0 && (int)minspecial > maxspecial)
-  //       throw "Invalid arguments(mask special characters).";
+  
+    //  complexity 
+    // mincomplexity = vm["mincomplexity"].as<unsigned int>();
+    // maxcomplexity = vm["maxcomplexity"].as<int>();
 
-  //     else
-  //       maxspecial = -1; //there isn't a maximum special charaters
-  //   }
-  //   else if (minspecial == 0 && maxspecial != 0)
-  //   {
-  //     if(maxspecial < 0)
-  //       maxspecial = -1; //there isn't a maximum special characters
-  //   }// else case is when minspecial == 0 and maxspecial == 0
-  // }
-  // catch(std::exception &error)
-  // {
-  //   cout << error.what() << endl;
-  //   exit(1);
-  // }
+    // try
+    // {
+    //   if(minspecial >0 && maxspecial == 0)
+    //     maxspecial = -1; //there isn't a maximum special  characters
+    //   else if (minspecial > 0 && maxspecial != 0)
+    //   {
+    //     if(maxspecial > 0 && (int)minspecial > maxspecial)
+    //       throw "Invalid arguments(mask special characters).";
 
-  // lower characters
-  minlower = vm["minlower"].as<unsigned int>();
-  maxlower = vm["maxlower"].as<int>();
+    //     else
+    //       maxspecial = -1; //there isn't a maximum special charaters
+    //   }
+    //   else if (minspecial == 0 && maxspecial != 0)
+    //   {
+    //     if(maxspecial < 0)
+    //       maxspecial = -1; //there isn't a maximum special characters
+    //   }// else case is when minspecial == 0 and maxspecial == 0
+    // }
+    // catch(std::exception &error)
+    // {
+    //   cout << error.what() << endl;
+    //   exit(1);
+    // }
 
-  try
-  {
+    // lower characters
+    minlower = vm["minlower"].as<unsigned int>();
+    maxlower = vm["maxlower"].as<int>();
+
+
     if(minlower >0 && maxlower == 0)
       maxlower = -1; //there isn't a maximum lowercases
     else if (minlower > 0 && maxlower != 0)
@@ -521,7 +676,7 @@ pstruct::pstruct(po::variables_map vm)
       else
       {
         if((int)minlower > maxlower)
-        throw "Invalid arguments(mask lower cases).";
+        throw Exception("Invalid arguments(mask lower cases).");
       }
     }
     else if (minlower == 0 && maxlower != 0)
@@ -529,19 +684,11 @@ pstruct::pstruct(po::variables_map vm)
       if(maxlower < 0)
         maxlower = -1; //there isn't a maximum lowercases
     }// else case is when minlower == 0 and maxlower == 0
-  }
-  catch(std::exception &error)
-  {
-    cout << error.what() << endl;
-    exit(EXIT_FAILURE);
-  }
 
-  // upper characters
-  minupper = vm["minupper"].as<unsigned int>();
-  maxupper = vm["maxupper"].as<int>();
+    // upper characters
+    minupper = vm["minupper"].as<unsigned int>();
+    maxupper = vm["maxupper"].as<int>();
 
-  try
-  {
     if(minupper >0 && maxupper == 0)
       maxupper = -1; //there isn't a maximum uppercases
     else if (minupper > 0 && maxupper != 0)
@@ -551,7 +698,7 @@ pstruct::pstruct(po::variables_map vm)
       else
       {
         if((int)minupper > maxupper)
-        throw "Invalid arguments(mask uppercases).";
+        throw Exception("Invalid arguments(mask uppercases).");
       }
     }
     else if (minupper == 0 && maxupper != 0)
@@ -559,19 +706,13 @@ pstruct::pstruct(po::variables_map vm)
       if(maxupper < 0)
         maxupper = -1; //there isn't a maximum uppercases
     }// else case is when minupper == 0 and maxupper == 0
-  }
-  catch(std::exception &error)
-  {
-    cout << error.what() << endl;
-    exit(EXIT_FAILURE);
-  }
 
-  // digit characters
-  mindigit = vm["mindigit"].as<unsigned int>();
-  maxdigit = vm["maxdigit"].as<int>();
 
-  try
-  {
+    // digit characters
+    mindigit = vm["mindigit"].as<unsigned int>();
+    maxdigit = vm["maxdigit"].as<int>();
+
+
     if(mindigit >0 && maxdigit == 0)
       maxdigit = -1; //there isn't a maximum digits
     else if (mindigit > 0 && maxdigit != 0)
@@ -581,7 +722,7 @@ pstruct::pstruct(po::variables_map vm)
       else
       {
         if((int)mindigit > maxdigit)
-          throw "Invalid arguments(mask digits).";
+          throw Exception("Invalid arguments(mask digits).");
       }
     }
     else if (mindigit == 0 && maxdigit != 0)
@@ -589,19 +730,11 @@ pstruct::pstruct(po::variables_map vm)
       if(maxdigit < 0)
         maxdigit = -1; //there isn't a maximum digits
     }// else case is when mindigit == 0 and maxdigit == 0
-  }
-  catch(std::exception &error)
-  {
-    cout << error.what() << endl;
-    exit(EXIT_FAILURE);
-  }
 
-  // special characters
-  minspecial = vm["minspecial"].as<unsigned int>();
-  maxspecial = vm["maxspecial"].as<int>();
+    // special characters
+    minspecial = vm["minspecial"].as<unsigned int>();
+    maxspecial = vm["maxspecial"].as<int>();
 
-  try
-  {
     if(minspecial >0 && maxspecial == 0)
       maxspecial = -1; //there isn't a maximum special  characters
     else if (minspecial > 0 && maxspecial != 0)
@@ -611,7 +744,7 @@ pstruct::pstruct(po::variables_map vm)
       else
       {
         if((int)minspecial > maxspecial)
-        throw "Invalid arguments(mask special characters).";
+        throw Exception("Invalid arguments(mask special characters).");
       }
     }
     else if (minspecial == 0 && maxspecial != 0)
@@ -619,10 +752,17 @@ pstruct::pstruct(po::variables_map vm)
       if(maxspecial < 0)
         maxspecial = -1; //there isn't a maximum special characters
     }// else case is when minspecial == 0 and maxspecial == 0
+  
+    ////////// parallel parameters (parallel section) //////////
+    threads = vm["threads"].as<unsigned int>();
+    int maxthreads = omp_get_max_threads();
+    if((int)threads > maxthreads)
+      throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
   }
   catch(std::exception &error)
   {
     cout << error.what() << endl;
+    cout << policygen << endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -658,4 +798,8 @@ void pstruct::debug() // show all the parameters
 
   cout << "minspecial: " << minspecial << endl;
   cout << "maxspecial: " << maxspecial << endl;
+
+    //parallel section
+  cout << "\n--- parallel section --" << endl;
+  cout << "threads: " << threads << endl;
 }

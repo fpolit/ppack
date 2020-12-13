@@ -10,28 +10,10 @@
 #ifndef __INCLUDE_MASK_H__
 #define __INCLUDE_MASK_H__
 #include "../include/mask.hpp"
+//#include <string>
 #endif //__INCLUDE_MASK_H__
 
-/*
- * Mask exceptions
-*/
-struct invalid_maskcharset : public std::exception
-{
-  const char * what () const throw ()
-  {
-    return "Invalid mask charset.";
-  }
-}invalid_maskcharset;
 
-
-
-struct invalid_mask : public std::exception
-{
-  const char * what () const throw ()
-  {
-    return "Invalid mask.";
-  }
-}invalid_mask;
 
 
 
@@ -72,6 +54,31 @@ map<ACS, string> acsMap = {
 };
 
 
+/*
+ * Mask exceptions
+*/
+
+InvalidMaskcharset::InvalidMaskcharset(string invalidMaskCharset)
+{
+  maskCharset = invalidMaskCharset;
+}
+
+const char * InvalidMaskcharset::what() const throw ()
+{
+  string warningMsg = "Invalid MaskCharset: " + maskCharset;
+  return warningMsg.c_str();
+}
+
+InvalidMask::InvalidMask(string invalidMask)
+{
+  mask = invalidMask;
+}
+
+ const char * InvalidMask::what () const throw ()
+ {
+    string warningMsg = "Invalid Mask: " + mask;
+    return warningMsg.c_str();
+ }
 // head of functions
 
 // check methods
@@ -115,7 +122,7 @@ Mask::Mask(string mask)
 {
   try{
     if(!ismask(mask))
-      throw invalid_mask;
+      throw InvalidMask(mask);
 
     // mask analysis
     for(int i=1; i<(int)mask.size(); i+=2)
@@ -275,7 +282,7 @@ void Mask::realloc(string maskCharset)
 {
   try{
     if(!isMaskCharset(maskCharset))
-      throw invalid_maskcharset;
+      throw InvalidMaskcharset(maskCharset);
 
     if(maskCharset == "?l")
       mstruct.lowercase += 1;
@@ -308,7 +315,7 @@ Mask Mask::analysis(string mask)
 
   try{
     if(!ismask(mask))
-      throw invalid_mask;
+      throw InvalidMask(mask);
 
     //#pragma omp parallel for shared(mask)
     for(int i=1; i<(int)mask.size(); i+=2)
@@ -408,4 +415,24 @@ bool Mask::equalStruct(Mask kmask, Mask imask)
       kmstruct.special == imstruct.special)
     return true;
   return false;
+}
+
+SCS Mask::checkSCS(string pscs)
+{
+  for(auto [scs, valueSCS]: scsMap)
+  {
+    if(pscs == valueSCS)
+      return scs;
+  }
+  return SCS::none;
+}
+
+ACS Mask::checkACS(string pacs)
+{
+  for(auto [acs, valueACS]: acsMap)
+  {
+    if(pacs == valueACS)
+      return acs;
+  }
+  return ACS::advnone;
 }

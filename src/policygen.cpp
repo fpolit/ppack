@@ -52,14 +52,14 @@ int main(int argc ,char* argv[])
 
     po::options_description files("Files I/O");
     files.add_options()
-        ("output, o", po::value<string>()->default_value("policygen.hcmasks"), "Ouput File.")
-        ("input, i", po::value<string>()->default_value(""), "Input File.");
+        ("output,o", po::value<string>()->default_value(""), "Ouput File.")
+        ("input,i", po::value<string>()->default_value(""), "Input File.");
 
     po::options_description print("Print");
     print.add_options()
-        ("show", po::value<bool>()->implicit_value(true)->default_value(false), "Show generated masks.")
-        ("quiet, q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).")
-        ("pretty", po::value<bool>()->implicit_value(true)->default_value(false), "Pretty output.");
+        ("show,s", po::value<bool>()->implicit_value(true)->default_value(false), "Show generated masks.")
+        ("quiet,q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).")
+        ("pretty,p", po::value<bool>()->implicit_value(true)->default_value(false), "Pretty output.");
 
 
     po::options_description mask("Mask Structure");
@@ -97,11 +97,16 @@ int main(int argc ,char* argv[])
         ("minspecial", po::value<unsigned int>()->default_value(0), "Minimum password special characters.")
         ("maxspecial", po::value<int>()->default_value(0), "Maximum password special characters.");
 
+    po::options_description parallel("Parallel");
+    parallel.add_options()
+        ("threads,t", po::value<unsigned int>()->default_value(2), "Number of OMP threads.");
+      
+
     po::options_description policygen("Generate customized mask for crack passwords");
     policygen.add_options()
-        ("version, v", "PPACK version.")
-        ("help, h", "Show help.");
-    policygen.add(files).add(print).add(mask);
+        ("version,v", "PPACK version.")
+        ("help,h", "Show help.");
+    policygen.add(files).add(print).add(mask).add(policygen);
 
     po::variables_map vm;
 
@@ -120,7 +125,8 @@ int main(int argc ,char* argv[])
         return 1;
     }
 
-    pstruct pargs(vm);
+    pstruct pargs(vm, policygen);
+    //pargs.debug();
     PPACK::policygen(pargs);
 
     return 0;

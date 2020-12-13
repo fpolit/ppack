@@ -124,7 +124,7 @@ public:
 
   // core of statsgen
   friend statstruct coreStatsgen(sstruct pargs);
-  friend void printStatsgen(statstruct stats, sstruct pargs);
+  friend void writeStatsgen(statstruct stats, sstruct pargs);
   // core of policygen is in basepoli.cpp
 };
 #endif // __PPACK_H__

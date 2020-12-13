@@ -162,7 +162,34 @@ public:
   static string scstoString(SCS simpleCharset); // return the string value of the SCS simpleCharset
   static string acstoString(ACS advanceCharset); // return the string value of the ACS advanceCharset
   static bool equalStruct(Mask kmask, Mask imask); //return true if the maskStruct of the mask are equal otherwise return false 
+  static SCS checkSCS(string pscs); //pscs : posible SCS type, if pscs is an invalid SCS, then SCS:none is returned
+  static ACS checkACS(string pacs); //pacs : posible ACS type, if pacs is an invalid ACS, then ACS:advnone is returned
+
   // parse a maskStruct and get the complexity of the mask
   int complexityParser(maskStruct mstruct);
 };
+
+/*
+ * Mask exceptions
+*/
+class InvalidMaskcharset : public std::exception
+{
+  private:
+    string maskCharset;
+  public:
+    InvalidMaskcharset(string invalidMaskCharset);
+    const char * what () const throw ();
+};
+
+
+
+class InvalidMask : public std::exception
+{
+  private:
+    string mask;
+  public:
+    InvalidMask(string invalidMask);
+    const char * what () const throw ();
+};
+
 #endif // __MASK_H__
