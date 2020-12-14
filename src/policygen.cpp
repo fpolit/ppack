@@ -25,6 +25,7 @@
 
 #ifndef __INCLUDE_STD_IOSTREAM_H__
 #define __INCLUDE_STD_IOSTREAM_H__
+#include <cstdlib>
 #include <iostream>
 #endif //__INCLUDE_STD_IOSTREAM_H__
 
@@ -46,10 +47,11 @@ using namespace std;
 
 int main(int argc ,char* argv[])
 {
+
+    //cout << "Start running policygen main" << endl;
+
     try
     {
-
-
     po::options_description files("Files I/O");
     files.add_options()
         ("output,o", po::value<string>()->default_value(""), "Ouput File.")
@@ -106,7 +108,7 @@ int main(int argc ,char* argv[])
     policygen.add_options()
         ("version,v", "PPACK version.")
         ("help,h", "Show help.");
-    policygen.add(files).add(print).add(mask).add(policygen);
+    policygen.add(files).add(print).add(mask).add(parallel);
 
     po::variables_map vm;
 
@@ -115,16 +117,17 @@ int main(int argc ,char* argv[])
 
     if(vm.count("help")){
         cout << policygen << endl;
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
     if(vm.count("version"))
     {
         //cout << "PPACK  version " + ppack::VERSION << endl;
         cout << "PPACK  version: 1.0"  << endl;
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
+    //cout << "before run pstruct constructor." << endl;
     pstruct pargs(vm, policygen);
     //pargs.debug();
     PPACK::policygen(pargs);
@@ -134,6 +137,6 @@ int main(int argc ,char* argv[])
     catch(std::exception& e)
     {
         cout << e.what() << endl;
-        return 1;
+        exit(EXIT_FAILURE);
     }
 }

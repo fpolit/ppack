@@ -210,7 +210,7 @@ void corePolicygen(pstruct pargs)
   
   int minlength = base->getMinLength();
   int baseLength = base->getLength();
-  while(baseLength < minlength - 1)
+  while(baseLength < minlength)
     {
       base = maskStep(base); //increase the length of base in one
       baseLength += 1;
@@ -229,9 +229,8 @@ void corePolicygen(pstruct pargs)
       {
         #pragma omp ordered
         base->showMasks(pargs.pretty);
-
-        base = maskStep(base);
         writeMasks(base, outputPolicygen);
+        base = maskStep(base);
       }
       base->showMasks(pargs.pretty);
       writeMasks(base, outputPolicygen);
@@ -255,8 +254,8 @@ void corePolicygen(pstruct pargs)
     try {
       for(int step=base->getLength(); step < base->getMaxLength(); step++)
       {
-        base = maskStep(base);
         writeMasks(base, outputPolicygen);
+        base = maskStep(base);
       }
       writeMasks(base, outputPolicygen);
       outputPolicygen->close();
