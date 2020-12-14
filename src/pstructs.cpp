@@ -140,24 +140,24 @@ sstruct::sstruct(po::variables_map vm, po::options_description statsgen)
   // otherwise assign the default value ("")
   if(vm.count("input"))
   {
-    try{
-      input = vm["input"].as<string>();
-      CSimpleIniA filterFile;
-      filterFile.SetUnicode();
-      SI_Error rc = filterFile.LoadFile(input.c_str());
-      if(rc < 0)
-        throw std::exception();
+    // try{
+    //   input = vm["input"].as<string>();
+    //   CSimpleIniA filterFile;
+    //   filterFile.SetUnicode();
+    //   SI_Error rc = filterFile.LoadFile(input.c_str());
+    //   if(rc < 0)
+    //     throw std::exception();
 
-      CSimpleIniA::TNamesDepend filters;
-      filterFile.GetAllKeys("statsgen", filters);
-      cout << "readed keys." << endl;
-    }
-    catch(std::exception& error)
-    {
-      cout << error.what() << endl;
-      cout << statsgen << endl;
-      exit(EXIT_FAILURE);
-    }
+    //   CSimpleIniA::TNamesDepend filters;
+    //   filterFile.GetAllKeys("statsgen", filters);
+    //   cout << "readed keys." << endl;
+    // }
+    // catch(std::exception& error)
+    // {
+    //   cout << error.what() << endl;
+    //   cout << statsgen << endl;
+    //   exit(EXIT_FAILURE);
+    // }
   }
   else {
     try{
