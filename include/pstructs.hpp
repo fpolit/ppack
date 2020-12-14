@@ -58,10 +58,10 @@ namespace po = boost::program_options;
 #include "omp.h"
 #endif //__INCLUDE_OMP_H__
 
-#ifndef __INCLUDE_SIMPLEINI_H__
-#define __INCLUDE_SIMPLEINI_H__
-#include "simpleini/SimpleIni.h"
-#endif // __INCLUDE_SIMPLEINI_H__
+// #ifndef __INCLUDE_SIMPLEINI_H__
+// #define __INCLUDE_SIMPLEINI_H__
+// #include "simpleini/SimpleIni.h"
+// #endif // __INCLUDE_SIMPLEINI_H__
 
 
 class Exception : public std::exception
