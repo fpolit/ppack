@@ -2,7 +2,12 @@
 
 from sbash.core import Bash
 import argparse
-from fineprint.status import print_status
+from fineprint.status import print_status, print_successful, print_failure
+import re
+import sys
+import os
+from os.path import basename
+#from tabulate import tabulate
 
 john_hashes=[
 "descrypt",             "bsdicrypt",            "md5crypt",         "md5crypt-long",        "bcrypt",               "scrypt",    
@@ -52,30 +57,116 @@ john_hashes=[
 ]   
 
 
+class MaskAttack:
+    """
+        This class perform a mask attack
+    """
+    hashFormat = john_hashes
+    
+    def __init__(self, masksFile, hashType, hashFile):
+        self.masksFile = masksFile
+        self.hashType = hashType
+        self.hashFile = hashFile
+        
+    @staticmethod
+    def searchHash(search=None, *, sensitive=False):
+        if search:
+            if not sensitive:
+                hashPattern = re.compile(rf"\w*{search}\w*", re.IGNORECASE)
+            else:
+                hashPattern = re.compile(rf"\w*{search}\w*")
+                
+            print_status("Posible hashes format:")
+            for hashFormat in MaskAttack.hashFormat:
+                if hashPattern.search(hashFormat):
+                    print_successful(hashFormat)
 
-def maskAttack(masksFile, hashType, hashFile):
-    masks = open(masksFile, 'r')
-    #print(f"hashType: {hashType}")
-    while mask := masks.readline():
-        mask = mask.rstrip()
-        #print_status(f"mask: {mask}, hashType: {hashType}")
-        attack_cmd = f"john --mask={mask} --format={hashType} {hashFile}"
-        print("\n")
-        print_status(f"Running {attack_cmd}")
-        Bash.exec(attack_cmd)
+        else:
+            print_failure("No pattern given.")
+
+
+    def run(self, ompThreads=None, mpiProc=None, partition="me"):
+        try:
+            if ompThreads and mpiProc:
+                raise Exception("No hybrid execution supported")
+            elif ompThreads and not mpiProc: # omp execution
+                Bash.exec(f"export OMP_NUM_THREADS={ompThreads}")
+                masks = open(self.masksFile, 'r')
+                while mask := masks.readline():
+                    mask = mask.rstrip()
+                    attack_cmd = f"john --mask={mask} --format={self.hashType} {self.hashFile}"
+                    print()
+                    print_status(f"Running {attack_cmd}")
+                    Bash.exec(attack_cmd)
+            elif mpiProc and not ompThreads: # mpi execution
+                if partition == "me":
+                    masks = open(self.masksFile, 'r')
+                    while mask := masks.readline():
+                        mask = mask.rstrip()
+                        attack_cmd = f"mpirun -n {mpiProc} john --mask={mask} --format={hashType} {hashFile}"
+                        print()
+                        print_status(f"Running {attack_cmd}")
+                        Bash.exec(attack_cmd)
+                else: # write a slurm script and run in a cluster
+                    try:
+                        slurm_script = f"""
+                        #!/bin/bash
+                        #SBATCH --job-name=maskAttack
+                        #SBATCH --
+                        """
+                        nameHashFile = basename(self.hashFile)
+                        slurm = open(f"{nameHashFile}.slurm", 'w')
+                        slurm.write(slurm_script)
+                        slurm.close()
+
+                        Bash.exec(f"sbash {nameHashFile}.slurm")
+                    except Exception as error:
+                        print_failure(error)
+                        sys.exit(1)
+
+            else:
+                raise Exception("No OpenMP or MPI execution seleted.")
+
+        except Exception as error:
+            print_failure(error)
+            sys.exit(1)
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Mask Attack", prog='mattack', usage='%(prog)s [-h] [-m MASKS] [-f HASH_TYPE] hash')
+    
     parser.add_argument('-m', '--masks',
                         help='Mask File to perform Mask Attack')
+
     parser.add_argument('-f', '--format', choices=john_hashes,
                         help='John The Ripper\'s  hash format')
-    parser.add_argument('hash',
-                        help='hashes to crack')
+
+    parser.add_argument('-n', '--nproc', type=int, default=0,
+                        help='Number of proccessors')
+
+    parser.add_argument('-t', '--threads', type=int, default=0,
+                        help='Number of OMP threads')
+
+    parser.add_argument('-p', '--partition', type=str, default="me",
+                        help='Slurm Partition')
+    
+    parser.add_argument('-s', '--search',
+                        help='Search by a hash format')
+    
+    parser.add_argument('hashes',
+                        help='hashes file to crack')
+    
 
     args = parser.parse_args()
     
-    masksFile = args.masks
-    hashType = args.format
-    hashFile = args.hash
-    maskAttack(masksFile, hashType, hashFile)
+    if searchHash := args.search:
+        MaskAttack.searchHash(searchHash)
+    else:
+        masksFile = args.masks
+        hashType = args.format
+        hashFile = args.hash
+        mattack = MaskAttack(masksFile, hashType, hashFile)
+
+        nproc = args.nproc
+        threads = args.threads
+        partition = args.partition
+        mattack.run(threads, nproc, partition)
