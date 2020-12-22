@@ -90,7 +90,7 @@ class MaskAttack:
             else:
                 hashPattern = re.compile(rf"\w*{search}\w*")
                 
-            print_status("Posible hashes format:")
+            print_status(f"Posible hashes(*{search}*):")
             for hashFormat in MaskAttack.hashFormat:
                 if hashPattern.search(hashFormat):
                     print_successful(hashFormat)
@@ -191,8 +191,16 @@ class MaskAttack:
                                 f"\n#SBATCH --ntasks={ntasks}"    +\
                                 f"\n#SBATCH --cpus-per-task={cpusPerTask}"
                     
+                    if memPerCpu:
+                        sscript += f"\n#SBATCH --mem-per-cpu={memPerCpu}\n"
+
                     if time:
                         sscript += f"\n#SBATCH --time={time}\n" 
+                    
+                    if error:
+                        sscript += f"\n#SBATCH --error={error}\n"
+                    if output:
+                        sscript += f"\n#SBATCH --output={output}\n"
                         
                     sscript += "\n\n#Performing several parallel mask attacks"
                     with open(self.masksFile, 'r') as masks:
@@ -242,8 +250,7 @@ if __name__=="__main__":
     parser.add_argument('-s', '--search', type=str, default=None,
                         help='Search by a hash format')
     
-    #hpcParser = parser.add_subparsers(title='parallel execution(slurm)')
-
+    # HPC parameters
     parser.add_argument('-N', '--nodes', type=int, default=1,
                         help='Number of nodes')
 
@@ -263,16 +270,16 @@ if __name__=="__main__":
                         help='Slurm Job Name')
 
     parser.add_argument('-o', '--output', type=str, default=None,
-                        help='Slurm Output File')
+                        help='Slurm Output File Name')
 
     parser.add_argument('-e', '--error', type=str, default=None,
-                        help='Slurm Error File')
+                        help='Slurm Error File Name')
 
     parser.add_argument('--slurm', type=str, default="mattack.slurm",
-                        help='Slurm Submmit Script')
+                        help='Slurm Submit Script Name')
 
     parser.add_argument('--time', type=str, default=None,
-                        help='Maximum time to perform the attack')
+                        help='Maximum time to perform the attack(HH:MM:SS)')
 
 
     args = parser.parse_args()
