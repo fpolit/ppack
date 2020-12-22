@@ -117,11 +117,13 @@ class MaskAttack:
 
 
     def run(self, nodes=None, ntasks=None, partition=None, cpusPerTask=1, memPerCpu=None, 
-        jobName="slurmJob", output=None, error=None, slurmScript="mattack", time=None):
+        jobName="mattack", output=None, error=None, slurmScript="mattack.sh", time=None):
         """
             Submit a slurm task
         """
         try:
+
+            #import pdb; pdb.set_trace()
             if not partition:   #No partition variable is supplied(we cann't submmit this task with slurm)
                 #run simply in the actual node
                 if cpusPerTask>1 and ntasks>1: #no hybrid taks supported by john
@@ -151,17 +153,16 @@ class MaskAttack:
                     raise Exception("No hybrid execution supported")
                 elif cpusPerTask>1 and ntasks==1 and nodes==1: #omp work in only 1 node(OpenMP isn't scalable)
                     # writing slurm script (sscript)
-                    sscript = f"""
-                    #!/bin/bash
-                    #SBATCH --job-name={jobName}
-                    #SBATCH --nodes={nodes}
-                    #SBATCH --ntasks={ntasks}
-                    #SBATCH --cpus-per-task={cpusPerTask}
-                    """
+                    sscript =   "#!/bin/bash" +\
+                                f"#\nSBATCH --job-name={jobName}" +\
+                                f"#\nSBATCH --nodes={nodes}"  +\
+                                f"#\nSBATCH --ntasks={ntasks}"    +\
+                                f"#\nSBATCH --cpus-per-task={cpusPerTask}"
                     
                     if time:
                         sscript += f"\n#SBATCH --time={time}\n" 
-                        
+                    
+                    sscript += "\n\n#Performing a parallel mask attack"
                     with open(self.masksFile, 'r') as masks:
                         while mask := masks.readline():
                             mask = mask.rstrip()
@@ -171,28 +172,29 @@ class MaskAttack:
                         submmitScript.write(sscript)
 
                     infoAttack =    f"Performing a mask attack against of {self.hashType} hash in {self.hashFile}" +\
-                                    f"\n\tmaskFile: {self.masksFile}" +\
-                                    f"\n\nParallel attack desciption:" +\
-                                    f"\n\tnodes: {nodes}" +\
-                                    f"\n\tntasks: {ntasks}" +\
-                                    f"\n\tpartition: {partition}"
-                                    # ADD MORE DETAILS
+                                    f"\n\tmaskFile: {self.masksFile}"
+                                
+                    parallelAttackinfo =    f"Parallel attack desciption:" +\
+                                            f"\n\tnodes: {nodes}" +\
+                                            f"\n\tntasks: {ntasks}" +\
+                                            f"\n\tpartition: {partition}\n"
+                                            # ADD MORE DETAILS
                     print_status(infoAttack)
-                    Bash.exec(f"sbash {slurmScript}")
+                    print_status(parallelAttackinfo)
+                    #Bash.exec(f"sbatch {slurmScript}")
 
-                elif cpusPerTask>1 and ntasks>1 and nodes>=1: #mpi work(parallel scalable task)
+                elif cpusPerTask==1 and ntasks>1 and nodes>=1: #mpi work(parallel scalable task)
                     # writing slurm script (sscript)
-                    sscript = f"""
-                    #!/bin/bash
-                    #SBATCH --job-name={jobName}
-                    #SBATCH --nodes={nodes}
-                    #SBATCH --ntasks={ntasks}
-                    #SBATCH --cpus-per-task={cpusPerTask}
-                    """
+                    sscript =   "#!/bin/bash" +\
+                                f"\n#SBATCH --job-name={jobName}" +\
+                                f"\n#SBATCH --nodes={nodes}"  +\
+                                f"\n#SBATCH --ntasks={ntasks}"    +\
+                                f"\n#SBATCH --cpus-per-task={cpusPerTask}"
                     
                     if time:
                         sscript += f"\n#SBATCH --time={time}\n" 
                         
+                    sscript += "\n\n#Performing several parallel mask attacks"
                     with open(self.masksFile, 'r') as masks:
                         while mask := masks.readline():
                             mask = mask.rstrip()
@@ -202,15 +204,18 @@ class MaskAttack:
                         submmitScript.write(sscript)
 
 
+
                     infoAttack =    f"Performing a mask attack against of {self.hashType} hash in {self.hashFile}" +\
-                                    f"\n\tmaskFile: {self.masksFile}" +\
-                                    f"\n\nParallel attack desciption:" +\
-                                    f"\n\tnodes: {nodes}" +\
-                                    f"\n\tntasks: {ntasks}" +\
-                                    f"\n\tpartition: {partition}"
-                                    # ADD MORE DETAILS
+                                    f"\n\tmaskFile: {self.masksFile}"
+                                
+                    parallelAttackinfo =    f"Parallel attack desciption:" +\
+                                            f"\n\tnodes: {nodes}" +\
+                                            f"\n\tntasks: {ntasks}" +\
+                                            f"\n\tpartition: {partition}\n"
+                                            # ADD MORE DETAILS
                     print_status(infoAttack)
-                    Bash.exec(f"sbash {slurmScript}")
+                    print_status(parallelAttackinfo)
+                    Bash.exec(f"sbatch {slurmScript}")
                 
                 else:
                     raise Exception("Invalid arguments.")
@@ -234,37 +239,39 @@ if __name__=="__main__":
     parser.add_argument('hash',
                         help='hash file to crack')
 
-    parser.add_argument('-s', '--search',
+    parser.add_argument('-s', '--search', type=str, default=None,
                         help='Search by a hash format')
+    
+    #hpcParser = parser.add_subparsers(title='parallel execution(slurm)')
 
     parser.add_argument('-N', '--nodes', type=int, default=1,
                         help='Number of nodes')
 
     parser.add_argument('-n', '--ntasks', type=int, default=1,
-                        help='Number of tasks')
+                        help='Number of tasks(MPI process)')
 
-    parser.add_argument('-p', '--partition', type=str, default="me",
+    parser.add_argument('-p', '--partition', type=str, default=None,
                         help='Slurm Partition')
     
     parser.add_argument('-t', '--cpusPerTask', type=int, default=1,
                     help='Number of tasks per CPU(OMP Threads)')
 
-    parser.add_argument('--menPerCpu', type=int, default=1,
+    parser.add_argument('--menPerCpu', type=str, default="4GB",
                 help='Memory per CPU(node)')
 
-    parser.add_argument('-j', '--jobname', type=str,
-                        help='Job Name Slurm')
+    parser.add_argument('-j', '--jobname', type=str, default="mattack",
+                        help='Slurm Job Name')
 
-    parser.add_argument('-o', '--output', type=str,
-                        help='Output File Slurm')
+    parser.add_argument('-o', '--output', type=str, default=None,
+                        help='Slurm Output File')
 
-    parser.add_argument('-e', '--error', type=str,
-                        help='Error File Slurm')
+    parser.add_argument('-e', '--error', type=str, default=None,
+                        help='Slurm Error File')
 
-    parser.add_argument('--slurm', type=str,
+    parser.add_argument('--slurm', type=str, default="mattack.slurm",
                         help='Slurm Submmit Script')
 
-    parser.add_argument('--time',
+    parser.add_argument('--time', type=str, default=None,
                         help='Maximum time to perform the attack')
 
 
@@ -278,17 +285,18 @@ if __name__=="__main__":
         hashFile = args.hash
         mattack = MaskAttack(masksFile, hashType, hashFile)
 
+        # parameters to perform a parallel mask attack
         nodes = args.nodes
         ntasks = args.ntasks
         partition = args.partition
-        cpuPerTasks = args.ntasks
-        memPerCpu = args.memPerCpu
+        cpusPerTask = args.cpusPerTask
+        memPerCpu = args.menPerCpu
         jobName = args.jobname
         output = args.output
         error = args.error
         slurmScript = args.slurm
         time = args.time
 
-        # perform mask attack
-        mattack.run(nodes, ntasks, partition, cpuPerTasks, memPerCpu, 
+        # performing a parallel mask attack
+        mattack.run(nodes, ntasks, partition, cpusPerTask, memPerCpu, 
                 jobName, output, error, slurmScript, time)
