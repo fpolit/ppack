@@ -6,10 +6,9 @@ from fineprint.status import print_status, print_successful, print_failure
 import re
 import sys
 import os
-from os.path import dirname
+from os.path import dirname, join
 import json
-#from reader import Reader
-#from tabulate import tabulate
+
 
 
 
@@ -67,7 +66,7 @@ john_hashes=[
 "HMAC-SHA384",          "HMAC-SHA512",          "dummy",            "crypt",              "cq"
 ]   
 
-hashesjson = os.path.join(dirname(PWD), 'hash.json')
+hashesjson = os.path.join(dirname(PWD), 'hhash.json')
 with open(hashesjson, 'r') as hash_hashcat:
     hashcat_hashes = json.load(hash_hashcat) 
 
@@ -99,9 +98,26 @@ class MaskAttack:
         else:
             print_failure("No pattern given.")
 
+    @staticmethod
+    def checkStatus(hash):
+        """
+            Check status of the hash (it is cracked or no)
+            It hash is cracked when it is in the ~/.john/john.pot file
+            otherwise it isn't cracked
+        """
+        import pdb; pdb.set_trace()
+        crackedPattern = re.compile(rf"(\w|\W|\s)*{hash}(\w|\W|\s)*")
+        homeUser = os.path.expanduser("~")
+        johnPotPath = os.path.join(homeUser, ".john/john.pot")
+        with open(johnPotPath, 'r') as johnPotFile:
+            while   crackedHash := johnPotFile.readline().rstrip():
+                if(crackedPattern.fullmatch(crackedHash)):
+                    return True
+        return False
 
-    def run(self, nodes=None, ntasks=None, partition=None, cpusPerTask=1, time=None, memPerCpu=None, 
-            output=None, error=None, jobName="slurmJob", slurmScript="mattack"):
+
+    def run(self, nodes=None, ntasks=None, partition=None, cpusPerTask=1, memPerCpu=None, 
+        jobName="slurmJob", output=None, error=None, slurmScript="mattack", time=None):
         """
             Submit a slurm task
         """
@@ -215,20 +231,26 @@ if __name__=="__main__":
     parser.add_argument('-f', '--format',
                         help='John The Ripper\'s  hash format')
 
+    parser.add_argument('hash',
+                        help='hash file to crack')
+
+    parser.add_argument('-s', '--search',
+                        help='Search by a hash format')
+
     parser.add_argument('-N', '--nodes', type=int, default=1,
                         help='Number of nodes')
 
     parser.add_argument('-n', '--ntasks', type=int, default=1,
                         help='Number of tasks')
+
+    parser.add_argument('-p', '--partition', type=str, default="me",
+                        help='Slurm Partition')
     
     parser.add_argument('-t', '--cpusPerTask', type=int, default=1,
                     help='Number of tasks per CPU(OMP Threads)')
 
     parser.add_argument('--menPerCpu', type=int, default=1,
                 help='Memory per CPU(node)')
-
-    parser.add_argument('-p', '--partition', type=str, default="me",
-                        help='Slurm Partition')
 
     parser.add_argument('-j', '--jobname', type=str,
                         help='Job Name Slurm')
@@ -239,18 +261,12 @@ if __name__=="__main__":
     parser.add_argument('-e', '--error', type=str,
                         help='Error File Slurm')
 
-    parser.add_argument('-s', '--slurm', type=str,
+    parser.add_argument('--slurm', type=str,
                         help='Slurm Submmit Script')
 
     parser.add_argument('--time',
-                        help='Maximum time to perform the task')
+                        help='Maximum time to perform the attack')
 
-    parser.add_argument('-s', '--search',
-                        help='Search by a hash format')
-    
-    parser.add_argument('hashes',
-                        help='hashes file to crack')
-    
 
     args = parser.parse_args()
     
@@ -262,7 +278,17 @@ if __name__=="__main__":
         hashFile = args.hash
         mattack = MaskAttack(masksFile, hashType, hashFile)
 
-        nproc = args.nproc
-        threads = args.threads
+        nodes = args.nodes
+        ntasks = args.ntasks
         partition = args.partition
-        mattack.run(threads, nproc, partition)
+        cpuPerTasks = args.ntasks
+        memPerCpu = args.memPerCpu
+        jobName = args.jobname
+        output = args.output
+        error = args.error
+        slurmScript = args.slurm
+        time = args.time
+
+        # perform mask attack
+        mattack.run(nodes, ntasks, partition, cpuPerTasks, memPerCpu, 
+                jobName, output, error, slurmScript, time)
