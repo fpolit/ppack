@@ -218,7 +218,7 @@ void corePolicygen(pstruct pargs)
 
 
   // now the length of base is equal to minlength-1(policygen paramemter)
-  vector<Base*>* basePoli = new vector<Base*>;
+  //vector<Base*>* basePoli = new vector<Base*>;
   if(pargs.show)
   {
     ofstream* outputPolicygen = new ofstream;

@@ -548,7 +548,7 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
             cout  << "[ " << setw(3) << std::left << mask.length() << "] " << setw(32) <<  mask
                   << "[ " << setw(6) << occurence << "]" << endl;
           }
-          #pragma atomic update
+          #pragma omp atomic update
             generatedMasks += 1;
 
         }
@@ -593,7 +593,7 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
               << "[ " << setw(6) << occurence << "]" << endl;
         }
 
-        #pragma atomic update
+        #pragma omp atomic update
           generatedMasks += 1;
       }
     }
