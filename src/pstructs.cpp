@@ -237,10 +237,10 @@ sstruct::sstruct(po::variables_map vm, po::options_description statsgen)
       } // else case is when minlength == 0 and maxlength == 0
     
       ////////// parallel parameters (parallel section) //////////
-      threads = vm["threads"].as<unsigned int>();
-      int maxthreads = omp_get_max_threads();
-      if((int)threads > maxthreads)
-        throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
+      // threads = vm["threads"].as<unsigned int>();
+      // int maxthreads = omp_get_max_threads();
+      // if((int)threads > maxthreads)
+      //   throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
     }
     catch(std::exception &error)
     {
@@ -470,10 +470,10 @@ mstruct::mstruct(po::variables_map vm, po::options_description maskgen)
     } // else case is when minoccurence == 0 and maxoccurence == 0
 
     ////////// parallel parameters (parallel section) //////////
-    threads = vm["threads"].as<unsigned int>();
-    int maxthreads = omp_get_max_threads();
-    if((int)threads > maxthreads)
-      throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
+    // threads = vm["threads"].as<unsigned int>();
+    // int maxthreads = omp_get_max_threads();
+    // if((int)threads > maxthreads)
+    //   throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
   
   }
   catch(std::exception &error)
@@ -754,10 +754,10 @@ pstruct::pstruct(po::variables_map vm, po::options_description policygen)
     }// else case is when minspecial == 0 and maxspecial == 0
   
     ////////// parallel parameters (parallel section) //////////
-    threads = vm["threads"].as<unsigned int>();
-    int maxthreads = omp_get_max_threads();
-    if((int)threads > maxthreads)
-      throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
+    // threads = vm["threads"].as<unsigned int>();
+    // int maxthreads = omp_get_max_threads();
+    // if((int)threads > maxthreads)
+    //   throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
   }
   catch(std::exception &error)
   {

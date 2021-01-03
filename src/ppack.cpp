@@ -405,19 +405,19 @@ void writeStatsgen(statstruct stats, sstruct pargs)
 
 void PPACK::statsgen(sstruct pargs)
 {
-  double elapsedTime = omp_get_wtime();
+  //double elapsedTime = omp_get_wtime();
   
-  omp_set_num_threads(pargs.threads);
+  //omp_set_num_threads(pargs.threads);
   statstruct stats = coreStatsgen(pargs);
 
   // print to console the computed stats and write
   // generated mask in output file
   writeStatsgen(stats, pargs);
-  elapsedTime = omp_get_wtime() - elapsedTime;
-  if(pargs.pretty)
-    FinePrint::successful("Elapsed Time: " + to_string(elapsedTime));
-  else
-    cout << "[+] Elapsed Time: " << elapsedTime << endl;
+  //elapsedTime = omp_get_wtime() - elapsedTime;
+  // if(pargs.pretty)
+  //   FinePrint::successful("Elapsed Time: " + to_string(elapsedTime));
+  // else
+  //   cout << "[+] Elapsed Time: " << elapsedTime << endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -614,9 +614,9 @@ void coreMaskgen(ofstream *maskgenOutput, vector<vector<string>> statsgenResults
 }
 void PPACK::maskgen(mstruct pargs)
 {
-  double elapsedTime = omp_get_wtime();
+  //double elapsedTime = omp_get_wtime();
   
-  omp_set_num_threads(pargs.threads);
+  //omp_set_num_threads(pargs.threads);
   CSVReader statsgen(pargs.statsgen);
 
   vector<vector<string>> results = statsgen.getData(); //results of statsgen
@@ -628,8 +628,8 @@ void PPACK::maskgen(mstruct pargs)
   try
   {
     coreMaskgen(maskgenOutput, results, pargs);
-    elapsedTime = omp_get_wtime() - elapsedTime;
-    cout << "[+] Elapsed Time: " << elapsedTime << endl;
+    // elapsedTime = omp_get_wtime() - elapsedTime;
+    // cout << "[+] Elapsed Time: " << elapsedTime << endl;
   }
   catch (std::exception& error) {
     cerr << error.what() << endl;
@@ -654,8 +654,8 @@ void PPACK::policygen(pstruct pargs)
     if(pargs.output == "")
       throw Exception("No output file supplied!");
     
-    double elapsedTime = omp_get_wtime();
-    omp_set_num_threads(pargs.threads);
+    //double elapsedTime = omp_get_wtime();
+    //omp_set_num_threads(pargs.threads);
     if(pargs.quiet == false) // print the ppack logo
       cout << Logo::randomLogo() << endl;
 
@@ -683,8 +683,8 @@ void PPACK::policygen(pstruct pargs)
                                           << " d:" << setw(3) << pargs.maxdigit
                                           << " s:" << setw(3) << pargs.maxspecial << endl;
     corePolicygen(pargs); //do almost all the work()
-    elapsedTime = omp_get_wtime() - elapsedTime;
-    cout << "[*] Elapsed Time : " << elapsedTime << endl;
+    // elapsedTime = omp_get_wtime() - elapsedTime;
+    // cout << "[*] Elapsed Time : " << elapsedTime << endl;
   }
   catch(std::exception& error)
   {
