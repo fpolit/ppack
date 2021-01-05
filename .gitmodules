@@ -5,5 +5,5 @@
 	path = include/simpleini
 	url = https://github.com/brofield/simpleini.git
 [submodule "doc/wiki"]
-	path = doc/wiki
+	path = doc/oldwiki
 	url = https://github.com/shpolit/ppack.wiki.git
