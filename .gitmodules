@@ -1,9 +1,9 @@
 [submodule "doc/ppack.wiki"]
-	path = doc/wiki/
-	url = https://github.com/wtchdog/ppack.wiki.git
+	path = doc/ppack.wiki
+	url = git@gitlab.com:spolit/ppack.wiki.git
 [submodule "include/simpleini"]
 	path = include/simpleini
 	url = https://github.com/brofield/simpleini.git
 [submodule "doc/wiki"]
-	path = doc/oldwiki
-	url = https://github.com/shpolit/ppack.wiki.git
+	path = doc/wiki
+	url = git@gitlab.com:spolit/ppack.wiki.git
