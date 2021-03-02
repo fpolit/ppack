@@ -1,5 +1,5 @@
 [submodule "include/simpleini"]
-	path = include/simpleini
+	path = ppack/include/simpleini
 	url = https://github.com/brofield/simpleini.git
 [submodule "wiki"]
 	path = doc/wiki
