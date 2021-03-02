@@ -4,10 +4,10 @@
  * Depuration - 28 nov 2020
  * policygen (cli interface) depurate.
  *
- * No tested functions: ALL FUNCTION TESTED
+ * No tested functions: NONE
  *
  * No implemented functions:
- *  
+ *
  * NO COMPLETED
  * --- implement the input of parameters using a input file ---
  *
@@ -22,6 +22,7 @@
  * Maintainer: glozanoa <glozanoa@uni.pe>
  *
  */
+
 
 #ifndef __INCLUDE_STD_IOSTREAM_H__
 #define __INCLUDE_STD_IOSTREAM_H__
@@ -102,7 +103,6 @@ int main(int argc ,char* argv[])
     po::options_description parallel("Parallel");
     parallel.add_options()
         ("threads,t", po::value<unsigned int>()->default_value(2), "Number of OMP threads.");
-      
 
     po::options_description policygen("Generate customized mask for crack passwords");
     policygen.add_options()

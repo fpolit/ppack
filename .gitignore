@@ -24,3 +24,6 @@ src/*.masks
 src/*.hcmasks
 src/wordlists/*
 src/debug/*
+
+bin/*
+build/*

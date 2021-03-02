@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
   // ismask check function
   cout << "\nismask function:" << endl;
-  if(ismask(smask))
+  if(Mask::ismask(smask))
     cout << mask << " is a mask." << endl;
   else
     cout << mask << "is an invalid mask." << endl;
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
   cout << "\ncheckLength function:" << endl;
   int minlength = 2;
   int maxlength = 4;
-  if(checkLength(mask, minlength, maxlength))
+  if(Mask::checkLength(mask, minlength, maxlength))
     cout << "len(" << mask << "):" << mask.length() << " is between " << minlength << " and " << maxlength << endl;
   else
     cout << "Invalid len(" << mask << ") : " << mask.length() << endl;
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
   // parser functions
   cout << "\nscsParser function:" << endl;
-  SCS scsMask = scsParser(mstruct);
+  SCS scsMask = Mask::scsParser(mstruct);
   cout << "cssmMask: " << scsMask << endl;
 
   cout << "\nanalysis function:" << endl;
