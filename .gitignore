@@ -27,3 +27,7 @@ src/debug/*
 
 bin/*
 build/*
+ppack_ama.egg-info/*
+dist/*
+
+env/*
