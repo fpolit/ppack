@@ -1,8 +1,0 @@
-uni
-hola
-bye
-love
-super
-imSuper1
-TocToc
-$ecurePasswd
