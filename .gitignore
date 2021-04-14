@@ -2,7 +2,7 @@ build/*
 **/*~
 *~
 **/.*
-#*#
+**/#*#
 a.out
 pack/*
 .*
@@ -16,10 +16,11 @@ test/omp/*
 doc/pack.wiki/*
 doc/README
 
-src/maskgen
-src/policygen
-src/stastgen
-src/cxx.md
+ppack/test/*
+ppack/src/maskgen
+ppack/src/policygen
+ppack/src/stastgen
+ppack/src/cxx.md
 src/*.masks
 src/*.hcmasks
 src/wordlists/*
