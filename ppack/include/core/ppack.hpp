@@ -22,42 +22,15 @@
 #ifndef _PPACK_H
 #define _PPACK_H
 
-
-#include <cstdlib>
-#include <iomanip>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-//#include <omp.h>
-
-using namespace std;
-
-
-#include "mask.hpp"
-#include "password.hpp"
-#include "args.hpp"
-#include "base.hpp"
-#include "logos.hpp"
-#include "csv.hpp"
+string VERSION = "1.0";
+int release = 1;
 
 class PPACK
 {
-
 public:
-
-  PPACK(){}
-
-  // using pstructs to pass paramether to static method of PPACK class
-
   static void statsgen(Sargs sargs);
   static void maskgen(Margs margs);
   static void policygen(Pargs pargs);
-
-  // // core of statsgen
-  // friend statstruct coreStatsgen(sstruct pargs);
-  // friend void writeStatsgen(statstruct stats, sstruct pargs);
-  // // core of policygen is in basepoli.cpp
 };
 
 #endif // _PPACK_H

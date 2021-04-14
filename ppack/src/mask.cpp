@@ -15,7 +15,7 @@ Mask::Mask()
   // mstruct is initilizated to zeros by default
   charset = SCS::none;
   complexity=0;
-  advanceCharset = ACS::advnone; //init advanceCharset with none, use only the set method to get acs
+  adv_charset = ACS::advnone; //init advanceCharset with none, use only the set method to get acs
 }
 
 
@@ -23,7 +23,7 @@ Mask::Mask(string mask)
   :string("") // NOTA: EL CONTRUCTOR DE LA CLASE PADRE (string) DEBE IR AQUI NO EN EL CUERPO SINO NO FUNCIONA.
 {
   try{
-    if(!ismask(mask))
+    if(!Mask::ismask(mask))
       throw InvalidMask(mask);
 
     // mask analysis
@@ -46,9 +46,9 @@ Mask::Mask(string mask)
           }
       }
 
-    charset = scsParser(mstruct);
+    charset = scs_parser(mstruct);
     complexity = 0; // implement a function to compute mask complexity
-    advanceCharset = ACS::advnone; //init advanceCharset with none, use only the set method to get acs
+    adv_charset = ACS::advnone; //init advanceCharset with none, use only the set method to get acs
 
   }
   catch(invalid_argument& error)
@@ -64,12 +64,13 @@ bool Mask::ismask(string mask)
 {
   bool master_ismask = true;
   //#pragma omp parallel for shared(master_ismask)
+  Charsets charsets;
   for(int k=1; k<(int)mask.size(); k+=2)
     {
       // if the string mask  isn't a mask, then only pass.
       if(!master_ismask)  continue;
 
-      if(masksymbols.find(mask[k], 0) == string::npos)
+      if(charsets.masksymbols.find(mask[k], 0) == string::npos)
         {
           //#pragma omp critical
           master_ismask = false;
@@ -118,7 +119,7 @@ bool Mask::check_length(Mask mask, int minlength, int maxlength)
 
 bool Mask::check_complexity(Mask mask, int mincomplexity, int maxcomplexity)
 {
-  int complexity = mask.getComplexity();
+  int complexity = mask.get_complexity();
   if(maxcomplexity != -1)
   {
     if(complexity >= mincomplexity && complexity <= maxcomplexity)
@@ -134,16 +135,17 @@ bool Mask::check_complexity(Mask mask, int mincomplexity, int maxcomplexity)
 
 
 
-// bool isMaskCharset(string maskCharset) // check if a symbols is a valid symbol mask
-// {
-//   if(maskCharset.size() == 2)
-//     {
-//       if(masksymbols.find(maskCharset[1], 0) != string::npos)
-//         return true;
-//     }
-//   return false;
+bool Mask::is_mask_charset(string maskCharset) // check if a symbols is a valid symbol mask
+{
+  Charsets charsets;
+  if(maskCharset.size() == 2)
+    {
+      if(charsets.masksymbols.find(maskCharset[1], 0) != string::npos)
+        return true;
+    }
+  return false;
 
-// }
+}
 
 
 // // get and set methods
@@ -181,8 +183,8 @@ string Mask::symbols()
 void Mask::realloc(string mask_charset)
 {
   try{
-    if(!isMaskCharset(mask_charset))
-      throw InvalidMaskcharset(mask_charset);
+    if(! Mask::is_mask_charset(mask_charset))
+      throw InvalidMaskCharset(mask_charset);
 
     if(mask_charset == "?l")
       mstruct.lowercase += 1;
@@ -247,7 +249,7 @@ Mask Mask::analysis(string mask)
       }
 
     maskStruct mstruct = gmask.get_mask_struct();
-    gmask.setSCS(scs_parser(mstruct));
+    gmask.set_scs(scs_parser(mstruct));
 
     return gmask;
   }
@@ -286,18 +288,18 @@ SCS Mask::scs_parser(maskStruct mstruct)
 
     else if((mstruct.special && mstruct.uppercase && mstruct.lowercase) &&
         !(mstruct.digit))
-        return SCS::mixalphaspecial;
+        return SCS::mix_alpha_special;
 
     else if((mstruct.digit && mstruct.uppercase && mstruct.lowercase) &&
         !(mstruct.special))
-        return SCS::mixalphanum;
+        return SCS::mix_alpha_num;
 
     else if((mstruct.digit && mstruct.special) &&
         !(mstruct.uppercase || mstruct.lowercase))
-        return SCS::mixspecialnum;
+        return SCS::mix_special_num;
 
     else if(mstruct.special && mstruct.lowercase && mstruct.uppercase && mstruct.digit)
-        return SCS::mixall;
+        return SCS::mix_all;
 
     else
         return SCS::none;
@@ -306,12 +308,12 @@ SCS Mask::scs_parser(maskStruct mstruct)
 
 string Mask::scs2string(SCS simpleCharset) // return the string value of the SCS simpleCharset
 {
-  return scsMap[simpleCharset];
+  return scs_map[simpleCharset];
 }
 
 string Mask::acs2string(ACS advanceCharset) // return the string value of the ACS advanceCharset
 {
-  return acsMap[advanceCharset];
+  return acs_map[advanceCharset];
 }
 
 bool Mask::equal_struct(Mask kmask, Mask imask)
@@ -352,14 +354,17 @@ string Mask::operator[](int index)
   if(index < 0 || index > this->length())
     return "?" + this[2*index + 1];
   else
-    throw out_of_range(index);
+    {
+      string warning = "Invalid index: " + index;
+      throw out_of_range(warning.c_str());
+    }
 }
 
-bool Mask::operator==(const Mask& other)
+bool Mask::operator==(const Mask other)
 {
-  maskStruct ms = other.get_mask_struct();
-  if (Mask.equalStruct(mstruct, ms) &&
-      *this == other)
+  //maskStruct ms = other.get_mask_struct();
+  if (Mask::equal_struct(*this, other) &&
+      this->compare(other) == 0)
     return true;
   return false;
 }
@@ -369,11 +374,14 @@ Mask Mask::split(int index)
   if(index < 0 || index > this->length())
     {
       Mask split_mask = Mask();
-      for(int i=index; i<this->length(), i++)
+      for(int i=index; i<this->length(); i++)
         split_mask.realloc(this[i]);
 
       return split_mask;
     }
   else
-    throw out_of_range(index);
+    {
+      string warning = "Invalid index: " + index;
+      throw out_of_range(warning.c_str());
+    }
 }

@@ -6,6 +6,9 @@
 
 #include <exception>
 
+#ifndef _ARGS_EXCEPT_H
+#define _ARGS_EXCEPT_H
+
 class Exception : public std::exception
 {
 private:
@@ -41,3 +44,5 @@ public:
     return warning.c_str();
   }
 };
+
+#endif // _ARGS_EXCEPT_H

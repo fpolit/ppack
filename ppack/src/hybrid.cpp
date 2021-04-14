@@ -4,18 +4,8 @@
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
-//#include "ppack/base.py"
+
 #include "../include/hybrid.hpp"
-
-Hybrid::Hybrid(string init_mask)
-{
-  word = "";
-  if (Mask.ismask(init_mask))
-    mask = init_mask;
-  else
-    throw InvalidMask(mask);
-}
-
 
 Hybrid::Hybrid(Mask init_mask)
 {
@@ -33,9 +23,10 @@ Hybrid::Hybrid(string init_word ,Mask init_mask)
 void Hybrid::expand()
 {
   string init_word = word;
-  Mask init_mask = this->split(1);
+  Mask init_mask = mask.split(1);
   string charsets;
-  string mask_symbol = mask[0]
+  string mask_symbol = mask[0];
+  Charsets charset;
 
   if (mask_symbol == "?l")
     charsets = charset.ascii_loweralpha;
@@ -62,7 +53,7 @@ void Hybrid::reset_branches(vector<Hybrid> sons_branches)
 
 bool Hybrid::has_empty_mask()
 {
-  if (mask == Mask.NONE)
+  if (mask == NONE_MASK)
     return true;
   return false;
 }
@@ -91,7 +82,7 @@ void Hybrid::expandall()
         branch.expand();
         son_branches = branch.get_branches();
         for (Hybrid son_branch: son_branches)
-          all_son_branches.push_back(son_branch)
+          all_son_branches.push_back(son_branch);
       }
     this->reset_branches(all_son_branches);
     full_expansion = this->is_final_expansion();

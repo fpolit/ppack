@@ -22,17 +22,18 @@
  *
  */
 
-#ifndef _MASK_H
-#define _MASK_H
-
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "charset.hpp"
+#include "exceptions/mask.hpp"
 
 using namespace std;
+
+#ifndef _MASK_H
+#define _MASK_H
 
 typedef struct maskStruct
 {
@@ -85,6 +86,7 @@ public:
   static bool check_scs(Mask mask, vector<SCS> scs); //check if mask have one of the simple Charset of scs
   static bool check_acs(Mask mask, vector<ACS> acs); //check if mask have one of the advance Charset of acs
   static bool check_complexity(Mask mask, int minCompexity, int maxComplexity);
+  static bool is_mask_charset(string maskCharset);
   //static bool isMaskCharset(string maskCharset); // check if a symbols is a valid symbol mask
 
 
@@ -104,9 +106,10 @@ public:
 
   // operators
   string operator[](int index);
-  bool operator==(const Mask& other);
+  bool operator==(const Mask other);
   Mask split(int index);
 };
 
 Mask NONE_MASK = Mask();
+
 #endif // _MASK_H

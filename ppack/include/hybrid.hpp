@@ -4,19 +4,19 @@
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
-#ifndef _HYBRID_H
-#define _HYBRID_H
 
 #include <string>
 #include <vector>
 
 using namespace std;
 
+
 #include "mask.hpp"
 #include "exceptions/mask.hpp"
 #include "charset.hpp"
 
-using namespace ppack;
+#ifndef _HYBRID_H
+#define _HYBRID_H
 
 class Hybrid
 {
@@ -39,6 +39,6 @@ public:
   // expand init mask and generate leafs
   void expand();
   void expandall();
-}
+};
 
 #endif //_HYBRID_H

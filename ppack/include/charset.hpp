@@ -4,15 +4,14 @@
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
-#ifndef _CHARSET_H
-#define _CHARSET_H
-
 #include <string>
 using namespace std;
 
-class charset
+#ifndef _CHARSET_H
+#define _CHARSET_H
+
+typedef struct Charsets
 {
-public:
   string ascii_alpha =  R"(abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ)";
   string ascii_loweralpha = R"(abcdefghijklmnopqrstuvwxyz)";
   string ascii_upperalpha = R"(ABCDEFGHIJKLMNOPQRSTUVWXYZ)";
@@ -20,7 +19,7 @@ public:
   string special = R"(!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~)";
   string all = ascii_alpha + digits + special;
   string masksymbols = R"(ludsa)";
-};
+}Charsets;
 
 typedef enum SCS {
   none,                // default value to empty SCS variable
