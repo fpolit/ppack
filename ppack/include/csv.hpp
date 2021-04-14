@@ -18,21 +18,17 @@ using namespace std;
 
 #include <boost/algorithm/string.hpp>
 
-namespace ppack
+class CSVReader
 {
-  class CSVReader
-  {
 
-  private:
-    string filename;
-    string delimeter;
+private:
+  string filename;
+  string delimeter;
 
-  public:
-    CSVReader(string filename, string delm = ",");
-    // Function to fetch data from a CSV File
-    vector<vector<string>> get_data();
-  };
-
-}
+public:
+  CSVReader(string filename, string delm = ",");
+  // Function to fetch data from a CSV File
+  vector<vector<string>> get_data();
+};
 
 #endif //_CSV_H

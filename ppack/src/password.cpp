@@ -35,15 +35,49 @@
  */
 
 
-#ifndef __INCLUDE_PASSWORD_H__
-#define __INCLUDE_PASSWORD_H__
-#include "../include/password.hpp"
-#include <algorithm>
-#endif //__INCLUDE_PASSWORD_H__
+// tested - 24 nov 2020
+Password::Password(string passwd)
+  :string(passwd), mask("")
+{
+  mask = analyzePassword(passwd);
+}
 
-Mask  analyzePassword(string passwd);
+// check functions
+bool Password::check_length(Password passwd, int minlength, int maxlength)
+/*
+ * maxlength = -1, means that the maximum length of password is infinite.
+ */
+{
+  int passwd_length = passwd.size();
+  if(maxlength != -1)
+    {
+      if(passwd_length >= minlength && passwd_length <= maxlength)
+        return true;
+    }
+  else
+    {
+      if(passwd_length >= minlength)
+        return true;
+    }
 
+  return false;
+}
 
+// check if a password have a SCS type in pscs(posibles SCS)
+bool Password::check_scs(Password passwd, vector<SCS> pscs)
+{
+  if(std::find(pscs.begin(), pscs.end(), passwd.getSCS()) == pscs.end())
+    return false;
+  return true;
+}
+
+// check if a password have a ACS type in pscs(posibles ACS)
+bool Password::check_acs(Password passwd, vector<ACS> pacs)
+{
+  if(std::find(pacs.begin(), pacs.end(), passwd.getACS()) == pacs.end())
+    return false;
+  return true;
+}
 
 // Tested with omp support - 30 nov 2020
 bool Password::isdigit(string word)
@@ -127,79 +161,35 @@ bool Password::isspecial(string word)
   return isspecialMaster;
 }
 
-bool Password::checkLength(Password passwd, int minlength, int maxlength)
-/*
- * maxlength = -1, means that the maximum length of password is infinite.
- */
-{
-  int passwdLength = passwd.size();
-  if(maxlength != -1)
-  {
-    if(passwdLength >= minlength && passwdLength <= maxlength)
-    return true;
-  }
-  else
-  {
-    if(passwdLength >= minlength)
-    return true;
-  }
-  
-  return false;
-}
-
-// check if a password have a SCS type in pscs(posibles SCS)
-bool Password::checkSCS(Password passwd, vector<SCS> pscs)
-{
-  if(std::find(pscs.begin(), pscs.end(), passwd.getSCS()) == pscs.end())
-    return false;
-  return true;
-}
-
-// check if a password have a ACS type in pscs(posibles ACS)  
-bool Password::checkACS(Password passwd, vector<ACS> pacs)
-{
-  if(std::find(pacs.begin(), pacs.end(), passwd.getACS()) == pacs.end())
-    return false;
-  return true;
-}
-
 // tested - 24 nov 2020
-Password::Password(string passwd)
-  :string(passwd), mask("")
-{
-  mask = analyzePassword(passwd);
-}
-
-
-// tested - 24 nov 2020
-Mask analyzePassword(string passwd)
+Mask Password::analyze_password(string passwd)
 /*
  * Analize a string and create a Mask object,
  * also parse the Simple Charset of the password and
  * finally return it.
  */
 {
-    Mask maskParser;
-    // computer the mask of the password and fill the maskStruct
+    Mask mask_parser;
+    // compute the mask of the password and fill the maskStruct
     // #pragma omp parallel for ordered
     //     shared(master_mask, passwd, symbols, passwdStruct)
     for(auto letther: passwd)
     {
-      if(islower(letther))
-        maskParser.realloc("?l");
-      else if(isupper(letther))
-        maskParser.realloc("?u");
-      else if(isdigit(letther))
-        maskParser.realloc("?d");
+      if(Password::islower(letther))
+        mask_parser.realloc("?l");
+      else if(Password::isupper(letther))
+        mask_parser.realloc("?u");
+      else if(Password::isdigit(letther))
+        mask_parser.realloc("?d");
       else //the character is a special character
-        maskParser.realloc("?s");
+        mask_parser.realloc("?s");
     }
 
-    maskStruct mstruct = maskParser.getStruct();
+    maskStruct mstruct = mask_parser.get_mask_struct();
     // scsParser is defined in mask.hpp and implemented in mask.cpp
     // and password.cpp is importing mask.hpp
-    maskParser.setSCS(Mask::scsParser(mstruct)); 
+    mask_parser.set_scs(Mask::scs_parser(mstruct));
 
-    return maskParser;
+    return mask_parser;
 
 }

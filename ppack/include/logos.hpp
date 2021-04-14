@@ -19,18 +19,14 @@
 
 using namespace std;
 
+class Logo
+{
+protected:
+  vector<string> raw_logos;
 
-namespace ppack{
-
-  class Logo
-  {
-  protected:
-	vector<string> raw_logos;
-
-  public:
-	Logo();
-	static string random();
-  };
-}
+public:
+  Logo();
+  static string random();
+};
 
 #endif /* _LOGOS_H */

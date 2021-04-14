@@ -10,42 +10,18 @@
  */
 
 
-
-#ifndef __INCLUDE_PSTRUCTS_H__
-#define __INCLUDE_PSTRUCTS_H__
-#include "../include/pstructs.hpp"
-#include <cstdlib>
-#include <exception>
-#endif // __INCLUDE_PSTRUCTS_H__
-
-
-class InvalidCharset : public std::exception
-{
-  private:
-    string scharset;
-
-  public:
-    InvalidCharset(string pscs)
-    {
-      scharset = pscs;
-    }
-    const char* what() const throw()
-    {
-      //return "Invalid SCS type : " + scharset;
-      return "Invalid SCS type";
-    }
-};
-
+#include "../include/args.hpp"
+//#include "../include/exceptions/args.hpp"
 
 
 //////////////////////////////////
 ///// rstruct implementation /////
 //////////////////////////////////
 
-rstruct::rstruct(unsigned int min_length, int max_length,
-                 bool quiet_print,
-                 string output_file, string input_file,
-                 unsigned int nthreads)
+Args::Args(unsigned int min_length, int max_length,
+           bool quiet_print,
+           string output_file, string input_file,
+           unsigned int nthreads)
 {
 
   // mask struct
@@ -63,7 +39,7 @@ rstruct::rstruct(unsigned int min_length, int max_length,
   threads = nthreads;
 }
 
-void rstruct::debug()
+void Args::debug()
 {
   cout << "debug rstruct\n\n";
 

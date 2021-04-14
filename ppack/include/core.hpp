@@ -41,26 +41,23 @@ using namespace std;
 #include "logos.hpp"
 #include "csv.hpp"
 
-namespace ppack
+class PPACK
 {
-  class PPACK
-  {
 
-  public:
+public:
 
-    PPACK(){}
+  PPACK(){}
 
-    // using pstructs to pass paramether to static method of PPACK class
+  // using pstructs to pass paramether to static method of PPACK class
 
-    static void statsgen(Sargs sargs);
-    static void maskgen(Margs margs);
-    static void policygen(Pargs pargs);
+  static void statsgen(Sargs sargs);
+  static void maskgen(Margs margs);
+  static void policygen(Pargs pargs);
 
-    // // core of statsgen
-    // friend statstruct coreStatsgen(sstruct pargs);
-    // friend void writeStatsgen(statstruct stats, sstruct pargs);
-    // // core of policygen is in basepoli.cpp
-  };
-}
+  // // core of statsgen
+  // friend statstruct coreStatsgen(sstruct pargs);
+  // friend void writeStatsgen(statstruct stats, sstruct pargs);
+  // // core of policygen is in basepoli.cpp
+};
 
 #endif // _PPACK_H

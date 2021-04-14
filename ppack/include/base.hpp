@@ -27,41 +27,38 @@ using namespace std;
 #include "mask.hpp"
 #include "args.hpp"
 
-namespace ppack
+class Base
 {
-  class Base
-  {
-  private:
-    pstruct bstruct; // base struct , entered options for policygen
-    vector<Mask> *masks;
-    unsigned int length;
+private:
+  pstruct bstruct; // base struct , entered options for policygen
+  vector<Mask> *masks;
+  unsigned int length;
 
-  public:
-    Base();
-    Base(pstruct initial);
-    Base(pstruct poliOpt, unsigned int len);
-    // generate a new base from a base increasing in 1 the length.
-    friend Base* maskStep(Base* base);
+public:
+  Base();
+  Base(pstruct initial);
+  Base(pstruct poliOpt, unsigned int len);
+  // generate a new base from a base increasing in 1 the length.
+  friend Base* maskStep(Base* base);
 
-    void appendMask(Mask step); // next step mask
+  void appendMask(Mask step); // next step mask
 
-    // get and set methods
-    unsigned int getLength(){return length;}
-    int getNumberMasks(){return baseMasks->size();}
-    int getMinLength(){return bstruct.minlength;}
-    int getMaxLength(){return bstruct.maxlength;}
-    Mask getMask(int k);
-    vector<Mask> getBaseMasks(){return *baseMasks;}
-    pstruct getBaseStruct(){return bstruct;}
+  // get and set methods
+  unsigned int getLength(){return length;}
+  int getNumberMasks(){return baseMasks->size();}
+  int getMinLength(){return bstruct.minlength;}
+  int getMaxLength(){return bstruct.maxlength;}
+  Mask getMask(int k);
+  vector<Mask> getBaseMasks(){return *baseMasks;}
+  pstruct getBaseStruct(){return bstruct;}
 
-    //show baseMasks
-    void showMasks(bool prettyOutput);
+  //show baseMasks
+  void showMasks(bool prettyOutput);
 
-    ~Base();
-  };
+  ~Base();
+};
 
   //void permuteMasks(Base base);
   //void corePolicygen(pstruct init); //bases without permutations
 
-}
 #endif //_BASE_H

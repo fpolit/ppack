@@ -28,46 +28,40 @@ using namespace std;
 
 
 //Mask passwdAnalysis(string passwd); //analyze the string passwd and get its mask
-namespace ppack
+
+class Password : public std::string
 {
-  class Password : public std::string
-  {
-  private:
-    Mask mask;
+private:
+  Mask mask;
 
-  public:
-    Password(string passwd);
-    ~Password(){};
+public:
+  Password(string passwd);
+  ~Password(){};
 
 
-    // get and set methods
-    int get_complexity(){return 0;} // NOTA: IMPLEMENTAR LA COMPLEJIDAD DE UNA MASCARA
-    string getv_scs(){return mask.getValueSCS();}
-    string getv_acs(){return mask.getValueACS();}
-    SCS scs(){return mask.getSCS();}
-    ACS acs(){return mask.getACS();}
-    string mask(){return mask;}
+  //check functions
+  static bool check_length(Password passwd, int minlength, int maxlength);
+  static bool check_scs(Password passwd, vector<SCS> pscs); // check if a password have a SCS type in pscs(posibles SCS)
+  static bool check_acs(Password passwd, vector<ACS> pacs); // check if a password have a ACS type in pscs(posibles ACS)
+  static bool isdigit(string word);
+  static bool islower(string word);
+  static bool isupper(string word);
+  static bool isspecial(string word);
 
-    void set_complexity(int complex){mask.setComplexity(complex);}
-    void set_acs(ACS asv){mask.setACS(asv);}
-    void set_scs(SCS scs){mask.setSCS(scs);}
+  // get and set methods
+  string getv_scs(){return mask.getv_scs();}
+  string getv_acs(){return mask.getv_acs();}
+  int get_complexity(){return 0;} // NOTA: IMPLEMENTAR LA COMPLEJIDAD DE UNA MASCARA
+  SCS get_scs(){return mask.get_scs();}
+  ACS get_acs(){return mask.get_acs();}
+  string get_mask(){return mask;}
 
-    // parse function
-    //static Mask  analyzePassword(string passwd);
+  void set_complexity(int complex){mask.set_complexity(complex);}
+  void set_acs(ACS asv){mask.set_acs(asv);}
+  void set_scs(SCS scs){mask.set_scs(scs);}
 
-
-    //check functions
-    static bool check_length(Password passwd, int minlength, int maxlength);
-    static bool check_scs(Password passwd, vector<SCS> pscs); // check if a password have a SCS type in pscs(posibles SCS)
-    static bool check_acs(Password passwd, vector<ACS> pacs); // check if a password have a ACS type in pscs(posibles ACS)
-
-
-    static bool isdigit(string word);
-    static bool islower(string word);
-    static bool isupper(string word);
-    static bool isspecial(string word);
-  };
-}
-
+  // parse function
+  static Mask analyze_password(string passwd);
+};
 
 #endif // _PASSWORD_H

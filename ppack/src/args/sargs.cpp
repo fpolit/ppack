@@ -1,15 +1,15 @@
 
 //////////////////////////////////
-///// sstruct implementation /////
+///// Sargs implementation /////
 //////////////////////////////////
 
 
-sstruct::sstruct(unsigned int min_length, int max_length, //mask struct parameters
-          bool quietPrint, double hideRare,          //print parameters
-          string output_file, string input_file,     // IO parameters
-          vector<string> scharsets,
-          vector<string> acharsets,                  // check parameters
-          unsigned int nthreads)
+Sargs::Sargs(unsigned int min_length, int max_length, //mask struct parameters
+             bool quietPrint, double hideRare,          //print parameters
+             string output_file, string input_file,     // IO parameters
+             vector<string> scharsets,
+             vector<string> acharsets,                  // check parameters
+             unsigned int nthreads)
   :rstruct(min_length, max_length,
            quietPrint,
            output_file, input_file,
@@ -40,7 +40,7 @@ sstruct::sstruct(unsigned int min_length, int max_length, //mask struct paramete
   }
 }
 
-sstruct::sstruct(po::variables_map vm, po::options_description statsgen)
+Sargs::Sargs(po::variables_map vm, po::options_description statsgen)
 /*
  * init a sstruct with all the paramenters entered to vm
  * (from cli using flags)
@@ -164,7 +164,7 @@ sstruct::sstruct(po::variables_map vm, po::options_description statsgen)
   }
 }
 
-void sstruct::debug()
+void Sargs::debug()
 {
     cout << "debug sstruct\n";
 
