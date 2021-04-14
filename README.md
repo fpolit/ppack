@@ -1,8 +1,8 @@
-# PPACK with `openmp` support
+# ppack
 
 ## Dependences
 * boost
 * C++ compiler with `omp` support(`g++` GNU Compiler)
 * Cmake
 
-Visit our [PPACK wiki](https://github.com/shpolit/ppack/wiki) to get more details.
+Visit our [wiki](https://github.com/fpolit/ppack/wiki) to get more details.
