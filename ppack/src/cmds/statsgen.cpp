@@ -7,7 +7,7 @@
  *
  *
  * No implemented functions:
- *  
+ *
  * NO COMPLETED
  * --- implement the input of parameters using a input file ---
  *
@@ -22,30 +22,16 @@
  *
  */
 
-#ifndef __INCLUDE_STD_IOSTREAM_H__
-#define __INCLUDE_STD_IOSTREAM_H__
 #include <iostream>
-#endif //__INCLUDE_STD_IOSTREAM_H__
-
-#ifndef __INCLUDE_STD_VECTOR_H_
-#define __INCLUDE_STD_VECTOR_H_
 #include<vector>
-#endif //__INCLUDE_STD_VECTOR_H_
-
 using namespace std;
 
-#ifndef __INCLUDE_PROGRAM_OPTIONS_H__
-#define __INCLUDE_PROGRAM_OPTIONS_H__
 #include<boost/program_options.hpp>
-#endif //__INCLUDE_PROGRAM_OPTIONS_H__
-
-//using namespace boost;
 namespace po = boost::program_options;
 
-#ifndef __INCLUDE_PPACK_H__
-#define __INCLUDE_PPACK_H__
-#include "../include/ppack.hpp"
-#endif // __INCLUDE_PPACK_H__
+
+#include "../include/core/ppack.hpp"
+#include "../include/args.hpp"
 
 
 int main(int argc ,char* argv[])
@@ -85,53 +71,39 @@ int main(int argc ,char* argv[])
         ("quiet,q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).")
         ("pretty,p", po::value<bool>()->implicit_value(true)->default_value(false), "Pretty output.");
 
-    po::options_description parallel("Parallel");
-    parallel.add_options()
-      ("threads,t", po::value<unsigned int>()->default_value(2), "Number of OMP threads.");
-
     po::options_description statsgen("Generate statistic of a wordlists that help you crack passwords");
     statsgen.add_options()
         ("version,v", "PPACK version.")
         ("help,h", "Show help.");
-    statsgen.add(files).add(password).add(print).add(parallel);
+    statsgen.add(files).add(password).add(print);
 
     po::variables_map vm;
 
     store(po::command_line_parser(argc, argv).
             options(statsgen).run(), vm);
 
-    if(vm.count("help")){
+    if(vm.count("help"))
+      {
         cout << statsgen << endl;
         return 1;
-    }
+      }
 
     if(vm.count("version"))
-    {
-        //cout << "PPACK  version " + ppack::VERSION << endl;
-        cout << "PPACK  version 0.1"  << endl;
-
+      {
+        cout << "PPACK  version " + VERSION << endl;
         return 1;
-    }
-
-    // if(vm.count("input"))
-    //   {
-    //     // write the support to read from a ini file
-    //   }
-    //cout << "--- vm(before parsing arguments) ---" << endl;
-    //testBoostOptions(vm);
-
-    //cout << "--- vm(parsing arguments) ---" << endl;
-    sstruct pargs(vm, statsgen);
-    //pargs.debug();  
+      }
 
 
-    PPACK::statsgen(pargs);
-    
+    Sargs sargs(vm, statsgen);
+    //sargs.debug();
+
+    PPACK::statsgen(sargs);
+    return 0;
   }
   catch(std::exception& e)
   {
     cout << e.what() << endl;
     return 1;
   }
-  return 0;
 }

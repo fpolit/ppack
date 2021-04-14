@@ -4,7 +4,7 @@
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
-##include "ppack/base.py"
+//#include "ppack/base.py"
 #include "../include/hybrid.hpp"
 
 Hybrid::Hybrid(string init_mask)

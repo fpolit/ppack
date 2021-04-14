@@ -9,7 +9,7 @@
  * The base class is defined in include/basepoli.hpp
  * and implemented in src/basepoli.cpp
  * --- Separate Base class of ppack.hhp in its own head file and its implementation file ---
- *  
+ *
  *
  *
  * COMPLETED: (3 dec 2020)
@@ -20,53 +20,41 @@
 */
 
 
+#include <cstdlib>
+#include <iomanip>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
 
-#include "../include/core.hpp"
+using namespace std;
+
+#include "../include/csv.hpp"
+#include "../include/core/ppack.hpp"
+#include "../include/core/statsgen.hpp"
+#include "../include/core/maskgen.hpp"
+#include "../include/core/policygen.hpp"
 
 
-//////////////////////////////////////////////
-////////// statsgen  implementation   ////////
-//////////////////////////////////////////////
-
-void PPACK::statsgen(sstruct pargs)
+void PPACK::statsgen(Sargs sargs)
 {
-  //double elapsedTime = omp_get_wtime();
-  
-  //omp_set_num_threads(pargs.threads);
-  statstruct stats = coreStatsgen(pargs);
-
-  // print to console the computed stats and write
-  // generated mask in output file
-  writeStatsgen(stats, pargs);
-  //elapsedTime = omp_get_wtime() - elapsedTime;
-  // if(pargs.pretty)
-  //   FinePrint::successful("Elapsed Time: " + to_string(elapsedTime));
-  // else
-  //   cout << "[+] Elapsed Time: " << elapsedTime << endl;
+  statstruct stats = coreStatsgen(sargs);
+  writeStatsgen(stats, sargs);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// maskgen implementation   /////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////
-
-void PPACK::maskgen(mstruct pargs)
+void PPACK::maskgen(Margs margs)
 {
-  //double elapsedTime = omp_get_wtime();
-  
-  //omp_set_num_threads(pargs.threads);
-  CSVReader statsgen(pargs.statsgen);
+  CSVReader statsgen(margs.statsgen);
 
   vector<vector<string>> results = statsgen.getData(); //results of statsgen
 
-  if(!pargs.quiet)
+  if(!margs.quiet)
     cout << Logo::randomLogo() << endl;
   ofstream *maskgenOutput;
 
   try
   {
-    coreMaskgen(maskgenOutput, results, pargs);
-    // elapsedTime = omp_get_wtime() - elapsedTime;
-    // cout << "[+] Elapsed Time: " << elapsedTime << endl;
+    coreMaskgen(maskgenOutput, results, margs);
   }
   catch (std::exception& error) {
     cerr << error.what() << endl;
@@ -74,25 +62,14 @@ void PPACK::maskgen(mstruct pargs)
   }
 }
 
-namespace ppack{
-  string VERSION = "1.0";
-  int release = 1;
-}
-
-//////////////////////////////////////////////
-////////// policygen implementation   ////////
-//////////////////////////////////////////////
-
-void PPACK::policygen(pstruct pargs)
+void PPACK::policygen(Pargs pargs)
 {
   try
   {
 
     if(pargs.output == "")
       throw Exception("No output file supplied!");
-    
-    //double elapsedTime = omp_get_wtime();
-    //omp_set_num_threads(pargs.threads);
+
     if(pargs.quiet == false) // print the ppack logo
       cout << Logo::randomLogo() << endl;
 
@@ -120,8 +97,6 @@ void PPACK::policygen(pstruct pargs)
                                           << " d:" << setw(3) << pargs.maxdigit
                                           << " s:" << setw(3) << pargs.maxspecial << endl;
     corePolicygen(pargs); //do almost all the work()
-    // elapsedTime = omp_get_wtime() - elapsedTime;
-    // cout << "[*] Elapsed Time : " << elapsedTime << endl;
   }
   catch(std::exception& error)
   {

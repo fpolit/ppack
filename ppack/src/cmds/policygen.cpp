@@ -24,48 +24,37 @@
  */
 
 
-#ifndef __INCLUDE_STD_IOSTREAM_H__
-#define __INCLUDE_STD_IOSTREAM_H__
 #include <cstdlib>
 #include <iostream>
-#endif //__INCLUDE_STD_IOSTREAM_H__
+using namespace std;
 
-#ifndef __INCLUDE_PROGRAM_OPTIONS_H__
-#define __INCLUDE_PROGRAM_OPTIONS_H__
 #include<boost/program_options.hpp>
 #endif //__INCLUDE_PROGRAM_OPTIONS_H__
-
-using namespace boost;
+//using namespace boost;
 namespace po = boost::program_options;
 
 
-#ifndef __INCLUDE_PPACK_H__
-#define __INCLUDE_PPACK_H__
-#include "../include/ppack.hpp"
-#endif // __INCLUDE_PPACK_H__
+#include "../include/core/ppack.hpp"
+#include "../include/args.hpp"
 
-using namespace std;
 
 int main(int argc ,char* argv[])
 {
-
-    //cout << "Start running policygen main" << endl;
-
-    try
+  try
     {
-    po::options_description files("Files I/O");
-    files.add_options()
+      po::options_description files("Files I/O");
+      files.add_options()
         ("output,o", po::value<string>()->default_value(""), "Ouput File.")
         ("input,i", po::value<string>()->default_value(""), "Input File.");
 
-    po::options_description print("Print");
-    print.add_options()
+      po::options_description print("Print");
+      print.add_options()
         ("show,s", po::value<bool>()->implicit_value(true)->default_value(false), "Show generated masks.")
         ("quiet,q", po::value<bool>()->implicit_value(true)->default_value(false), "Quiet printing(Omit PPACK logo).")
         ("pretty,p", po::value<bool>()->implicit_value(true)->default_value(false), "Pretty output.");
 
 
-    po::options_description mask("Mask Structure");
+      po::options_description mask("Mask Structure");
 
     /*
     * MEANS of -1 value as a default value:
@@ -83,7 +72,7 @@ int main(int argc ,char* argv[])
     */
 
 
-    mask.add_options()
+      mask.add_options()
         ("minlength", po::value<unsigned int>()->default_value(0), "Minimum password length.")
         ("maxlength", po::value<int>()->default_value(0), "Maximum password length.")
 
@@ -100,43 +89,40 @@ int main(int argc ,char* argv[])
         ("minspecial", po::value<unsigned int>()->default_value(0), "Minimum password special characters.")
         ("maxspecial", po::value<int>()->default_value(0), "Maximum password special characters.");
 
-    po::options_description parallel("Parallel");
-    parallel.add_options()
-        ("threads,t", po::value<unsigned int>()->default_value(2), "Number of OMP threads.");
 
-    po::options_description policygen("Generate customized mask for crack passwords");
-    policygen.add_options()
+      po::options_description policygen("Generate customized mask for crack passwords");
+      policygen.add_options()
         ("version,v", "PPACK version.")
         ("help,h", "Show help.");
-    policygen.add(files).add(print).add(mask).add(parallel);
+      policygen.add(files).add(print).add(mask);
 
-    po::variables_map vm;
+      po::variables_map vm;
 
-    po::store(po::command_line_parser(argc, argv).
-            options(policygen).run(), vm);
+      po::store(po::command_line_parser(argc, argv).
+                options(policygen).run(), vm);
 
-    if(vm.count("help")){
+      if(vm.count("help")){
         cout << policygen << endl;
         exit(EXIT_FAILURE);
-    }
+      }
 
-    if(vm.count("version"))
+      if(vm.count("version"))
+        {
+          //cout << "PPACK  version " + ppack::VERSION << endl;
+          cout << "PPACK  version: 1.0"  << endl;
+          exit(EXIT_FAILURE);
+        }
+
+      //cout << "before run pstruct constructor." << endl;
+      Pargs pargs(vm, policygen);
+      //pargs.debug();
+
+      PPACK::policygen(pargs);
+      return 0;
+    }
+  catch(std::exception& e)
     {
-        //cout << "PPACK  version " + ppack::VERSION << endl;
-        cout << "PPACK  version: 1.0"  << endl;
-        exit(EXIT_FAILURE);
-    }
-
-    //cout << "before run pstruct constructor." << endl;
-    pstruct pargs(vm, policygen);
-    //pargs.debug();
-    PPACK::policygen(pargs);
-
-    return 0;
-    }
-    catch(std::exception& e)
-    {
-        cout << e.what() << endl;
-        exit(EXIT_FAILURE);
+      cout << e.what() << endl;
+      exit(EXIT_FAILURE);
     }
 }

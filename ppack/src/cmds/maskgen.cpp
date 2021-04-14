@@ -7,7 +7,7 @@
  * No tested functions: ALL FUNCTION TESTED
  *
  * No implemented functions:
- *  
+ *
  * NO COMPLETED
  * --- implement the input of parameters using a input file ---
  *
@@ -23,32 +23,20 @@
  *
  */
 
-#ifndef __INCLUDE_STD_IOSTREAM_H__
-#define __INCLUDE_STD_IOSTREAM_H__
-#include <iostream>
-#endif //__INCLUDE_STD_IOSTREAM_H__
 
-#ifndef __INCLUDE_STD_VECTOR_H_
-#define __INCLUDE_STD_VECTOR_H_
+#include <iostream>
 #include<vector>
-#endif //__INCLUDE_STD_VECTOR_H_
 
 using namespace std;
 
-#ifndef __INCLUDE_PROGRAM_OPTIONS_H__
-#define __INCLUDE_PROGRAM_OPTIONS_H__
 #include<boost/program_options.hpp>
-#endif //__INCLUDE_PROGRAM_OPTIONS_H__
 
 //using namespace boost;
 namespace po = boost::program_options;
 
 
-#ifndef __INCLUDE_PPACK_H__
-#define __INCLUDE_PPACK_H__
-#include "../include/ppack.hpp"
-#endif // __INCLUDE_PPACK_H__
-
+#include "../include/core/ppack.hpp"
+#include "../include/args.hpp"
 
 int main(int argc ,char* argv[])
 {
@@ -87,38 +75,33 @@ int main(int argc ,char* argv[])
             ("minoccurrence", po::value<unsigned int>()->default_value(0), "Minimum of mask occurrences.")
             ("maxoccurrence", po::value<int>()->default_value(-1), "Maximum of mask occurrences.");
 
-
-        po::options_description parallel("Parallel");
-        parallel.add_options()
-            ("threads,t", po::value<unsigned int>()->default_value(2), "Number of OMP threads.");
-      
         po::options_description maskgen("Generate customized mask for crack passwords");
         maskgen.add_options()
             ("version,v", "PPACK version.")
             ("help,h", "Show help.");
-        maskgen.add(files).add(print).add(check).add(password).add(frequency).add(parallel);
+        maskgen.add(files).add(print).add(check).add(password).add(frequency);
 
         po::variables_map vm;
 
         store(po::command_line_parser(argc, argv).
                 options(maskgen).run(), vm);
 
-        if(vm.count("help")){
+        if(vm.count("help"))
+          {
             cout << maskgen << endl;
             return 1;
-        }
+          }
 
         if(vm.count("version"))
-        {
-            //cout << "PPACK  version " + ppack::VERSION << endl;
-            cout << "PPACK  version 0.1"  << endl;
-
+          {
+            cout << "PPACK  version " + VERSION << endl;
             return 1;
-        }
+          }
 
-        mstruct pargs(vm, maskgen);
-        //pargs.debug();
-        PPACK::maskgen(pargs);
+        Margs margs(vm, maskgen);
+        //margs.debug();
+
+        PPACK::maskgen(margs);
 
         return 0;
     }
