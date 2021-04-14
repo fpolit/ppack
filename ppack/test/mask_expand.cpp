@@ -1,7 +1,9 @@
-#include "../include/hybrid.hpp"
 #include <iostream>
-
 using namespace std;
+
+
+#include "../include/hybrid.hpp"
+#include "../include/mask.hpp"
 
 int main()
 {
@@ -14,4 +16,6 @@ int main()
     {
       cout << "word: " << branch.get_word() << " , mask: " << branch.get_mask() << endl;
     }
+
+  return 0;
 }

@@ -10,10 +10,17 @@
 
 using namespace std;
 
-
+#ifndef _MASK_H
 #include "mask.hpp"
+#endif
+
+#ifndef _MASK_EXCEPT_H
 #include "exceptions/mask.hpp"
+#endif
+
+#ifndef _CHARSET_H
 #include "charset.hpp"
+#endif
 
 #ifndef _HYBRID_H
 #define _HYBRID_H

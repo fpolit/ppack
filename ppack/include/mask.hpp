@@ -27,8 +27,13 @@
 #include <string>
 #include <vector>
 
+#ifndef _CHARSET_H
 #include "charset.hpp"
+#endif
+
+#ifndef _MASK_EXCEPT_H
 #include "exceptions/mask.hpp"
+#endif
 
 using namespace std;
 
