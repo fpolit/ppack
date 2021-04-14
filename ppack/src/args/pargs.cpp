@@ -1,21 +1,20 @@
+#include "../../include/args.hpp"
 
 //////////////////////////////////
-///// pstruct implementation /////
+/////   Pargs implementation /////
 //////////////////////////////////
 
 
-pstruct::pstruct(unsigned int min_length, int max_length,    //
-                 unsigned int min_lower, int max_lower,      // masks
-                 unsigned int min_upper, int max_upper,      // struct
-                 unsigned int min_digit, int max_digit,      // parameters
-                 unsigned int min_special, int max_special,  //
-                 bool quiet_print, bool show_masks,          // print parameters
-                 string output_file, string input_file,      // io parameters
-                unsigned int nthreads)
-                :rstruct(min_length, max_length,
-                          quiet_print,
-                          output_file, input_file,
-                          nthreads)
+Pargs::Pargs(unsigned int min_length, int max_length,    //
+             unsigned int min_lower, int max_lower,      // masks
+             unsigned int min_upper, int max_upper,      // struct
+             unsigned int min_digit, int max_digit,      // parameters
+             unsigned int min_special, int max_special,  //
+             bool quiet_print, bool show_masks,          // print parameters
+             string output_file, string input_file)      // io parameter
+  :Args(min_length, max_length,
+        quiet_print,
+        output_file, input_file)
 {
   // masks struct parameters
   minlower = min_lower;
@@ -34,7 +33,7 @@ pstruct::pstruct(unsigned int min_length, int max_length,    //
   show = show_masks;
 }
 
-pstruct::pstruct(po::variables_map vm, po::options_description policygen)
+Pargs::Pargs(po::variables_map vm, po::options_description policygen)
 /*
  * init a pstruct with all the paramenters entered to vm
  * (from cli using flags)
@@ -209,12 +208,6 @@ pstruct::pstruct(po::variables_map vm, po::options_description policygen)
       if(maxspecial < 0)
         maxspecial = -1; //there isn't a maximum special characters
     }// else case is when minspecial == 0 and maxspecial == 0
-
-    ////////// parallel parameters (parallel section) //////////
-    // threads = vm["threads"].as<unsigned int>();
-    // int maxthreads = omp_get_max_threads();
-    // if((int)threads > maxthreads)
-    //   throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
   }
   catch(std::exception &error)
   {
@@ -225,7 +218,7 @@ pstruct::pstruct(po::variables_map vm, po::options_description policygen)
 }
 
 
-void pstruct::debug() // show all the parameters
+void Pargs::debug() // show all the parameters
 {
   cout << "debug pstruct\n\n";
 

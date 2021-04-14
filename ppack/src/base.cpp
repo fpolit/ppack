@@ -4,8 +4,8 @@
  *
  *
  * Depuration: 
- * TESTED ALL THE FUNCTION with exeption of permuteMasks, 
- * because it isn't implemented yet. 
+ * TESTED ALL THE FUNCTION with exeption of permuteMasks,
+ * because it isn't implemented yet.
  *
  *
  * No tested functions: ALL FUNCTION TESTED
@@ -18,16 +18,81 @@
  */
 
 
-#include "ppack/base.py"
+//#include "ppack/base.py"
+#include "../include/base.py"
+string repeat(string str, int n); // helper function
 
-// #ifndef __INCLUDE_BASE_H__
-// #define __INCLUDE_BASE_H__
-// #include "../include/basepoli.hpp"
-// #include <exception>
-// #include <fstream>
-// #include <ostream>
-// #endif //__INCLUDE_BASE_H__
+Base::Base()
+{
+  length = 0;
+}
 
+Base::Base(baseStruct initial)
+{
+  bstruct = initial;
+  string init_mask = "";
+  init_mask += repeat("?l", bstruct.minlower);
+  init_mask += repeat("?u", bstruct.minupper);
+  init_mask += repeat("?s", bstruct.minspecial);
+  init_mask += repeat("?d", bstruct.mindigit);
+
+  Mask initMask(init_mask);
+  baseMasks.push_back(initMask);
+  length = initMask.length();
+}
+
+
+// tested 27 nov 2020
+Base mask_step(Base init_base) // init base
+{
+  unsigned int length_gbase = init_base.get_length()+1;
+  baseStep bstruct = base.get_base_struct();
+  Base gbase = Base(bstruct, length_gbase); // generated base
+
+  for(Mask mask : init_base.get_masks())
+    {
+      maskStruct mstruct = mask.get_mask_struct();
+
+      if(mstruct.lowercase < bstruct.maxlower || bstruct.maxlower == -1)
+        {
+          gbase.append_mask(realloc_mask(mask, "?l"));
+          if(mstruct.digit < bstruct.maxdigit || bstruct.maxdigit == -1)
+              gbase.append_mask(realloc_mask(mask, "?d"));
+
+          if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
+              gbase.append_mask(realloc_mask(mask, "?u"));
+
+          if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
+            gbase.append_mask(realloc_mask(mask, "?s"));
+        }
+      else if(mstruct.digit < bstruct.maxdigit || bstruct.maxdigit == -1)
+        {
+          gbase.append_mask(realloc_mask(mask, "?d"));
+          if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
+              gbase.append_mask(realloc_mask(mask, "?u"));
+          if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
+            gbase.append_mask(realloc_mask(mask, "?s"));
+        }
+      else if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
+        {
+          gbase.append_mask(realloc_mask(mask, "?u"));
+          if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
+            gbase.append_mask(realloc_mask(mask, "?s"));
+        }
+      else if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
+        {
+          gbase.append_mask(realloc_mask(mask, "?s"));
+        }
+    }
+
+    return gbase;
+}
+
+
+void Base::append_mask(Mask step)
+{
+  masks.push_back(step);
+}
 
 
 //tested 27 nov 2020
@@ -40,135 +105,40 @@ string repeat(string str, int n)
   return repeat_str;
 }
 
-Base::Base()
+void Base::show_masks()
 {
-  length = 0;
-  baseMasks = new vector<Mask>;
-}
-
-Base::Base(pstruct initial)
-{
-  bstruct = initial;
-  string init_mask = "";
-
-  init_mask += repeat("?l", bstruct.minlower);
-  init_mask += repeat("?u", bstruct.minupper);
-  init_mask += repeat("?s", bstruct.minspecial);
-  init_mask += repeat("?d", bstruct.mindigit);
-
-
-  Mask initMask(init_mask);
-
-  baseMasks = new vector<Mask>;
-  baseMasks->push_back(initMask);
-  length = initMask.length();
-}
-// create a base of mask of length len and a empty baseMasks vertor.
-Base::Base(pstruct poliOpt, unsigned int len)
-{
-  bstruct = poliOpt;
-  length = len;
-  baseMasks = new vector<Mask>;
-}
-
-Base::~Base()
-{
-  delete  baseMasks;
-}
-
-void Base::appendMask(Mask step)
-{
-  baseMasks->push_back(step);
-}
-
-// check is base have a mask with similar structure of baseMask
-// bool isDuplicateBaseMask(Base base, Mask mask)
-// {
-//   for(auto bmask: base.getBaseMasks())
-//   {
-//     if(Mask::equalStruct(bmask, mask))
-//       return true;
-//   }
-//   return false;
-// }
-
-
-// tested 27 nov 2020
-Base* maskStep(Base *base)
-{
-  unsigned int lengthBaseStep = base->getLength()+1;
-  Base* baseStep = new Base(base->getBaseStruct(), lengthBaseStep);
-
-  pstruct bstruct = base->getBaseStruct();
-  for(Mask mask : base->getBaseMasks())
-    {
-      maskStruct mstruct = mask.getStruct();
-
-      if(mstruct.lowercase < bstruct.maxlower || bstruct.maxlower == -1)
-        {
-          baseStep->appendMask(reallocMask(mask, "?l"));
-          if(mstruct.digit < bstruct.maxdigit || bstruct.maxdigit == -1)
-              baseStep->appendMask(reallocMask(mask, "?d"));
-
-          if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
-              baseStep->appendMask(reallocMask(mask, "?u"));
-
-          if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
-            baseStep->appendMask(reallocMask(mask, "?s"));
-        }
-      else if(mstruct.digit < bstruct.maxdigit || bstruct.maxdigit == -1)
-        {
-          baseStep->appendMask(reallocMask(mask, "?d"));
-          if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
-              baseStep->appendMask(reallocMask(mask, "?u"));
-          if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
-            baseStep->appendMask(reallocMask(mask, "?s"));
-        }
-      else if(mstruct.uppercase < bstruct.maxupper || bstruct.maxupper == -1)
-        {
-          baseStep->appendMask(reallocMask(mask, "?u"));
-          if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
-            baseStep->appendMask(reallocMask(mask, "?s"));
-        }
-      else if(mstruct.special < bstruct.maxspecial || bstruct.maxspecial == -1)
-        {
-          baseStep->appendMask(reallocMask(mask, "?s"));
-        }
-    }
-
-    delete base;
-    return baseStep;
-}
-
-void Base::showMasks(bool prettyOutput)
-{
-  if(prettyOutput)
-    cout << FinePrint::greenText("[+]") << " Base " << length << " :" << endl;
-  else
+  // if(prettyOutput)
+  //   cout << FinePrint::greenText("[+]") << " Base " << length << " :" << endl;
+  // else
    cout << "[+] Base " << length << " :" << endl;
 
-  for(auto mask: *baseMasks)
+  for(auto mask: masks)
   {
     cout << "\t" << mask << endl;
   }
 }
-Mask Base::getMask(int k)
+
+Mask Base::get_mask(int k)
 {
-  return baseMasks->at(k);
+  if (k > 0 && k < masks.size())
+    return baseMasks->at(k);
+  else
+    throw out_of_range();
 }
 
-void writeMasks(Base* base, ofstream* outputPolicygen)
+// REWRITE (NOT ALL) THIS FUNCTION  - date Apr 14  2021
+void permute_base(Base base, ofstream* output)
 /*
- * This function compute all the permutations without repetitions
+ * This function compute all the permutations of base's masks without repetitions
  * and write all of them to a file.
  */
 {
-  vector<Mask> baseMasks;
+  vector<Mask> ;
   for(int k=0; k<base->getNumberMasks(); k++)
   {
     Mask kmask = base->getMask(k);
     bool repeatMask = false;
-#pragma omp parallel for shared(repeatMask, kmask, base)
+    //#pragma omp parallel for shared(repeatMask, kmask, base)
     for(int i=k+1; i<base->getNumberMasks(); i++)
     {
       if(repeatMask) continue;
@@ -191,8 +161,8 @@ void writeMasks(Base* base, ofstream* outputPolicygen)
       smask = "";
       for(auto character: maskSymbols)
           smask += "?" + string(1,character);
-      #pragma omp critical
-      *outputPolicygen << smask << endl;
+      //#pragma omp critical
+      output << smask << endl;
     } while ( std::next_permutation(maskSymbols.begin(),maskSymbols.end()) );
 
     smask = "";
@@ -202,74 +172,4 @@ void writeMasks(Base* base, ofstream* outputPolicygen)
     #pragma omp critical
     *outputPolicygen << smask << endl;
   }
-}
-
-// compute a set of bases[PoliBase]
-// (with length equal to minlength  till maxlength)
-// tested 27 nov 2020
-void corePolicygen(pstruct pargs)
-{
-  Base *base = new Base(pargs);
-  int minlength = base->getMinLength();
-  int baseLength = base->getLength();
-  while(baseLength < minlength)
-    {
-      base = maskStep(base); //increase the length of base in one
-      baseLength += 1;
-    }
-
-
-  // now the length of base is equal to minlength-1(policygen paramemter)
-  //vector<Base*>* basePoli = new vector<Base*>;
-  if(pargs.show)
-  {
-    ofstream* outputPolicygen = new ofstream;
-    outputPolicygen->open(pargs.output);
-    try {
-#pragma omp parallel for shared(base, outputPolicygen) ordered
-      for(int step=base->getLength(); step < base->getMaxLength(); step++)
-      {
-        #pragma omp ordered
-        base->showMasks(pargs.pretty);
-        writeMasks(base, outputPolicygen);
-        base = maskStep(base);
-      }
-      base->showMasks(pargs.pretty);
-      writeMasks(base, outputPolicygen);
-      outputPolicygen->close();
-
-      if(pargs.pretty)
-        FinePrint::successful("Generated masks have written in [" + pargs.output + "]");
-      else
-       cout << "Generated masks have written in [" + pargs.output + "]" << endl;
-
-    } catch (std::exception& error) {
-      cout << error.what() << endl;
-      outputPolicygen->close();
-    }
-  }
-  else
-  {
-
-    ofstream* outputPolicygen = new ofstream;
-    outputPolicygen->open(pargs.output);
-    try {
-      for(int step=base->getLength(); step < base->getMaxLength(); step++)
-      {
-        writeMasks(base, outputPolicygen);
-        base = maskStep(base);
-      }
-      writeMasks(base, outputPolicygen);
-      outputPolicygen->close();
-
-      if(pargs.pretty)
-        FinePrint::successful("Generated masks have written in [" + pargs.output + "]");
-      else
-       cout << "Generated masks have written in [" + pargs.output + "]" << endl;
-    } catch (std::exception& error) {
-      cout << error.what() << endl;
-      outputPolicygen->close();
-    }
-  }
-  delete base;
 }

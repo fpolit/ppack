@@ -1,3 +1,4 @@
+#include "../../include/args.hpp"
 
 //////////////////////////////////
 ///// Sargs implementation /////
@@ -5,34 +6,32 @@
 
 
 Sargs::Sargs(unsigned int min_length, int max_length, //mask struct parameters
-             bool quietPrint, double hideRare,          //print parameters
+             bool quietPrint, double hide_rare,          //print parameters
              string output_file, string input_file,     // IO parameters
-             vector<string> scharsets,
-             vector<string> acharsets,                  // check parameters
-             unsigned int nthreads)
-  :rstruct(min_length, max_length,
-           quietPrint,
-           output_file, input_file,
-           nthreads)
+             vector<string> scs,
+             vector<string> acs)                  // check parameters
+  :Args(min_length, max_length,
+        quietPrint,
+        output_file, input_file)
 {
   try {
-    for(auto charset: scharsets)
+    for(auto charset: scs)
     {
-      SCS scharset = Mask::checkSCS(charset);
+      SCS scharset = Mask::check_scs(charset);
       if(SCS::none == scharset)
         throw InvalidCharset(charset);
       scs.push_back(scharset);
     }
 
-    for(auto charset: acharsets)
+    for(auto charset: acs)
     {
-      ACS acharset = Mask::checkACS(charset);
+      ACS acharset = Mask::check_acs(charset);
       if(ACS::advnone == acharset)
         throw InvalidCharset(charset);
       acs.push_back(acharset);
     }
 
-    hiderare = hideRare;
+    hiderare = hide_rare;
 
   } catch (std::exception& error) {
     cout << error.what() << endl;
@@ -106,7 +105,7 @@ Sargs::Sargs(po::variables_map vm, po::options_description statsgen)
       {
         for(auto charset: vm["scs"].as<vector<string>>())
         {
-          SCS scharset = Mask::checkSCS(charset);
+          SCS scharset = Mask::check_scs(charset);
           if(SCS::none == scharset)
             throw InvalidCharset(charset);
           scs.push_back(scharset);
@@ -118,7 +117,7 @@ Sargs::Sargs(po::variables_map vm, po::options_description statsgen)
       {
         for(auto charset: vm["acs"].as<vector<string>>())
         {
-          ACS scharset = Mask::checkACS(charset);
+          ACS scharset = Mask::check_acs(charset);
           if(ACS::advnone == scharset)
             throw InvalidCharset(charset);
           acs.push_back(scharset);
@@ -196,8 +195,4 @@ void Sargs::debug()
   //scsValue is in mask.cpp(ans mask.hpp was included)
     cout << charset << ", ";
   cout << endl;
-
-  //parallel section
-  cout << "\n--- parallel section --" << endl;
-  cout << "threads: " << threads << endl;
 }

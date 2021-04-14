@@ -27,35 +27,48 @@ using namespace std;
 #include "mask.hpp"
 #include "args.hpp"
 
+typedef struct baseStruct
+{
+  unsigned int minlength  = 0;
+  unsigned int minlower   = 0;
+  unsigned int minupper   = 0;
+  unsigned int mindigit   = 0;
+  unsigned int minspecial = 0;
+  int maxlength  = 0;
+  int maxlower   = 0;
+  int maxupper   = 0;
+  int maxdigit   = 0;
+  int maxspecial = 0;
+}baseStruct;
+
 class Base
 {
 private:
-  pstruct bstruct; // base struct , entered options for policygen
-  vector<Mask> *masks;
+  baseStruct bstruct; // base struct , entered options for policygen
+  vector<Mask> masks;
   unsigned int length;
 
 public:
   Base();
-  Base(pstruct initial);
-  Base(pstruct poliOpt, unsigned int len);
+  Base(baseStruct initial);
+  Base(baseStruct initial, unsigned int base_length);
   // generate a new base from a base increasing in 1 the length.
-  friend Base* maskStep(Base* base);
+  friend Base mask_step(Base base);
 
-  void appendMask(Mask step); // next step mask
+  void append_mask(Mask step); // next step mask
 
   // get and set methods
-  unsigned int getLength(){return length;}
-  int getNumberMasks(){return baseMasks->size();}
-  int getMinLength(){return bstruct.minlength;}
-  int getMaxLength(){return bstruct.maxlength;}
-  Mask getMask(int k);
-  vector<Mask> getBaseMasks(){return *baseMasks;}
-  pstruct getBaseStruct(){return bstruct;}
+  unsigned int get_length(){return length;}
+  int count_masks(){return masks.size();}
+  int get_minlength(){return bstruct.minlength;}
+  int get_maxlength(){return bstruct.maxlength;}
+  Mask get_mask(int k);
+  vector<Mask> get_masks(){return masks;}
+  baseStruct get_base_struct(){return bstruct;}
 
-  //show baseMasks
-  void showMasks(bool prettyOutput);
-
-  ~Base();
+  //IO methods
+  void show_masks();
+  void permute_base(Base base, ofstream* outputPolicygen)
 };
 
   //void permuteMasks(Base base);

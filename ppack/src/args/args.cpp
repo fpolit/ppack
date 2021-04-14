@@ -10,7 +10,7 @@
  */
 
 
-#include "../include/args.hpp"
+#include "../../include/args.hpp"
 //#include "../include/exceptions/args.hpp"
 
 
@@ -20,8 +20,7 @@
 
 Args::Args(unsigned int min_length, int max_length,
            bool quiet_print,
-           string output_file, string input_file,
-           unsigned int nthreads)
+           string output_file, string input_file)
 {
 
   // mask struct

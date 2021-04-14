@@ -137,8 +137,7 @@ public:
           unsigned int min_digit, int max_digit,      // parameters
           unsigned int min_special, int max_special,  //
           bool quiet_print, bool show_masks,          // print parameters
-          string output_file, string input_file,      // io parameters
-          unsigned nthreads);
+          string output_file, string input_file);      // io parameters
 
   // password and mask
   //unsigned int minlength; - inehritance attribute

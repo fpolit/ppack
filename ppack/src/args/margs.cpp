@@ -1,20 +1,19 @@
+#include "../../include/args.hpp"
 
 //////////////////////////////////
 ///// mstruct implementation /////
 //////////////////////////////////
 
-mstruct::mstruct(unsigned int min_length, int max_length,             //
-          unsigned int min_complexity, int max_complexity,     // mask struct parameters
-          unsigned int min_occurrence, int max_occurrence,       //
-          bool quiet_print, bool show_masks,                   // print parametersxs
-          vector<string> scharsets, vector<string> acharsets,
-          vector<Mask> check_masks,string check_mask_file,
-          string output_file, string statsgen_output,
-          unsigned int nthreads)
-  :rstruct(min_length, max_length,
-           quiet_print,
-           output_file, statsgen_output,
-           nthreads)
+Margs::Margs(unsigned int min_length, int max_length,             //
+             unsigned int min_complexity, int max_complexity,     // mask struct parameters
+             unsigned int min_occurrence, int max_occurrence,       //
+             bool quiet_print, bool show_masks,                   // print parametersxs
+             vector<string> scharsets, vector<string> acharsets,
+             vector<Mask> check_masks,string check_mask_file,
+             string output_file, string statsgen_output)
+  :Args(min_length, max_length,
+        quiet_print,
+        output_file, statsgen_output)
 {
   try {
     for(auto charset: scharsets)
@@ -58,7 +57,7 @@ mstruct::mstruct(unsigned int min_length, int max_length,             //
   }
 }
 
-mstruct::mstruct(po::variables_map vm, po::options_description maskgen)
+Margs::Margs(po::variables_map vm, po::options_description maskgen)
 /*
  * init a mstruct with all the paramenters entered to vm
  * (from cli using flags)
@@ -178,13 +177,6 @@ mstruct::mstruct(po::variables_map vm, po::options_description maskgen)
       if(maxoccurrence < 0)
         maxoccurrence = -1; //there isn't a maximum length
     } // else case is when minoccurence == 0 and maxoccurence == 0
-
-    ////////// parallel parameters (parallel section) //////////
-    // threads = vm["threads"].as<unsigned int>();
-    // int maxthreads = omp_get_max_threads();
-    // if((int)threads > maxthreads)
-    //   throw Exception("You haven't enough threads(max threads: " + to_string(maxthreads) + ")");
-
   }
   catch(std::exception &error)
   {
@@ -194,7 +186,7 @@ mstruct::mstruct(po::variables_map vm, po::options_description maskgen)
   }
 }
 
-void mstruct::debug()
+void Margs::debug()
 {
   cout << "debug mstruct\n";
 
