@@ -7,11 +7,8 @@
 
 
 
-#ifndef __INCLUDE_MASK_H__
-#define __INCLUDE_MASK_H__
+//#include "ppack/mask.hpp"
 #include "../include/mask.hpp"
-//#include <string>
-#endif //__INCLUDE_MASK_H__
 
 
 
@@ -22,63 +19,9 @@ string masksymbols = R"(ludsa)";
 
 // characterSet map (SCS or ACS -> string values)
 
-// string Values of Simple Charsets
-map<SCS, string> scsMap = {
-  {SCS::loweralpha, "loweralpha"},
-  {SCS::upperalpha,"upperalpha"},
-  {SCS::numeric,"numeric"},
-  {SCS::special,"special"},
-  {SCS::alpha,"alpha"},
-  {SCS::mixalphaspecial,"mixalphaspecial"},
-  {SCS::mixalphanum, "mixalphanum"},
-  {SCS::mixspecialnum, "mixspecialnum"},
-  {SCS::mixall, "mixall"},
-  {SCS::none, "none"}
-};
-
-
-// string Values of advance Charsets
-map<ACS, string> acsMap = {
-  {ACS::alphaspecial, "alphaspecial"},
-  {ACS::loweralphaspecial, "loweralphaspecial"},
-  {ACS::upperalphaspecial, "upperalphaspecial"},
-  {ACS::specialalpha, "specialalpha"},
-  {ACS::specialloweralpha, "specialloweralpha"},
-  {ACS::specialupperalpha, "specialupperalpha"},
-  {ACS::alphanum, "alphanum"},
-  {ACS::loweralphanum, "loweralphanum"},
-  {ACS::upperalphanum, "upperalphanum"},
-  {ACS::specialnum, "specialnum"},
-  {ACS::numspecial, "numspecial"},
-  {ACS::advnone, "none"}
-};
-
-
 /*
  * Mask exceptions
 */
-
-InvalidMaskcharset::InvalidMaskcharset(string invalidMaskCharset)
-{
-  maskCharset = invalidMaskCharset;
-}
-
-const char * InvalidMaskcharset::what() const throw ()
-{
-  string warningMsg = "Invalid MaskCharset: " + maskCharset;
-  return warningMsg.c_str();
-}
-
-InvalidMask::InvalidMask(string invalidMask)
-{
-  mask = invalidMask;
-}
-
- const char * InvalidMask::what () const throw ()
- {
-    string warningMsg = "Invalid Mask: " + mask;
-    return warningMsg.c_str();
- }
 // head of functions
 
 // check methods
@@ -435,4 +378,36 @@ ACS Mask::checkACS(string pacs)
       return acs;
   }
   return ACS::advnone;
+}
+
+
+string Mask::operator[](int index)
+{
+  if(index < 0 || index > this->length())
+    return "?" + this[2*index + 1];
+  else
+    throw out_of_range(index);
+}
+
+bool Mask::operator==(const Mask& other)
+{
+  maskStruct ms = other.mask_struct();
+  if (Mask.equalStruct(mstruct, ms) &&
+      *this == other)
+    return true;
+  return false;
+}
+
+Mask Mask::split(int index)
+{
+  if(index < 0 || index > this->length())
+    {
+      Mask split_mask = Mask();
+      for(int i=index; i<this->length(), i++)
+        split_mask.realloc(this[i]);
+
+      return split_mask;
+    }
+  else
+    throw out_of_range(index);
 }

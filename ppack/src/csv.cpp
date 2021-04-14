@@ -5,25 +5,26 @@
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
-#ifndef __INCLUDE_CSV_H__
-#define __INCLUDE_CSV_H__
+//#include "ppack/csv.hpp"
 #include "../include/csv.hpp"
-#endif //__INCLUDE_CSV_H__
 
+CSVReader::CSVReader(string filename, string delm = ",")
+  :filename(filename), delimeter(delm)
+{ }
 
-std::vector<std::vector<std::string>> CSVReader::getData()
+vector<vector<string>> CSVReader::get_data()
 /*
  * Parses through csv file line by line and returns the data
  * in vector of vector of strings.
  */
 {
-  std::ifstream file(fileName);
+  std::ifstream file(filename);
   std::vector<std::vector<std::string> > dataList;
   std::string line = "";
   // Iterate through each line and split the content using delimeter
   while (getline(file, line))
     {
-      std::vector<std::string> vec;
+      vector<string> vec;
       boost::algorithm::split(vec, line, boost::is_any_of(delimeter));
       dataList.push_back(vec);
     }

@@ -1,20 +1,20 @@
 
 /*
- * Logos class implementation - 28 nov 2020
+ * ppack logos class
+ *
+ * implementation - 28 nov 2020
  *
  *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
-#ifndef __LOGOS_INCLUDE_H__
-#define __LOGOS_INCLUDE_H__
-#include "../include/logos.hpp"
-#endif //__LOGOS_INCLUDE_H__
 
+//#include "ppack/logos.hpp"
+#include "../include/logos.hpp"
 
 Logo::Logo()
 {
-	rawLogos = {
+	raw_logos = {
         R"""(
                                      _
                                     | |
@@ -154,10 +154,10 @@ Logo::Logo()
     };
 }
 
-string Logo::randomLogo()
+string Logo::random()
 {
-    Logo logo;
-	srand(time(NULL));
-	int idxLogo = rand() % logo.rawLogos.size();
-	return logo.rawLogos[idxLogo];
+    Logo ppack_logos;
+    srand(time(NULL));
+    int idx_logo = rand() % ppack_logos.raw_logos.size();
+    return ppack_logos.raw_logos[idx_logo];
 }

@@ -1,46 +1,36 @@
 
 /*
- * Logos class definition - Sep 27, 2020 
+ * ppack logos
  *
- * 
+ * implementation - Sep 27, 2020
+ *
+ *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
-#ifndef __LOGOS_H__
-#define __LOGOS_H__
+#ifndef _LOGOS_H
+#define _LOGOS_H
 
-#ifndef __INCLUDE_STD_VECTOR_H__
-#define __INCLUDE_STD_VECTOR_H__
 #include <vector>
-#endif //__INCLUDE_STD_VECTOR_H__
-
-#ifndef __INCLUDE_STD_STRING_H__
-#define __INCLUDE_STD_STRING_H__
-#include<string>
-#endif //__INCLUDE_STD_STRING_H__
-
-#ifndef __INCLUDE_STD_RANDOM_H__
-#define __INCLUDE_STD_RANDOM_H__
+#include <string>
 #include <random>
-#endif //__INCLUDE_STD_RANDOM_H__
-
-
-#ifndef __INCLUDE_STD_CTIME_H__
-#define __INCLUDE_STD_CTIME_H__
 #include <ctime>
-#endif //__INCLUDE_STD_CTIME_H__
-
 #include <iostream>
 
 using namespace std;
 
-class Logo
-{
-protected:
-	vector<string> rawLogos;
 
-public:
+namespace ppack{
+
+  class Logo
+  {
+  protected:
+	vector<string> raw_logos;
+
+  public:
 	Logo();
-	static string randomLogo();
-};
-#endif /* __LOGOS_H__ */
+	static string random();
+  };
+}
+
+#endif /* _LOGOS_H */

@@ -1,59 +1,38 @@
 /*
  * CVSReade class definition
- * Allow you read CVS files,  23 nov 20202
+ * A class to read data from a csv file.
  *
  * Maintainer: glozanoa <glozanoa@uni.pe>
  */
 
 
-#ifndef __CSV_H__
-#define __CSV_H__
+#ifndef _CSV_H
+#define _CSV_H
 
-#ifndef __INCLUDE_STD_VECTOR_H__
-#define __INCLUDE_STD_VECTOR_H__
 #include<vector>
-#endif // __INCLUDE_STD_VECTOR_H_
-
-#ifndef __INCLUDE_STD_STRING_H__
-#define __INCLUDE_STD_STRING_H__
 #include<string>
-#endif //__INCLUDE_STD_STRING_H_
-
-
-#ifndef __INCLUDE_FSTREAM_H__
-#define __INCLUDE_FSTREAM_H__
 #include<fstream>
-#endif //__INCLUDE_FSTREAM_H__
-
-
-#ifndef __INCLUDE_ALGORITHM_H__
-#define __INCLUDE_ALGORITHM_H__
 #include<algorithm>
-#endif //__INCLUDE_ALGORITHM_H__
 
+using namespace std;
 
-#ifndef __INCLUDE_BOOST_ALGORITHM_H__
-#define __INCLUDE_BOOST_ALGORITHM_H__
 #include <boost/algorithm/string.hpp>
-#endif //__INCLUDE_BOOST_ALGORITHM_H__
 
-
-
-class CSVReader
-/*
- * A class to read data from a csv file.
- */
+namespace ppack
 {
-private:
-    std::string fileName;
-    std::string delimeter;
-public:
-    CSVReader(std::string filename, std::string delm = ",") :
-            fileName(filename), delimeter(delm)
-    { }
+  class CSVReader
+  {
+
+  private:
+    string filename;
+    string delimeter;
+
+  public:
+    CSVReader(string filename, string delm = ",");
     // Function to fetch data from a CSV File
-    std::vector<std::vector<std::string>> getData();
-};
+    vector<vector<string>> get_data();
+  };
 
+}
 
-#endif //__CSV_H__
+#endif //_CSV_H

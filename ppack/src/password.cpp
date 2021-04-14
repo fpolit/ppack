@@ -41,19 +41,6 @@
 #include <algorithm>
 #endif //__INCLUDE_PASSWORD_H__
 
-
-// character.hpp
-namespace charset{
-
-  string ascci_letters =  R"(abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ)";
-  string ascii_lowercase = R"(abcdefghijklmnopqrstuvwxyz)";
-  string ascii_uppercase = R"(ABCDEFGHIJKLMNOPQRSTUVWXYZ)";
-  string digits = R"(0123456789)";
-  string special = R"(!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~)";
-}
-
-
-
 Mask  analyzePassword(string passwd);
 
 

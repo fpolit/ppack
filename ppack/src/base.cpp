@@ -17,13 +17,16 @@
  *
  */
 
-#ifndef __INCLUDE_BASE_H__
-#define __INCLUDE_BASE_H__
-#include "../include/basepoli.hpp"
-#include <exception>
-#include <fstream>
-#include <ostream>
-#endif //__INCLUDE_BASE_H__
+
+#include "ppack/base.py"
+
+// #ifndef __INCLUDE_BASE_H__
+// #define __INCLUDE_BASE_H__
+// #include "../include/basepoli.hpp"
+// #include <exception>
+// #include <fstream>
+// #include <ostream>
+// #endif //__INCLUDE_BASE_H__
 
 
 
@@ -143,7 +146,7 @@ void Base::showMasks(bool prettyOutput)
     cout << FinePrint::greenText("[+]") << " Base " << length << " :" << endl;
   else
    cout << "[+] Base " << length << " :" << endl;
-  
+
   for(auto mask: *baseMasks)
   {
     cout << "\t" << mask << endl;
@@ -170,7 +173,7 @@ void writeMasks(Base* base, ofstream* outputPolicygen)
     {
       if(repeatMask) continue;
       Mask imask = base->getMask(i);
-      
+
       if(Mask::equalStruct(kmask, imask))
         repeatMask = true;
     }
@@ -203,11 +206,10 @@ void writeMasks(Base* base, ofstream* outputPolicygen)
 
 // compute a set of bases[PoliBase]
 // (with length equal to minlength  till maxlength)
-// tested 27 nov 2020 
+// tested 27 nov 2020
 void corePolicygen(pstruct pargs)
 {
   Base *base = new Base(pargs);
-  
   int minlength = base->getMinLength();
   int baseLength = base->getLength();
   while(baseLength < minlength)
@@ -259,7 +261,7 @@ void corePolicygen(pstruct pargs)
       }
       writeMasks(base, outputPolicygen);
       outputPolicygen->close();
-      
+
       if(pargs.pretty)
         FinePrint::successful("Generated masks have written in [" + pargs.output + "]");
       else
